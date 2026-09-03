@@ -9,9 +9,14 @@ public class SteeringAgent : Agent
     [SerializeField] private float slowingDistance;
     [SerializeField] private float minDistance = 0.1f;
 
-    public enum SteeringModes { Seek, Flee, Arrive, Pursuit, Evade }
+    public enum SteeringModes { Seek, Flee, Arrive, Pursuit, Evade, Flocking}
     public SteeringModes currentSteering;
 
+    private void Awake()
+    {
+        Vector3 randomDirection = new Vector3(Random.Range(-1, 1), 0f, Random.Range(-1, 1));
+        velocity += randomDirection.normalized * maxSpeed;
+    }
     private void Update()
     {
         if (target == null) return;
@@ -36,7 +41,9 @@ public class SteeringAgent : Agent
             case SteeringModes.Pursuit:
                 return Pursuit(target);
             case SteeringModes.Evade:
-                 return Evade(target);
+                return Evade(target);
+            case SteeringModes.Flocking:
+                return transform.position;
             default:
                 return Vector3.zero;
         }
