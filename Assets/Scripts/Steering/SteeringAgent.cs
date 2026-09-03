@@ -1,67 +1,107 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class SteeringAgent : MonoBehaviour
+public class SteeringAgent : Agent
 {
-    [SerializeField] private Transform target;
+    [SerializeField] private Agent target;
     [SerializeField] private float maxSpeed;
     [SerializeField] private float maxSteering;
     [SerializeField] private float slowingDistance;
     [SerializeField] private float minDistance = 0.1f;
 
-    private Vector3 velocity;
+    public enum SteeringModes { Seek, Flee, Arrive, Pursuit, Evade }
+    public SteeringModes currentSteering;
+
     private void Update()
     {
-        Arrive();
+        if (target == null) return;
+
+        velocity += GetSteering();
+
         transform.position += velocity * Time.deltaTime;
 
         if (velocity != Vector3.zero) transform.forward = velocity;
     }
 
-    private void Seek()
+    private Vector3 GetSteering()
     {
-        Vector3 desiredVelocity = (target.position - transform.position).normalized;
-        desiredVelocity *= maxSpeed;
-
+        switch (currentSteering)
+        {
+            case SteeringModes.Seek:
+                return Seek(target.transform.position);
+            case SteeringModes.Flee:
+                return Flee(target.transform.position);
+            case SteeringModes.Arrive:
+                return Arrive(target.transform.position);
+            case SteeringModes.Pursuit:
+                return Pursuit(target);
+            case SteeringModes.Evade:
+                 return Evade(target);
+            default:
+                return Vector3.zero;
+        }
+    }
+    private Vector3 CalculateSteering(Vector3 desiredVelocity)
+    {
         Vector3 steering = desiredVelocity - velocity;
-
         steering = Vector3.ClampMagnitude(steering, maxSteering * Time.deltaTime);
-        velocity += steering;
 
+        return steering;
     }
 
-    private void Flee()
+    private Vector3 DesiredVelocity(Vector3 target)
     {
-        Vector3 desiredVelocity = (transform.position - target.position).normalized;
+        Vector3 desiredVelocity = (target - transform.position).normalized;
         desiredVelocity *= maxSpeed;
 
-        Vector3 steering = desiredVelocity - velocity;
-
-        steering = Vector3.ClampMagnitude(steering, maxSteering * Time.deltaTime);
-        velocity += steering;
-
+        return desiredVelocity;
+    }
+    private Vector3 Seek(Vector3 target)
+    {
+        Vector3 desired = DesiredVelocity(target);
+        return CalculateSteering(desired);
     }
 
-    private void Arrive()
+    private Vector3 Flee(Vector3 target)
     {
-        Vector3 direction = target.position - transform.position;
+        Vector3 desired = DesiredVelocity(target);
+        return CalculateSteering(-desired);
+    }
+
+    private Vector3 Arrive(Vector3 target)
+    {
+        Vector3 direction = target - transform.position;
 
         float distance = direction.magnitude;
 
         if (distance < minDistance)
         {
-            velocity = Vector3.zero;
-            return;
+            return CalculateSteering(Vector3.zero);
         }
 
-        float targetSpeed = maxSpeed * (distance / slowingDistance);
-        float desiredSpeed = Mathf.Min(targetSpeed, maxSpeed);
+        float desiredSpeed = Mathf.Clamp(maxSpeed * distance / slowingDistance,0,maxSpeed);
 
         Vector3 desired = direction.normalized * desiredSpeed;
-        Vector3 steering = desired - velocity;
+        return CalculateSteering(desired);
+    }
 
-        steering = Vector3.ClampMagnitude(steering, maxSteering * Time.deltaTime);
-        velocity += steering;
+    private Vector3 PredictTargetPosition(Agent target)
+    {
+        Vector3 direction = target.transform.position - transform.position;
+        float distance = direction.magnitude;
+
+        var prediction = distance / (maxSpeed + target.velocity.magnitude);
+        Vector3 futurePos = target.transform.position + target.velocity * prediction;
+        return futurePos;
+    }
+    private Vector3 Pursuit(Agent target)
+    {
+        return Seek(PredictTargetPosition(target));
+    }
+
+    private Vector3 Evade(Agent target)
+    {
+        return Flee(PredictTargetPosition(target));
     }
 }
 
