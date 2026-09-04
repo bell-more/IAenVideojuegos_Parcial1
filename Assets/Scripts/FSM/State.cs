@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public abstract class State
+public interface IState
 {
-    public virtual void Enter() { }
-    public virtual void Update() { }
-    public virtual void Exit() { }
+    void Enter() { }
+    void Update() { }
+    void Exit() { }
 }

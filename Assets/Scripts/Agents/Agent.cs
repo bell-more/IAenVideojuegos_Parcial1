@@ -2,5 +2,11 @@ using UnityEngine;
 
 public class Agent : MonoBehaviour
 {
-    public Vector3 velocity { get; protected set; }
+    private Vector3 Velocity;
+
+    public Vector3 velocity
+    {
+        get => Velocity;
+        set => Velocity = value;
+    }
 }
