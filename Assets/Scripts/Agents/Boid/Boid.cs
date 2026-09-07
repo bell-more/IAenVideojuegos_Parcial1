@@ -25,14 +25,14 @@ public class Boid : MonoBehaviour
         if (vision.HunterAgent != null)
         {
             Vector3 evadeForce = agent.Evade(vision.HunterAgent);
-            agent.velocity += evadeForce * Time.deltaTime;
+            agent.ApplySteering(evadeForce);
             return;
         }
 
         if (vision.NearbyAgents.Count > 0)
         {
             Vector3 flockingForce = flocking.GetFlocking(vision.NearbyAgents);
-            agent.velocity += flockingForce * Time.deltaTime;
+            agent.ApplySteering(flockingForce);
         }
     }
 }

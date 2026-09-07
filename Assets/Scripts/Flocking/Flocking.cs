@@ -21,89 +21,96 @@ public class Flocking : MonoBehaviour
         agent = GetComponent<SteeringAgent>();
     }
 
-    public Vector3 GetFlocking(List<SteeringAgent> neabyBoids)
+    public Vector3 GetFlocking(List<SteeringAgent> nearbyBoids)
     {
-        Vector3 separation = CalculateSeparation(neabyBoids, separationRadius) * separationWeight;
-        Vector3 alignment = CalculateAlignment(neabyBoids, alignmentRadius) * alignmentWeight;
-        Vector3 cohesion = CalculateCohesion(neabyBoids, cohesionRadius) * cohesionWeight;
+        Vector3 separation =
+            CalculateSeparation(nearbyBoids) * separationWeight;
+
+        Vector3 alignment =
+            CalculateAlignment(nearbyBoids) * alignmentWeight;
+
+        Vector3 cohesion =
+            CalculateCohesion(nearbyBoids) * cohesionWeight;
 
         return separation + alignment + cohesion;
     }
 
-    public Vector3 CalculateSeparation(List<SteeringAgent> neabyBoids, float radius)
+    private Vector3 CalculateSeparation(List<SteeringAgent> nearbyBoids)
     {
         Vector3 desired = Vector3.zero;
         int count = 0;
 
-        foreach (var item in neabyBoids)
+        foreach (SteeringAgent neighbour in nearbyBoids)
         {
-            if (item == agent) continue;
+            if (neighbour == agent)
+                continue;
 
-            float distance = Vector3.Distance(transform.position, item.transform.position);
+            Vector3 direction =
+                transform.position - neighbour.transform.position;
 
-            if (distance <= radius && distance > 0.001f)
+            float distance = direction.magnitude;
+
+            if (distance <= separationRadius && distance > 0.001f)
             {
-                desired += item.transform.position;
+                desired += direction.normalized / distance;
                 count++;
             }
         }
 
-        if (count == 0) return Vector3.zero;
+        if (count == 0)
+            return Vector3.zero;
 
         desired /= count;
-        desired = -desired;
+
         desired = desired.normalized * agent.MaxSpeed;
 
         return agent.CalculateSteering(desired);
     }
 
-    public Vector3 CalculateAlignment(List<SteeringAgent> neighbors, float radius)
+    private Vector3 CalculateAlignment(List<SteeringAgent> nearbyBoids)
     {
-        Vector3 desired = Vector3.zero;
+        Vector3 averageVelocity = Vector3.zero;
         int count = 0;
 
-        foreach (var item in neighbors)
+        foreach (SteeringAgent neighbour in nearbyBoids)
         {
-            if (item == agent) continue;
+            if (neighbour == agent)
+                continue;
 
-            float distance = Vector3.Distance(transform.position, item.transform.position);
-
-            if (distance <= radius)
-            {
-                desired += item.Velocity;
-                count++;
-            }
+            averageVelocity += neighbour.Velocity;
+            count++;
         }
 
-        if (count == 0) return Vector3.zero;
+        if (count == 0)
+            return Vector3.zero;
 
-        desired /= count;
-        desired = desired.normalized * agent.MaxSpeed;
+        averageVelocity /= count;
+
+        Vector3 desired =
+            averageVelocity.normalized * agent.MaxSpeed;
 
         return agent.CalculateSteering(desired);
     }
 
-    public Vector3 CalculateCohesion(List<SteeringAgent> neighbors, float radius)
+    private Vector3 CalculateCohesion(List<SteeringAgent> nearbyBoids)
     {
         Vector3 center = Vector3.zero;
         int count = 0;
 
-        foreach (var item in neighbors)
+        foreach (SteeringAgent neighbour in nearbyBoids)
         {
-            if (item == agent) continue;
+            if (neighbour == agent)
+                continue;
 
-            float distance = Vector3.Distance(transform.position, item.transform.position);
-
-            if (distance <= radius)
-            {
-                center += item.transform.position;
-                count++;
-            }
+            center += neighbour.transform.position;
+            count++;
         }
 
-        if (count == 0) return Vector3.zero;
+        if (count == 0)
+            return Vector3.zero;
 
         center /= count;
+
         return agent.Seek(center);
     }
 

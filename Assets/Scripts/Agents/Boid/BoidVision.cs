@@ -11,27 +11,31 @@ public class BoidVision : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        SteeringAgent neighbour = other.GetComponent<SteeringAgent>();
-        if (neighbour != null && neighbour.gameObject != gameObject)
+        Boid boid = other.GetComponent<Boid>();
+
+        if (boid != null && boid.gameObject != gameObject)
         {
+            SteeringAgent neighbour = boid.GetComponent<SteeringAgent>();
+
             if (!nearbyAgents.Contains(neighbour))
             {
                 nearbyAgents.Add(neighbour);
             }
         }
 
-        if (other.CompareTag("Hunter"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Hunter"))
         {
             hunterAgent = other.GetComponent<SteeringAgent>();
+            Debug.Log("HUNTER IS NOT NULL");
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        SteeringAgent neighbor = other.GetComponent<SteeringAgent>();
-        if (neighbor != null && nearbyAgents.Contains(neighbor))
+        SteeringAgent neighbour = other.GetComponent<SteeringAgent>();
+        if (neighbour != null && nearbyAgents.Contains(neighbour))
         {
-            nearbyAgents.Remove(neighbor);
+            nearbyAgents.Remove(neighbour);
         }
 
         if (other.CompareTag("Hunter"))
