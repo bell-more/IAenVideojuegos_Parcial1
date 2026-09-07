@@ -16,11 +16,8 @@ public class AttackState : IState
     {
         Debug.Log("Hunter entered attack state");
 
-        if (hunter.targetsInRange.Count > 0)
-        {
-            target = hunter.targetsInRange[0].GetComponent<Boid>();
-            Debug.Log("Target: " + target.name);
-        }
+        hunter.GetStatusUI.SetStatus("Attacking");
+        target = hunter.GetClosestTarget();
 
     }
 
@@ -29,7 +26,7 @@ public class AttackState : IState
         if (target == null)
         {
             fsm.ChangeState(HunterStates.Patrol);
-            Debug.Log("No target found");
+            Debug.Log("No target found or dead");
             return;
         }
 
@@ -43,20 +40,26 @@ public class AttackState : IState
        
         float distance = Vector3.Distance(hunter.transform.position, target.transform.position);
 
-        if (distance <= hunter.GetMeleeAttackRadius && hunter.CanAttack)
+        if (distance <= hunter.GetMeleeAttackRadius)
         {
+            if (hunter.CanAttack) 
+            { 
             Debug.Log("ABOUT TO ATTACK");
             bool attackSuccessful = hunter.MeleeAttack(target);
 
-            if (attackSuccessful)
-            {
-                hunter.ResetAttackTimer();
+                if (attackSuccessful)
+                {
+                    hunter.ResetAttackTimer();
+                    fsm.ChangeState(HunterStates.Patrol);
+                   
+                    return;
+                }
             }
         }
-        else if (distance <= hunter.GetRangeAttackRadius)
+       /* else if (distance <= hunter.GetRangeAttackRadius)
         {
             // range
-        }
+        }*/
         else
         {
             Vector3 steering = hunter.Agent.Pursuit(target);

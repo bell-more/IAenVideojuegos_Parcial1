@@ -16,11 +16,12 @@ public class PatrolState : IState
     {
         Debug.Log("Hunter entered patrol");
         currentWaypoint = 0;
+        hunter.GetStatusUI.SetStatus("Patolling");
     }
 
     public void Update()
     {
-        if (hunter.CanAttack && hunter.targetsInRange.Count > 0)
+        if (hunter.CanAttack && hunter.GetClosestTarget() != null)
         {
             fsm.ChangeState(HunterStates.Attack);
             return;

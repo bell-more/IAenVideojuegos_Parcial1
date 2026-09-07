@@ -80,13 +80,26 @@ public class SteeringAgent : Agent
         Vector3 direction = target.transform.position - transform.position;
         float distance = direction.magnitude;
 
-        var prediction = distance / (maxSpeed + target.velocity.magnitude);
-        Vector3 futurePos = target.transform.position + target.velocity * prediction;
-        return futurePos;
+        float predictionTime;
+
+        if (maxSpeed <= 0)
+        {
+            predictionTime = 0;
+        }
+        else
+        {
+            predictionTime = distance / maxSpeed;
+        }
+
+        Vector3 futurePosition =
+            target.transform.position + target.velocity * predictionTime;
+
+        return futurePosition;
     }
     public Vector3 Pursuit(Agent target)
     {
-        return Seek(PredictTargetPosition(target));
+        Vector3 futurePosition = PredictTargetPosition(target);
+        return Seek(futurePosition);
     }
 
     public Vector3 Evade(Agent target)

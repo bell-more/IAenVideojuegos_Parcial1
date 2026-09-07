@@ -29,6 +29,10 @@ public class Hunter : Agent
 
     private SteeringAgent agent;
     public SteeringAgent Agent => agent;
+
+    //UI
+    [SerializeField] private HunterStatusUI statusUI;
+    public HunterStatusUI GetStatusUI => statusUI;
     private void Awake()
     {
         agent = GetComponent<SteeringAgent>();
@@ -74,5 +78,32 @@ public class Hunter : Agent
     public void ResetAttackTimer()
     {
         tbaTimer = tba;
+    }
+
+    public Boid GetClosestTarget()
+    {
+        Boid closestTarget = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (Transform target in targetsInRange)
+        {
+            if (target == null)
+                continue;
+
+            Boid boid = target.GetComponent<Boid>();
+
+            if (boid == null || !boid.GetIsAlive)
+                continue;
+
+            float distance = Vector3.Distance(transform.position, target.position);
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestTarget = boid;
+            }
+        }
+
+        return closestTarget;
     }
 }

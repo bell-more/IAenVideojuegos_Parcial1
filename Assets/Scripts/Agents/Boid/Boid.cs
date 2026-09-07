@@ -8,6 +8,10 @@ public class Boid : Agent
     private BoidVision vision;
     private bool isAlive = true;
     [SerializeField] private int life = 3;
+    public bool GetIsAlive => isAlive;
+
+    [Header("Visuals")]
+    [SerializeField] private Renderer childMaterial;
 
     private void Awake()
     {
@@ -17,7 +21,7 @@ public class Boid : Agent
 
         Vector3 randomDirection = new Vector3(Random.Range(-1, 1), 0f, Random.Range(-1, 1));
         velocity += randomDirection.normalized * agent.MaxSpeed;
-}
+    }
 
     private void Start()
     {
@@ -29,7 +33,7 @@ public class Boid : Agent
     private void Update()
     {
         if (!isAlive) return;
-       
+
         if (vision.HunterAgent != null)
         {
             Vector3 evadeForce = agent.Evade(vision.HunterAgent);
@@ -47,7 +51,7 @@ public class Boid : Agent
     public void TakeDamage(int damage)
     {
         life -= damage;
-        Debug.Log("life: "+life);
+        Debug.Log("life: " + life);
 
         if (life <= 0)
         {
@@ -55,8 +59,17 @@ public class Boid : Agent
             life = 0;
             isAlive = false;
             agent.Stop();
-           
+            ChangeColor(Color.red);
+
             //die ----> stay still so the hunter can gather it ----after that-----> respawn in a random place after 3* seconds
+        }
+    }
+
+    public void ChangeColor(Color newColor)
+    {
+        if (childMaterial != null)
+        {
+            childMaterial.material.color = newColor;
         }
     }
 

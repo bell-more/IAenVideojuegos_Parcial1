@@ -50,6 +50,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fac55148ecdb3b40b1fd0010a2bc683, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boid
+  life: 3
+  childMaterial: {fileID: 7084471772390166928}
 --- !u!114 &535180689089622927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92,9 +94,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b16e7d51d0d8584583ebad4bf59ee05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SteeringAgent
-  maxSpeed: 6
-  maxSteering: 2
-  slowingDistance: 4
+  maxSpeed: 8
+  maxSteering: 5
+  slowingDistance: 6
   minDistance: 0.1
 --- !u!135 &725364550705010323
 SphereCollider:
