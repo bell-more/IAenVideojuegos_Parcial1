@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hunter : MonoBehaviour
+public class Hunter : Agent
 {
     [SerializeField] private LayerMask boidLayer;
 
@@ -9,35 +9,34 @@ public class Hunter : MonoBehaviour
 
     private StateMachine stateMachine;
 
+    [Header("Waypoints")]
     [SerializeField] private List<Transform> waypoints = new List<Transform>();
     [SerializeField] private float waypointCheckDistance = 1f;
-
-    private SteeringAgent agent;
-
     public List<Transform> Waypoints => waypoints;
     public float WaypointCheckDistance => waypointCheckDistance;
-    public SteeringAgent Agent => agent;
 
+
+    [Header("Attack")]
+    [SerializeField] private float tba = 3f; //time between attacks
+    [SerializeField] private float rangeAttackRadius = 6f;
+    [SerializeField] private float meleeAttackRadius = 2f;
+
+    public float GetTBA => tba;
+    public float GetRangeAttackRadius => rangeAttackRadius;
+    public float GetMeleeAttackRadius => meleeAttackRadius;
+    private float tbaTimer;
+    public bool CanAttack { get { return tbaTimer <= 0f; } }
+
+    private SteeringAgent agent;
+    public SteeringAgent Agent => agent;
     private void Awake()
     {
         agent = GetComponent<SteeringAgent>();
-
-        stateMachine = new StateMachine();
-
-        PatrolState patrolState = new PatrolState(this);
-
-        stateMachine.RegisterState(
-            HunterStates.Patrol,
-            patrolState
-        );
-
-        stateMachine.ChangeState(HunterStates.Patrol);
-        stateMachine.ChangeState(HunterStates.Patrol);
     }
 
     private void Update()
     {
-        stateMachine.Update();
+        if (tbaTimer > 0f) tbaTimer -= Time.deltaTime;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -49,8 +48,7 @@ public class Hunter : MonoBehaviour
                 targetsInRange.Add(other.transform);
             }
 
-            // Después:
-            // stateMachine.ChangeState(HunterStates.Pursuit);
+
         }
     }
 
@@ -59,9 +57,22 @@ public class Hunter : MonoBehaviour
         if (other.gameObject.layer == LayerMask.NameToLayer("Boid"))
         {
             targetsInRange.Remove(other.transform);
-
-            // Después:
-            // stateMachine.ChangeState(HunterStates.Patrol);
         }
+    }
+
+    //ATTACK
+    public bool MeleeAttack(Boid target)
+    {
+        if (target == null) return false;
+
+        target.TakeDamage(1);
+        Debug.Log("Boid attacked");
+
+        return true;
+    }
+
+    public void ResetAttackTimer()
+    {
+        tbaTimer = tba;
     }
 }

@@ -14,11 +14,6 @@ public class SteeringAgent : Agent
     public float MaxSpeed => maxSpeed;
     public Vector3 Velocity => velocity;
 
-   /* private void Awake()
-    {
-        Vector3 randomDirection = new Vector3(Random.Range(-1, 1), 0f, Random.Range(-1, 1));
-        velocity += randomDirection.normalized * maxSpeed;
-    }*/
     private void Update()
     {
         transform.position = Bounds.Instance.OutOfBounds(transform.position);
@@ -76,6 +71,7 @@ public class SteeringAgent : Agent
         float desiredSpeed = Mathf.Clamp(maxSpeed * distance / slowingDistance, 0, maxSpeed);
 
         Vector3 desired = direction.normalized * desiredSpeed;
+        
         return CalculateSteering(desired);
     }
 
@@ -88,7 +84,7 @@ public class SteeringAgent : Agent
         Vector3 futurePos = target.transform.position + target.velocity * prediction;
         return futurePos;
     }
-    private Vector3 Pursuit(Agent target)
+    public Vector3 Pursuit(Agent target)
     {
         return Seek(PredictTargetPosition(target));
     }
@@ -98,5 +94,9 @@ public class SteeringAgent : Agent
         return Flee(PredictTargetPosition(target));
     }
 
+    public void Stop()
+    {
+        velocity = Vector3.zero;
+    }
 }
 

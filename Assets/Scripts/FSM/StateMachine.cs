@@ -8,6 +8,7 @@ public class StateMachine
 {
     private Dictionary<Enum, IState> states = new Dictionary<Enum, IState>();
 
+
     private IState currentState;
 
     public void RegisterState(Enum key, IState state)

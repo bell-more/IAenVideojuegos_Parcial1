@@ -26,7 +26,6 @@ public class BoidVision : MonoBehaviour
         if (other.gameObject.layer == LayerMask.NameToLayer("Hunter"))
         {
             hunterAgent = other.GetComponent<SteeringAgent>();
-            Debug.Log("HUNTER IS NOT NULL");
         }
     }
 
