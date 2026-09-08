@@ -15,6 +15,8 @@ public class BoidVision : MonoBehaviour
 
         if (boid != null && boid.gameObject != gameObject)
         {
+            if(!boid.GetIsAlive) return;
+            
             SteeringAgent neighbour = boid.GetComponent<SteeringAgent>();
 
             if (!nearbyAgents.Contains(neighbour))

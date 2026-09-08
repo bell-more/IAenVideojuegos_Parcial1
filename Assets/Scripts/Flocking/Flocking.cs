@@ -23,14 +23,11 @@ public class Flocking : MonoBehaviour
 
     public Vector3 GetFlocking(List<SteeringAgent> nearbyBoids)
     {
-        Vector3 separation =
-            CalculateSeparation(nearbyBoids) * separationWeight;
+        Vector3 separation = CalculateSeparation(nearbyBoids) * separationWeight;
 
-        Vector3 alignment =
-            CalculateAlignment(nearbyBoids) * alignmentWeight;
+        Vector3 alignment = CalculateAlignment(nearbyBoids) * alignmentWeight;
 
-        Vector3 cohesion =
-            CalculateCohesion(nearbyBoids) * cohesionWeight;
+        Vector3 cohesion = CalculateCohesion(nearbyBoids) * cohesionWeight;
 
         return separation + alignment + cohesion;
     }
@@ -42,11 +39,9 @@ public class Flocking : MonoBehaviour
 
         foreach (SteeringAgent neighbour in nearbyBoids)
         {
-            if (neighbour == agent)
-                continue;
+            if (neighbour == agent) continue;
 
-            Vector3 direction =
-                transform.position - neighbour.transform.position;
+            Vector3 direction = transform.position - neighbour.transform.position;
 
             float distance = direction.magnitude;
 
@@ -57,8 +52,7 @@ public class Flocking : MonoBehaviour
             }
         }
 
-        if (count == 0)
-            return Vector3.zero;
+        if (count == 0) return Vector3.zero;
 
         desired /= count;
 
@@ -74,20 +68,22 @@ public class Flocking : MonoBehaviour
 
         foreach (SteeringAgent neighbour in nearbyBoids)
         {
-            if (neighbour == agent)
-                continue;
+            if (neighbour == agent) continue;
 
-            averageVelocity += neighbour.Velocity;
-            count++;
+            float distance = Vector3.Distance(transform.position,neighbour.transform.position);
+
+            if (distance <= alignmentRadius)
+            {
+                averageVelocity += neighbour.Velocity;
+                count++;
+            }
         }
 
-        if (count == 0)
-            return Vector3.zero;
+        if (count == 0) return Vector3.zero;
 
         averageVelocity /= count;
 
-        Vector3 desired =
-            averageVelocity.normalized * agent.MaxSpeed;
+        Vector3 desired = averageVelocity.normalized * agent.MaxSpeed;
 
         return agent.CalculateSteering(desired);
     }
@@ -99,15 +95,18 @@ public class Flocking : MonoBehaviour
 
         foreach (SteeringAgent neighbour in nearbyBoids)
         {
-            if (neighbour == agent)
-                continue;
+            if (neighbour == agent) continue;
 
-            center += neighbour.transform.position;
-            count++;
+            float distance = Vector3.Distance(transform.position, neighbour.transform.position);
+
+            if (distance <= cohesionRadius)
+            {
+                center += neighbour.transform.position;
+                count++;
+            }
         }
 
-        if (count == 0)
-            return Vector3.zero;
+        if (count == 0) return Vector3.zero;
 
         center /= count;
 

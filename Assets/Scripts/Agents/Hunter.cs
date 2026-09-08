@@ -45,14 +45,16 @@ public class Hunter : Agent
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Boid"))
+        Boid boid = other.GetComponent<Boid>();
+
+        if (boid != null && boid.gameObject != gameObject)
         {
+            if (!boid.GetIsAlive) return;
+            
             if (!targetsInRange.Contains(other.transform))
             {
                 targetsInRange.Add(other.transform);
             }
-
-
         }
     }
 
