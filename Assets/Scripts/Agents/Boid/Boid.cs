@@ -34,7 +34,7 @@ public class Boid : Agent
 
     private void Start()
     {
-        Debug.Log("LIFE: " + life);
+      //  Debug.Log("LIFE: " + life);
         Vector3 randomDirection = new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f)).normalized;
         agent.velocity = randomDirection * agent.MaxSpeed;
     }
@@ -67,6 +67,13 @@ public class Boid : Agent
             {
                 agent.velocity = transform.forward * 0.001f;
 
+                if (vision.NearbyAgents.Count > 0)
+                {
+                    Vector3 flockingForce = flocking.GetFlocking(vision.NearbyAgents);
+                    flockingForce.y = 0f;
+                    agent.ApplySteering(flockingForce);
+                }
+
                 if (trapAttackTimer <= 0f)
                 {
                     targetInterestObject.TakeDamage(1);
@@ -76,6 +83,13 @@ public class Boid : Agent
             else
             {
                 Vector3 arriveForce = agent.Arrive(targetPos);
+
+                if (vision.NearbyAgents.Count > 0)
+                {
+                    Vector3 flockingForce = flocking.GetFlocking(vision.NearbyAgents);
+                    arriveForce += flockingForce;
+                }
+
                 arriveForce.y = 0f;
                 agent.ApplySteering(arriveForce);
             }
@@ -106,7 +120,7 @@ public class Boid : Agent
     public void TakeDamage(int damage)
     {
         life -= damage;
-        Debug.Log("life: " + life);
+        //Debug.Log("life: " + life);
 
         if (life <= 0)
         {

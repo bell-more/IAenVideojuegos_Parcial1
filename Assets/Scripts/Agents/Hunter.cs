@@ -16,7 +16,6 @@ public class Hunter : Agent
     public List<Transform> Waypoints => waypoints;
     public float WaypointCheckDistance => waypointCheckDistance;
 
-
     [Header("Attack")]
     [SerializeField] private float tba = 3f;
     [SerializeField] private float rangeAttackRadius = 6f;
@@ -47,17 +46,19 @@ public class Hunter : Agent
     {
         if (tbaTimer > 0f) tbaTimer -= Time.deltaTime;
 
-        if (spawnTimer > 0f)
+        if (GetClosestTarget() == null)
         {
-            spawnTimer -= Time.deltaTime;
-        }
-        else
-        {
-            SpawnInterestObject();
-            spawnTimer = 3f;
+            if (spawnTimer > 0f)
+            {
+                spawnTimer -= Time.deltaTime;
+            }
+            else
+            {
+                SpawnInterestObject();
+                spawnTimer = 3f;
+            }
         }
     }
-
 
     private void OnTriggerEnter(Collider other)
     {
@@ -103,8 +104,7 @@ public class Hunter : Agent
 
         foreach (Transform target in targetsInRange)
         {
-            if (target == null)
-                continue;
+            if (target == null) continue;
 
             Boid boid = target.GetComponent<Boid>();
 
