@@ -21,6 +21,10 @@ public class Hunter : Agent
     [SerializeField] private float rangeAttackRadius = 6f;
     [SerializeField] private float meleeAttackRadius = 2f;
 
+    [Header("Gather")]
+    [SerializeField] private float gatherTime = 2f;
+    public float GetGatherTime => gatherTime;
+
     public float GetTBA => tba;
     public float GetRangeAttackRadius => rangeAttackRadius;
     public float GetMeleeAttackRadius => meleeAttackRadius;
@@ -46,7 +50,7 @@ public class Hunter : Agent
     {
         if (tbaTimer > 0f) tbaTimer -= Time.deltaTime;
 
-        if (GetClosestTarget() == null)
+        if (GetClosestTarget() == null && GetClosestDeadTarget() == null)
         {
             if (spawnTimer > 0f)
             {
@@ -66,8 +70,6 @@ public class Hunter : Agent
 
         if (boid != null && boid.gameObject != gameObject)
         {
-            if (!boid.GetIsAlive) return;
-
             if (!targetsInRange.Contains(other.transform))
             {
                 targetsInRange.Add(other.transform);
@@ -87,6 +89,7 @@ public class Hunter : Agent
     {
         if (target == null) return false;
 
+        Debug.Log("Hunter attacked a boid");
         target.TakeDamage(1);
 
         return true;
@@ -109,6 +112,31 @@ public class Hunter : Agent
             Boid boid = target.GetComponent<Boid>();
 
             if (boid == null || !boid.GetIsAlive) continue;
+
+            float distance = Vector3.Distance(transform.position, target.position);
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestTarget = boid;
+            }
+        }
+
+        return closestTarget;
+    }
+
+    public Boid GetClosestDeadTarget()
+    {
+        Boid closestTarget = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (Transform target in targetsInRange)
+        {
+            if (target == null) continue;
+
+            Boid boid = target.GetComponent<Boid>();
+
+            if (boid == null || boid.GetIsAlive) continue; //ignore if it's null or alive
 
             float distance = Vector3.Distance(transform.position, target.position);
 

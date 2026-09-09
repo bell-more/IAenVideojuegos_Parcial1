@@ -8,7 +8,9 @@ public class Boid : Agent
     private BoidVision vision;
     private bool isAlive = true;
     [SerializeField] private int life = 3;
+    private int initialLife;
     public bool GetIsAlive => isAlive;
+    private bool isCollected = false; 
 
     [Header("Visuals")]
     [SerializeField] private Renderer childMaterial;
@@ -22,14 +24,28 @@ public class Boid : Agent
         set => targetInterestObject = value;
     }
 
+    //colours
+    private Renderer[] allRenderers;
+    private Color[] initialColors;
+
     private void Awake()
     {
+        initialLife = life;
+
         agent = GetComponent<SteeringAgent>();
         flocking = GetComponent<Flocking>();
         vision = GetComponent<BoidVision>();
 
         Vector3 randomDirection = new Vector3(Random.Range(-1, 1), 0f, Random.Range(-1, 1));
         velocity += randomDirection.normalized * agent.MaxSpeed;
+
+        allRenderers = GetComponentsInChildren<Renderer>(true);
+
+        initialColors = new Color[allRenderers.Length];
+        for (int i = 0; i < allRenderers.Length; i++)
+        {
+            initialColors[i] = allRenderers[i].material.color;
+        }
     }
 
     private void Start()
@@ -122,13 +138,63 @@ public class Boid : Agent
         life -= damage;
         //Debug.Log("life: " + life);
 
-        if (life <= 0)
+        if (life <= 0 && isAlive)
         {
             life = 0;
             isAlive = false;
+            isCollected = false;
             agent.Stop();
             ChangeColor(Color.red);
+
+            foreach (SteeringAgent neighbor in vision.NearbyAgents)
+            {
+                BoidVision neighborVision = neighbor.GetComponent<BoidVision>();
+                if (neighborVision != null)
+                {
+                    neighborVision.RemoveNeighbour(this.agent);
+                }
+            }
         }
+    }
+
+    public void Collect()
+    {
+        if (isCollected) return;
+        isCollected = true;
+        CancelInvoke(nameof(Respawn));
+
+        childMaterial.GetComponent<Collider>().enabled = false;
+
+        for (int i = 0; i < allRenderers.Length; i++)
+        {
+            allRenderers[i].enabled = false;
+        }
+
+        Invoke(nameof(Respawn), 3f);
+    }
+
+    private void Respawn()
+    {
+        life = initialLife;
+        isAlive = true;
+        isCollected = false;
+        
+        GetComponent<BoidVision>().ClearVision();
+
+        float range = 10f;
+        transform.position = new Vector3(Random.Range(-range, range), transform.position.y, Random.Range(-range, range));
+
+        childMaterial.GetComponent<Collider>().enabled = true;
+
+        for (int i = 0; i < allRenderers.Length; i++)
+        {
+            allRenderers[i].enabled = true;
+            allRenderers[i].material.color = initialColors[i];
+        }
+
+
+        Vector3 randomDirection = new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f)).normalized;
+        agent.velocity = randomDirection * agent.MaxSpeed;
     }
 
     public void ChangeColor(Color newColor)

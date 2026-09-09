@@ -21,11 +21,18 @@ public class PatrolState : IState
 
     public void Update()
     {
+        if (hunter.GetClosestDeadTarget() != null)
+        {
+            fsm.ChangeState(HunterStates.Gather);
+            return;
+        }
+
         if (hunter.CanAttack && hunter.GetClosestTarget() != null)
         {
             fsm.ChangeState(HunterStates.Attack);
             return;
         }
+
         Patrol();
        // Debug.Log("Patrolling");
     }

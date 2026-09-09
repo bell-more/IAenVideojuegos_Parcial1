@@ -2,7 +2,7 @@
     public enum HunterStates
     {
         Patrol,
-        Pursuit,
+        Gather,
         Attack
     }
 

@@ -17,6 +17,9 @@ public class FSMAgent : MonoBehaviour
 
         AttackState attackState = new AttackState(hunter, fsm);
         fsm.RegisterState(HunterStates.Attack, attackState);
+
+        GatherState gatherState = new GatherState(hunter, fsm);
+        fsm.RegisterState(HunterStates.Gather, gatherState);
     }
 
     private void Update()

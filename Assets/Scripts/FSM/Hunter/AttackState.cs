@@ -37,36 +37,38 @@ public class AttackState : IState
             return;
         }
 
-       
+
         float distance = Vector3.Distance(hunter.transform.position, target.transform.position);
 
         if (distance <= hunter.GetMeleeAttackRadius)
         {
-            if (hunter.CanAttack) 
-            { 
-          //  Debug.Log("ABOUT TO ATTACK");
-            bool attackSuccessful = hunter.MeleeAttack(target);
+            if (hunter.CanAttack)
+            {
+                //  Debug.Log("ABOUT TO ATTACK");
+                bool attackSuccessful = hunter.MeleeAttack(target);
 
                 if (attackSuccessful)
                 {
                     hunter.ResetAttackTimer();
                     fsm.ChangeState(HunterStates.Patrol);
-                   
+
                     return;
                 }
             }
         }
-       /* else if (distance <= hunter.GetRangeAttackRadius)
-        {
-            // range
-        }*/
+        /* else if (distance <= hunter.GetRangeAttackRadius)
+         {
+             // range
+         }*/
         else
         {
             Vector3 steering = hunter.Agent.Pursuit(target);
             hunter.Agent.ApplySteering(steering);
         }
 
-      //  Debug.Log("Following: " + target.name);
+
+
+        //  Debug.Log("Following: " + target.name);
     }
 
     public void Exit()

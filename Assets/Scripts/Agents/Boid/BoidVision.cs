@@ -13,6 +13,7 @@ public class BoidVision : MonoBehaviour
     private InterestObject interestObject;
     public InterestObject InterestObject => interestObject;
 
+
     private void OnTriggerEnter(Collider other)
     {
         Boid boidOnTrigger = other.GetComponent<Boid>();
@@ -38,7 +39,7 @@ public class BoidVision : MonoBehaviour
 
         if (objectOnTrigger != null && objectOnTrigger.GetIsAlive)
         {
-            Debug.Log("INTEREST OBJECT DETECTED");
+            //    Debug.Log("INTEREST OBJECT DETECTED");
             interestObject = objectOnTrigger;
         }
     }
@@ -59,6 +60,20 @@ public class BoidVision : MonoBehaviour
         if (other.GetComponent<InterestObject>() == interestObject)
         {
             interestObject = null;
+        }
+    }
+    public void ClearVision()
+    {
+        nearbyAgents.Clear();
+        hunterAgent = null;
+        interestObject = null;
+    }
+
+    public void RemoveNeighbour(SteeringAgent agentToRemove)
+    {
+        if (nearbyAgents.Contains(agentToRemove))
+        {
+            nearbyAgents.Remove(agentToRemove);
         }
     }
 }

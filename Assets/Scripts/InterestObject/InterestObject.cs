@@ -16,7 +16,7 @@ public class InterestObject : MonoBehaviour
     {
         life -= damage;
 
-        Debug.Log("Object received damage");
+      //  Debug.Log("Object received damage");
 
         if (life <= 0)
         {
