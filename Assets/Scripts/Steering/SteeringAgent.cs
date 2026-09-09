@@ -13,6 +13,7 @@ public class SteeringAgent : Agent
 
     public float MaxSpeed => maxSpeed;
     public Vector3 Velocity => velocity;
+    public float GetMinDistance => minDistance; 
 
     private void Update()
     {
@@ -20,8 +21,7 @@ public class SteeringAgent : Agent
 
         transform.position += velocity * Time.deltaTime;
 
-        if (velocity != Vector3.zero)
-            transform.forward = velocity;
+        if (velocity != Vector3.zero) transform.forward = velocity;
     }
 
     public Vector3 CalculateSteering(Vector3 desiredVelocity)
@@ -91,8 +91,7 @@ public class SteeringAgent : Agent
             predictionTime = distance / maxSpeed;
         }
 
-        Vector3 futurePosition =
-            target.transform.position + target.velocity * predictionTime;
+        Vector3 futurePosition = target.transform.position + target.velocity * predictionTime;
 
         return futurePosition;
     }

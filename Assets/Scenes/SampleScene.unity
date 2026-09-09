@@ -129,7 +129,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 476848993220531001, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -17.635754
+      value: -3.1357536
       objectReference: {fileID: 0}
     - target: {fileID: 476848993220531001, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_LocalPosition.y
@@ -137,7 +137,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 476848993220531001, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 9.290355
+      value: -9.209645
       objectReference: {fileID: 0}
     - target: {fileID: 476848993220531001, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_LocalRotation.w
@@ -725,7 +725,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1280087512135700557, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1251,6 +1251,8 @@ MonoBehaviour:
   tba: 3
   rangeAttackRadius: 6
   meleeAttackRadius: 2
+  interestObjectPrefab: {fileID: 2227697553672454419, guid: 189504d97144c9d44b9a27fcd5845ee7, type: 3}
+  spawnTimer: 3
   statusUI: {fileID: 61425375}
 --- !u!135 &577207850
 SphereCollider:
@@ -1700,7 +1702,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1280087512135700557, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1582569236036054070, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_IsActive
@@ -1765,7 +1767,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1280087512135700557, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2092,7 +2094,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1280087512135700557, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3019,7 +3021,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1280087512135700557, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

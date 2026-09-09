@@ -13,6 +13,15 @@ public class Boid : Agent
     [Header("Visuals")]
     [SerializeField] private Renderer childMaterial;
 
+    [SerializeField] private float trapAttackCooldown = 3f;
+    [SerializeField] private float trapAttackDistance = 2f;
+    private float trapAttackTimer;
+    private InterestObject targetInterestObject;
+    public InterestObject TargetInterestObject
+    {
+        set => targetInterestObject = value;
+    }
+
     private void Awake()
     {
         agent = GetComponent<SteeringAgent>();
@@ -34,9 +43,54 @@ public class Boid : Agent
     {
         if (!isAlive) return;
 
+        if (trapAttackTimer > 0f) trapAttackTimer -= Time.deltaTime;
+
+        if (targetInterestObject != null && (targetInterestObject.Equals(null) || !targetInterestObject.GetIsAlive))
+        {
+            targetInterestObject = null;
+            agent.velocity = transform.forward * agent.MaxSpeed;
+        }
+
+        if (targetInterestObject == null && vision.InterestObject != null && !vision.InterestObject.Equals(null))
+        {
+            targetInterestObject = vision.InterestObject;
+        }
+
+        if (targetInterestObject != null)
+        {
+            Vector3 targetPos = targetInterestObject.transform.position;
+            targetPos.y = transform.position.y;
+
+            float distance = Vector3.Distance(transform.position, targetPos);
+
+            if (distance <= trapAttackDistance)
+            {
+                agent.velocity = transform.forward * 0.001f;
+
+                if (trapAttackTimer <= 0f)
+                {
+                    targetInterestObject.TakeDamage(1);
+                    trapAttackTimer = trapAttackCooldown;
+                }
+            }
+            else
+            {
+                Vector3 arriveForce = agent.Arrive(targetPos);
+                arriveForce.y = 0f;
+                agent.ApplySteering(arriveForce);
+            }
+            return;
+        }
+
+        if (agent.velocity.magnitude < agent.MaxSpeed * 0.1f)
+        {
+            agent.velocity = transform.forward * agent.MaxSpeed;
+        }
+
         if (vision.HunterAgent != null)
         {
             Vector3 evadeForce = agent.Evade(vision.HunterAgent);
+            evadeForce.y = 0f;
             agent.ApplySteering(evadeForce);
             return;
         }
@@ -44,6 +98,7 @@ public class Boid : Agent
         if (vision.NearbyAgents.Count > 0)
         {
             Vector3 flockingForce = flocking.GetFlocking(vision.NearbyAgents);
+            flockingForce.y = 0f;
             agent.ApplySteering(flockingForce);
         }
     }
@@ -55,13 +110,10 @@ public class Boid : Agent
 
         if (life <= 0)
         {
-
             life = 0;
             isAlive = false;
             agent.Stop();
             ChangeColor(Color.red);
-
-            //die ----> stay still so the hunter can gather it ----after that-----> respawn in a random place after 3* seconds
         }
     }
 

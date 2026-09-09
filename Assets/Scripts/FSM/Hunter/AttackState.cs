@@ -14,7 +14,7 @@ public class AttackState : IState
 
     public void Enter()
     {
-        Debug.Log("Hunter entered attack state");
+     //   Debug.Log("Hunter entered attack state");
 
         hunter.GetStatusUI.SetStatus("Attacking");
         target = hunter.GetClosestTarget();
@@ -44,7 +44,7 @@ public class AttackState : IState
         {
             if (hunter.CanAttack) 
             { 
-            Debug.Log("ABOUT TO ATTACK");
+          //  Debug.Log("ABOUT TO ATTACK");
             bool attackSuccessful = hunter.MeleeAttack(target);
 
                 if (attackSuccessful)
@@ -71,7 +71,7 @@ public class AttackState : IState
 
     public void Exit()
     {
-        Debug.Log("Hunter exit attack state");
+      //  Debug.Log("Hunter exit attack state");
         target = null;
     }
 }

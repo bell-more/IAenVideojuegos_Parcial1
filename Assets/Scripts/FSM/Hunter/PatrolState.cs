@@ -14,7 +14,7 @@ public class PatrolState : IState
 
     public void Enter()
     {
-        Debug.Log("Hunter entered patrol");
+       // Debug.Log("Hunter entered patrol");
         currentWaypoint = 0;
         hunter.GetStatusUI.SetStatus("Patolling");
     }
@@ -33,7 +33,7 @@ public class PatrolState : IState
 
     public void Exit()
     {
-        Debug.Log("Hunter never exit patrol");
+        //Debug.Log("Hunter never exit patrol");
     }
 
     private void Patrol()

@@ -32,7 +32,7 @@ public class Flocking : MonoBehaviour
         return separation + alignment + cohesion;
     }
 
-    private Vector3 CalculateSeparation(List<SteeringAgent> nearbyBoids)
+    public Vector3 CalculateSeparation(List<SteeringAgent> nearbyBoids)
     {
         Vector3 desired = Vector3.zero;
         int count = 0;

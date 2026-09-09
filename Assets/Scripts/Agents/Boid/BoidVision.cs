@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class BoidVision : MonoBehaviour
@@ -9,15 +10,18 @@ public class BoidVision : MonoBehaviour
     public List<SteeringAgent> NearbyAgents => nearbyAgents;
     public SteeringAgent HunterAgent => hunterAgent;
 
+    private InterestObject interestObject;
+    public InterestObject InterestObject => interestObject;
+
     private void OnTriggerEnter(Collider other)
     {
-        Boid boid = other.GetComponent<Boid>();
+        Boid boidOnTrigger = other.GetComponent<Boid>();
 
-        if (boid != null && boid.gameObject != gameObject)
+        if (boidOnTrigger != null && boidOnTrigger.gameObject != gameObject)
         {
-            if(!boid.GetIsAlive) return;
-            
-            SteeringAgent neighbour = boid.GetComponent<SteeringAgent>();
+            if (!boidOnTrigger.GetIsAlive) return;
+
+            SteeringAgent neighbour = boidOnTrigger.GetComponent<SteeringAgent>();
 
             if (!nearbyAgents.Contains(neighbour))
             {
@@ -28,6 +32,14 @@ public class BoidVision : MonoBehaviour
         if (other.gameObject.layer == LayerMask.NameToLayer("Hunter"))
         {
             hunterAgent = other.GetComponent<SteeringAgent>();
+        }
+
+        InterestObject objectOnTrigger = other.GetComponent<InterestObject>();
+
+        if (objectOnTrigger != null && objectOnTrigger.GetIsAlive)
+        {
+            Debug.Log("INTEREST OBJECT DETECTED");
+            interestObject = objectOnTrigger;
         }
     }
 
@@ -42,6 +54,11 @@ public class BoidVision : MonoBehaviour
         if (other.CompareTag("Hunter"))
         {
             hunterAgent = null;
+        }
+
+        if (other.GetComponent<InterestObject>() == interestObject)
+        {
+            interestObject = null;
         }
     }
 }

@@ -52,6 +52,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Boid
   life: 3
   childMaterial: {fileID: 7084471772390166928}
+  trapAttackCooldown: 3
 --- !u!114 &535180689089622927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97,7 +98,7 @@ MonoBehaviour:
   maxSpeed: 8
   maxSteering: 5
   slowingDistance: 6
-  minDistance: 0.1
+  minDistance: 1
 --- !u!135 &725364550705010323
 SphereCollider:
   m_ObjectHideFlags: 0

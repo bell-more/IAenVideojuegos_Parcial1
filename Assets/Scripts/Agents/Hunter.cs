@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Hunter : Agent
 {
@@ -17,7 +18,7 @@ public class Hunter : Agent
 
 
     [Header("Attack")]
-    [SerializeField] private float tba = 3f; //time between attacks
+    [SerializeField] private float tba = 3f;
     [SerializeField] private float rangeAttackRadius = 6f;
     [SerializeField] private float meleeAttackRadius = 2f;
 
@@ -30,9 +31,13 @@ public class Hunter : Agent
     private SteeringAgent agent;
     public SteeringAgent Agent => agent;
 
-    //UI
+    [SerializeField] private GameObject interestObjectPrefab;
+    [SerializeField] private float spawnTimer = 3f;
+    private int interestObjectCount = 0;
+
     [SerializeField] private HunterStatusUI statusUI;
     public HunterStatusUI GetStatusUI => statusUI;
+
     private void Awake()
     {
         agent = GetComponent<SteeringAgent>();
@@ -41,7 +46,18 @@ public class Hunter : Agent
     private void Update()
     {
         if (tbaTimer > 0f) tbaTimer -= Time.deltaTime;
+
+        if (spawnTimer > 0f)
+        {
+            spawnTimer -= Time.deltaTime;
+        }
+        else
+        {
+            SpawnInterestObject();
+            spawnTimer = 3f;
+        }
     }
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -50,7 +66,7 @@ public class Hunter : Agent
         if (boid != null && boid.gameObject != gameObject)
         {
             if (!boid.GetIsAlive) return;
-            
+
             if (!targetsInRange.Contains(other.transform))
             {
                 targetsInRange.Add(other.transform);
@@ -66,13 +82,11 @@ public class Hunter : Agent
         }
     }
 
-    //ATTACK
     public bool MeleeAttack(Boid target)
     {
         if (target == null) return false;
 
         target.TakeDamage(1);
-        Debug.Log("Boid attacked");
 
         return true;
     }
@@ -94,8 +108,7 @@ public class Hunter : Agent
 
             Boid boid = target.GetComponent<Boid>();
 
-            if (boid == null || !boid.GetIsAlive)
-                continue;
+            if (boid == null || !boid.GetIsAlive) continue;
 
             float distance = Vector3.Distance(transform.position, target.position);
 
@@ -107,5 +120,21 @@ public class Hunter : Agent
         }
 
         return closestTarget;
+    }
+
+    public void SpawnInterestObject()
+    {
+        if (interestObjectCount < 5)
+        {
+            GameObject newObject = Instantiate(interestObjectPrefab, transform.position, Quaternion.identity);
+            newObject.GetComponent<InterestObject>().SetHunter(this);
+
+            interestObjectCount++;
+        }
+
+    }
+    public void RemoveInterestObject()
+    {
+        if (interestObjectCount > 0) interestObjectCount--;
     }
 }
