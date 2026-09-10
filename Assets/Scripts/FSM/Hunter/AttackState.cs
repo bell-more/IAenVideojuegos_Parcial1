@@ -14,7 +14,7 @@ public class AttackState : IState
 
     public void Enter()
     {
-     //   Debug.Log("Hunter entered attack state");
+        //   Debug.Log("Hunter entered attack state");
 
         hunter.GetStatusUI.SetStatus("Attacking");
         target = hunter.GetClosestTarget();
@@ -42,24 +42,12 @@ public class AttackState : IState
 
         if (distance <= hunter.GetMeleeAttackRadius)
         {
-            if (hunter.CanAttack)
-            {
-                //  Debug.Log("ABOUT TO ATTACK");
-                bool attackSuccessful = hunter.MeleeAttack(target);
-
-                if (attackSuccessful)
-                {
-                    hunter.ResetAttackTimer();
-                    fsm.ChangeState(HunterStates.Patrol);
-
-                    return;
-                }
-            }
+            Attack(hunter.MeleeAttack(target));
         }
-        /* else if (distance <= hunter.GetRangeAttackRadius)
-         {
-             // range
-         }*/
+        else if (distance <= hunter.GetRangeAttackRadius)
+        {
+            Attack(hunter.RangeAttack(target));
+        }
         else
         {
             Vector3 steering = hunter.Agent.Pursuit(target);
@@ -73,7 +61,27 @@ public class AttackState : IState
 
     public void Exit()
     {
-      //  Debug.Log("Hunter exit attack state");
+        //  Debug.Log("Hunter exit attack state");
         target = null;
+    }
+
+    private void Attack(bool attackSuccessful)
+    {
+        hunter.Agent.Stop();
+        Vector3 lookPos = new Vector3(target.transform.position.x, hunter.transform.position.y, target.transform.position.z);
+        hunter.transform.LookAt(lookPos);
+
+        if (hunter.CanAttack)
+        {
+            //Debug.Log("Meelee attack");
+
+            if (attackSuccessful)
+            {
+                hunter.ResetAttackTimer();
+                fsm.ChangeState(HunterStates.Patrol);
+
+                return;
+            }
+        }
     }
 }

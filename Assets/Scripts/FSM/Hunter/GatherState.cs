@@ -25,7 +25,7 @@ public class GatherState : IState
 
     public void Update()
     {
-        if (target == null || target.gameObject.activeInHierarchy == false)
+        if (target == null || target.gameObject.activeInHierarchy == false || target.GetIsAlive)
         {
             fsm.ChangeState(HunterStates.Patrol);
             return;

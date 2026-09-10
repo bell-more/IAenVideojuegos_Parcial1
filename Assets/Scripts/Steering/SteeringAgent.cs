@@ -88,7 +88,7 @@ public class SteeringAgent : Agent
         }
         else
         {
-            predictionTime = distance / maxSpeed;
+            predictionTime = distance / (maxSpeed + target.velocity.magnitude);
         }
 
         Vector3 futurePosition = target.transform.position + target.velocity * predictionTime;

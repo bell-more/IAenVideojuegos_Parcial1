@@ -20,17 +20,20 @@ public class Hunter : Agent
     [SerializeField] private float tba = 3f;
     [SerializeField] private float rangeAttackRadius = 6f;
     [SerializeField] private float meleeAttackRadius = 2f;
-
-    [Header("Gather")]
-    [SerializeField] private float gatherTime = 2f;
-    public float GetGatherTime => gatherTime;
-
+    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private Transform firePoint;
     public float GetTBA => tba;
     public float GetRangeAttackRadius => rangeAttackRadius;
     public float GetMeleeAttackRadius => meleeAttackRadius;
     private float tbaTimer;
     public bool CanAttack { get { return tbaTimer <= 0f; } }
 
+
+    [Header("Gather")]
+    [SerializeField] private float gatherTime = 2f;
+    public float GetGatherTime => gatherTime;
+
+   
     private SteeringAgent agent;
     public SteeringAgent Agent => agent;
 
@@ -91,6 +94,21 @@ public class Hunter : Agent
 
         Debug.Log("Hunter attacked a boid");
         target.TakeDamage(1);
+
+        return true;
+    }
+
+    public bool RangeAttack(Boid target)
+    {
+        if (target == null) return false;
+
+        GameObject newProjectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+
+        Projectile projectile = newProjectile.GetComponent<Projectile>();
+        if (projectile != null)
+        {
+            projectile.Initialize(target);
+        }
 
         return true;
     }

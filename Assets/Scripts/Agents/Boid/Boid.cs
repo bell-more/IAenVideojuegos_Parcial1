@@ -7,14 +7,20 @@ public class Boid : Agent
     private Flocking flocking;
     private BoidVision vision;
     private bool isAlive = true;
+
+    [Header("Stats")]
     [SerializeField] private int life = 3;
     private int initialLife;
     public bool GetIsAlive => isAlive;
-    private bool isCollected = false; 
+    private bool isCollected = false;
 
     [Header("Visuals")]
     [SerializeField] private Renderer childMaterial;
 
+    [Header("UI")]
+    [SerializeField] private HealthBar healthBar;
+
+    [Header("Trap")]
     [SerializeField] private float trapAttackCooldown = 3f;
     [SerializeField] private float trapAttackDistance = 2f;
     private float trapAttackTimer;
@@ -31,6 +37,11 @@ public class Boid : Agent
     private void Awake()
     {
         initialLife = life;
+
+        if (healthBar != null)
+        {
+            healthBar.Setup(initialLife);
+        }
 
         agent = GetComponent<SteeringAgent>();
         flocking = GetComponent<Flocking>();
@@ -136,15 +147,19 @@ public class Boid : Agent
     public void TakeDamage(int damage)
     {
         life -= damage;
+        if (healthBar != null) healthBar.UpdateHealth(life);
+
         //Debug.Log("life: " + life);
 
-        if (life <= 0 && isAlive)
+            if (life <= 0 && isAlive)
         {
             life = 0;
             isAlive = false;
             isCollected = false;
             agent.Stop();
             ChangeColor(Color.red);
+
+            if (healthBar != null) healthBar.Toggle(false);
 
             foreach (SteeringAgent neighbor in vision.NearbyAgents)
             {
@@ -178,7 +193,13 @@ public class Boid : Agent
         life = initialLife;
         isAlive = true;
         isCollected = false;
-        
+
+        if (healthBar != null)
+        {
+            healthBar.Toggle(true);
+            healthBar.UpdateHealth(initialLife);
+        }
+
         GetComponent<BoidVision>().ClearVision();
 
         float range = 10f;
