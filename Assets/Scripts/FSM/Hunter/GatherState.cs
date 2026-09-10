@@ -20,7 +20,9 @@ public class GatherState : IState
     {
         hunter.GetStatusUI.SetStatus("Gathering");
         target = hunter.GetClosestDeadTarget();
-        gatherTimer = hunter.GetGatherTime; 
+        gatherTimer = hunter.GetGatherTime;
+        hunter.SetCurrentTarget(target);
+
     }
 
     public void Update()
@@ -30,6 +32,8 @@ public class GatherState : IState
             fsm.ChangeState(HunterStates.Patrol);
             return;
         }
+
+        hunter.GetStatusUI.ShowAction("Time remaining: " + gatherTimer.ToString("F0"));
 
         float distance = Vector3.Distance(hunter.transform.position, target.transform.position);
 
@@ -42,6 +46,7 @@ public class GatherState : IState
             {
                 hunter.targetsInRange.Remove(target.transform);
                 target.Collect();
+
                 fsm.ChangeState(HunterStates.Patrol);
             }
         }
@@ -58,5 +63,7 @@ public class GatherState : IState
     public void Exit()
     {
         target = null;
+        hunter.GetStatusUI.ShowAction("");
+        hunter.SetCurrentTarget(null);
     }
 }

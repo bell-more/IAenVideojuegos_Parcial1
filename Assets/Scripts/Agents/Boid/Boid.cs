@@ -16,6 +16,8 @@ public class Boid : Agent
 
     [Header("Visuals")]
     [SerializeField] private Renderer childMaterial;
+    [SerializeField] private HealthVisuals visuals;
+    [SerializeField] private GameObject targetAura;
 
     [Header("UI")]
     [SerializeField] private HealthBar healthBar;
@@ -32,7 +34,7 @@ public class Boid : Agent
 
     //colours
     private Renderer[] allRenderers;
-    private Color[] initialColors;
+    private Color[] initialColours;
 
     private void Awake()
     {
@@ -52,16 +54,16 @@ public class Boid : Agent
 
         allRenderers = GetComponentsInChildren<Renderer>(true);
 
-        initialColors = new Color[allRenderers.Length];
+        initialColours = new Color[allRenderers.Length];
         for (int i = 0; i < allRenderers.Length; i++)
         {
-            initialColors[i] = allRenderers[i].material.color;
+            initialColours[i] = allRenderers[i].material.color;
         }
     }
 
     private void Start()
     {
-      //  Debug.Log("LIFE: " + life);
+        //  Debug.Log("LIFE: " + life);
         Vector3 randomDirection = new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f)).normalized;
         agent.velocity = randomDirection * agent.MaxSpeed;
     }
@@ -123,10 +125,10 @@ public class Boid : Agent
             return;
         }
 
-        if (agent.velocity.magnitude < agent.MaxSpeed * 0.1f)
+        /*if (agent.velocity.magnitude < agent.MaxSpeed * 0.1f)
         {
             agent.velocity = transform.forward * agent.MaxSpeed;
-        }
+        }*/
 
         if (vision.HunterAgent != null)
         {
@@ -149,17 +151,16 @@ public class Boid : Agent
         life -= damage;
         if (healthBar != null) healthBar.UpdateHealth(life);
 
-        //Debug.Log("life: " + life);
+        if (visuals != null) visuals.SetColour(life);
 
-            if (life <= 0 && isAlive)
+        if (life <= 0 && isAlive)
         {
             life = 0;
             isAlive = false;
             isCollected = false;
             agent.Stop();
-            ChangeColor(Color.red);
 
-            if (healthBar != null) healthBar.Toggle(false);
+            if (healthBar != null) healthBar.SetActive(false);
 
             foreach (SteeringAgent neighbor in vision.NearbyAgents)
             {
@@ -196,7 +197,7 @@ public class Boid : Agent
 
         if (healthBar != null)
         {
-            healthBar.Toggle(true);
+            healthBar.SetActive(true);
             healthBar.UpdateHealth(initialLife);
         }
 
@@ -210,19 +211,26 @@ public class Boid : Agent
         for (int i = 0; i < allRenderers.Length; i++)
         {
             allRenderers[i].enabled = true;
-            allRenderers[i].material.color = initialColors[i];
+            allRenderers[i].material.color = initialColours[i];
         }
-
 
         Vector3 randomDirection = new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f)).normalized;
         agent.velocity = randomDirection * agent.MaxSpeed;
     }
 
-    public void ChangeColor(Color newColor)
+    public void ChangeColour(Color newColour)
     {
         if (childMaterial != null)
         {
-            childMaterial.material.color = newColor;
+            childMaterial.material.color = newColour;
+        }
+    }
+
+    public void SetTargetArrow(bool isActive)
+    {
+        if (targetAura != null)
+        {
+            targetAura.SetActive(isActive);
         }
     }
 

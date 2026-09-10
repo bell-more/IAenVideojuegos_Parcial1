@@ -16,7 +16,7 @@ public class PatrolState : IState
     {
        // Debug.Log("Hunter entered patrol");
         currentWaypoint = 0;
-        hunter.GetStatusUI.SetStatus("Patolling");
+        hunter.GetStatusUI.SetStatus("Patrolling");
     }
 
     public void Update()
@@ -34,7 +34,6 @@ public class PatrolState : IState
         }
 
         Patrol();
-       // Debug.Log("Patrolling");
     }
 
 
@@ -52,7 +51,7 @@ public class PatrolState : IState
 
         float distance = Vector3.Distance(hunter.transform.position, waypoint.position);
 
-        if (distance <= hunter.WaypointCheckDistance)
+        if (distance <= hunter.SetWaypointCheckDistance)
         {
             currentWaypoint++;
 

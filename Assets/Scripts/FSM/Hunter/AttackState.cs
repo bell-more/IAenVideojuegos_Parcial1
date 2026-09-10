@@ -15,54 +15,46 @@ public class AttackState : IState
     public void Enter()
     {
         //   Debug.Log("Hunter entered attack state");
-
-        hunter.GetStatusUI.SetStatus("Attacking");
         target = hunter.GetClosestTarget();
+        hunter.SetCurrentTarget(target);
 
     }
 
     public void Update()
     {
-        if (target == null)
-        {
-            fsm.ChangeState(HunterStates.Patrol);
-            Debug.Log("No target found or dead");
-            return;
-        }
-
-
-        if (!hunter.targetsInRange.Contains(target.transform))
+        if (target == null || !hunter.targetsInRange.Contains(target.transform) || !target.GetIsAlive)
         {
             fsm.ChangeState(HunterStates.Patrol);
             return;
         }
-
 
         float distance = Vector3.Distance(hunter.transform.position, target.transform.position);
 
         if (distance <= hunter.GetMeleeAttackRadius)
         {
+            hunter.GetStatusUI.SetStatus("Pursuing Boid");
+            hunter.GetStatusUI.ShowAction("Melee Attack");
             Attack(hunter.MeleeAttack(target));
         }
         else if (distance <= hunter.GetRangeAttackRadius)
         {
+            hunter.GetStatusUI.SetStatus("Pursuing Boid");
+            hunter.GetStatusUI.ShowAction("Range Attack");
             Attack(hunter.RangeAttack(target));
         }
         else
         {
+            hunter.GetStatusUI.SetStatus("Pursuing Boid");
             Vector3 steering = hunter.Agent.Pursuit(target);
             hunter.Agent.ApplySteering(steering);
         }
 
-
-
-        //  Debug.Log("Following: " + target.name);
     }
 
     public void Exit()
     {
-        //  Debug.Log("Hunter exit attack state");
         target = null;
+        hunter.SetCurrentTarget(null);
     }
 
     private void Attack(bool attackSuccessful)
@@ -73,8 +65,6 @@ public class AttackState : IState
 
         if (hunter.CanAttack)
         {
-            //Debug.Log("Meelee attack");
-
             if (attackSuccessful)
             {
                 hunter.ResetAttackTimer();

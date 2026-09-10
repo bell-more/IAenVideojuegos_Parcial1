@@ -6,7 +6,6 @@ public class HealthBar : MonoBehaviour
     [SerializeField] private Slider slider;
     public void Setup(int maxHealth)
     {
-        Debug.Log("Setting health bar");
         slider.maxValue = maxHealth;
         slider.value = maxHealth;
         gameObject.SetActive(true);
@@ -17,8 +16,8 @@ public class HealthBar : MonoBehaviour
         slider.value = currentHealth;
     }
 
-    public void Toggle(bool state)
+    public void SetActive(bool isActive)
     {
-        gameObject.SetActive(state);
+        gameObject.SetActive(isActive);
     }
 }

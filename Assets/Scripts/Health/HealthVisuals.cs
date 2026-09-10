@@ -1,16 +1,24 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class HealthVisuals : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private List<Material> bodyColours = new List<Material>();
+    private Renderer bodyRenderer;
 
-    // Update is called once per frame
-    void Update()
+    public void Awake()
     {
-        
+        bodyRenderer = GetComponent<Renderer>();
+    }
+    public void SetColour(int currentLife)
+    {
+        if (bodyRenderer == null || bodyColours.Count == 0) return;
+
+
+
+        int index = Mathf.Clamp(currentLife, 0, bodyColours.Count - 1);
+        Debug.Log("Setting colour...current life: " + currentLife + " index: "+index);
+        bodyRenderer.material = bodyColours[index];
     }
 }

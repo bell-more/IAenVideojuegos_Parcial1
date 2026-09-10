@@ -23,7 +23,6 @@ public class Bounds : MonoBehaviour
         float limitX = (width / 2f) + offset;
         float limitZ = (height / 2f) + offset;
 
-        // Eje X: usamos else if para evitar comprobaciones dobles irreales
         if (position.x > limitX)
         {
             newPos.x = -limitX + padding;
@@ -33,7 +32,6 @@ public class Bounds : MonoBehaviour
             newPos.x = limitX - padding;
         }
 
-        // Eje Z
         if (position.z > limitZ)
         {
             newPos.z = -limitZ + padding;

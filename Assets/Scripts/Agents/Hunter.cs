@@ -10,11 +10,15 @@ public class Hunter : Agent
 
     private StateMachine stateMachine;
 
+    [Header("Visuals")]
+    [SerializeField] private LineRenderer lineRenderer;
+    private Boid currentBoid;
+
     [Header("Waypoints")]
     [SerializeField] private List<Transform> waypoints = new List<Transform>();
     [SerializeField] private float waypointCheckDistance = 1f;
     public List<Transform> Waypoints => waypoints;
-    public float WaypointCheckDistance => waypointCheckDistance;
+    public float SetWaypointCheckDistance => waypointCheckDistance;
 
     [Header("Attack")]
     [SerializeField] private float tba = 3f;
@@ -33,7 +37,7 @@ public class Hunter : Agent
     [SerializeField] private float gatherTime = 2f;
     public float GetGatherTime => gatherTime;
 
-   
+
     private SteeringAgent agent;
     public SteeringAgent Agent => agent;
 
@@ -65,6 +69,8 @@ public class Hunter : Agent
                 spawnTimer = 3f;
             }
         }
+
+        RenderLine();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -182,5 +188,45 @@ public class Hunter : Agent
     public void RemoveInterestObject()
     {
         if (interestObjectCount > 0) interestObjectCount--;
+    }
+
+    public void RenderLine()
+    {
+        if (lineRenderer == null) return;
+
+        targetsInRange.RemoveAll(t => t == null || !t.gameObject.activeInHierarchy);
+
+        if (targetsInRange.Count > 0)
+        {
+            lineRenderer.enabled = true;
+
+            lineRenderer.positionCount = targetsInRange.Count * 2;
+
+            for (int i = 0; i < targetsInRange.Count; i++)
+            {
+                lineRenderer.SetPosition(i * 2, transform.position);
+
+                lineRenderer.SetPosition((i * 2) + 1, targetsInRange[i].position);
+            }
+        }
+        else
+        {
+            lineRenderer.enabled = false;
+        }
+    }
+
+    public void SetCurrentTarget(Boid newTarget)
+    {
+        if (currentBoid != null)
+        {
+            currentBoid.SetTargetArrow(false);
+        }
+
+        currentBoid = newTarget;
+
+        if (currentBoid != null)
+        {
+            currentBoid.SetTargetArrow(true);
+        }
     }
 }
