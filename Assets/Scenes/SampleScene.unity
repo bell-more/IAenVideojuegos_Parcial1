@@ -177,7 +177,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1280087512135700557, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1458539871974296780, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: 'bodyColours.Array.data[0]'
@@ -197,7 +197,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMax.x
@@ -205,7 +205,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMin.x
@@ -658,23 +658,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1280087512135700557, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMin.x
@@ -916,11 +916,11 @@ GameObject:
   - component: {fileID: 577207853}
   m_Layer: 3
   m_Name: Hunter
-  m_TagString: Untagged
+  m_TagString: Hunter
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &577207847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -967,9 +967,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e673e6260f176b04999e1d912f1d8173, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Hunter
-  boidLayer:
-    serializedVersion: 2
-    m_Bits: 64
   targetsInRange: []
   lineRenderer: {fileID: 577207853}
   waypoints:
@@ -1547,7 +1544,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1280087512135700557, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1582569236036054070, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_IsActive
@@ -1559,7 +1556,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1567,7 +1564,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMin.x
@@ -1632,23 +1629,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1280087512135700557, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMin.x
@@ -1839,7 +1836,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1999,23 +1996,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1280087512135700557, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMin.x
@@ -2502,23 +2499,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1280087512135700557, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1783211537226662546, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8851385523250567092, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_AnchorMin.x
@@ -2879,8 +2876,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

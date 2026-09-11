@@ -3,7 +3,8 @@ using UnityEngine;
 public class InterestObject : MonoBehaviour
 {
     [SerializeField] private int life = 2;
-    public bool GetIsAlive => life > 0;
+    public int Life => life;
+    public bool IsAlive => life > 0;
 
     [SerializeField] private Hunter hunter;
 
@@ -15,8 +16,6 @@ public class InterestObject : MonoBehaviour
     public void TakeDamage(int damage)
     {
         life -= damage;
-
-      //  Debug.Log("Object received damage");
 
         if (life <= 0)
         {

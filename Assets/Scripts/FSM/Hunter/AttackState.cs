@@ -14,7 +14,6 @@ public class AttackState : IState
 
     public void Enter()
     {
-        //   Debug.Log("Hunter entered attack state");
         target = hunter.GetClosestTarget();
         hunter.SetCurrentTarget(target);
 
@@ -30,33 +29,36 @@ public class AttackState : IState
 
         float distance = Vector3.Distance(hunter.transform.position, target.transform.position);
 
-        if (distance <= hunter.GetMeleeAttackRadius)
+        if (distance <= hunter.MeleeAttackRadius)
         {
-            hunter.GetStatusUI.SetStatus("Pursuing Boid");
-            hunter.GetStatusUI.ShowAction("Melee Attack");
+            UpdateUI("Melee Attack");
             Attack(hunter.MeleeAttack(target));
         }
-        else if (distance <= hunter.GetRangeAttackRadius)
+        else if (distance <= hunter.RangeAttackRadius)
         {
-            hunter.GetStatusUI.SetStatus("Pursuing Boid");
-            hunter.GetStatusUI.ShowAction("Range Attack");
+            UpdateUI("Range Attack");
             Attack(hunter.RangeAttack(target));
         }
         else
         {
-            hunter.GetStatusUI.SetStatus("Pursuing Boid");
+            UpdateUI();
             Vector3 steering = hunter.Agent.Pursuit(target);
             hunter.Agent.ApplySteering(steering);
         }
 
     }
-
+   
     public void Exit()
     {
         target = null;
         hunter.SetCurrentTarget(null);
     }
 
+    private void UpdateUI(string action = "")
+    {
+        hunter.StatusUI.SetStatus("Pursuing Boid");
+        hunter.StatusUI.ShowAction(action);
+    }
     private void Attack(bool attackSuccessful)
     {
         hunter.Agent.Stop();

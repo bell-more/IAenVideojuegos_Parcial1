@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class BoidVision : MonoBehaviour
@@ -37,9 +36,8 @@ public class BoidVision : MonoBehaviour
 
         InterestObject objectOnTrigger = other.GetComponent<InterestObject>();
 
-        if (objectOnTrigger != null && objectOnTrigger.GetIsAlive)
+        if (objectOnTrigger != null && objectOnTrigger.IsAlive)
         {
-            //    Debug.Log("INTEREST OBJECT DETECTED");
             interestObject = objectOnTrigger;
         }
     }
@@ -52,7 +50,7 @@ public class BoidVision : MonoBehaviour
             nearbyAgents.Remove(neighbour);
         }
 
-        if (other.CompareTag("Hunter"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Hunter"))
         {
             hunterAgent = null;
         }

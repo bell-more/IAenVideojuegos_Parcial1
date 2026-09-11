@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.AdaptivePerformance;
 
 public class Boid : Agent
 {
@@ -21,10 +20,12 @@ public class Boid : Agent
 
     [Header("UI")]
     [SerializeField] private HealthBar healthBar;
+    [SerializeField] private HunterStatusUI statusUI;
 
     [Header("Trap")]
     [SerializeField] private float trapAttackCooldown = 3f;
     [SerializeField] private float trapAttackDistance = 2f;
+    private float totalEatTime;
     private float trapAttackTimer;
     private InterestObject targetInterestObject;
     public InterestObject TargetInterestObject
@@ -49,9 +50,6 @@ public class Boid : Agent
         flocking = GetComponent<Flocking>();
         vision = GetComponent<BoidVision>();
 
-        Vector3 randomDirection = new Vector3(Random.Range(-1, 1), 0f, Random.Range(-1, 1));
-        velocity += randomDirection.normalized * agent.MaxSpeed;
-
         allRenderers = GetComponentsInChildren<Renderer>(true);
 
         initialColours = new Color[allRenderers.Length];
@@ -63,89 +61,170 @@ public class Boid : Agent
 
     private void Start()
     {
-        //  Debug.Log("LIFE: " + life);
         Vector3 randomDirection = new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f)).normalized;
         agent.velocity = randomDirection * agent.MaxSpeed;
     }
-
     private void Update()
     {
         if (!isAlive) return;
 
+        UpdateTimers();
+        UpdateTarget();
+
+        if (targetInterestObject != null)
+        {
+            HandleInterestObject();
+            return;
+        }
+
+        if (vision.HunterAgent != null)
+        {
+            HandleHunter();
+            return;
+        }
+
+        HandleFlocking();
+    }
+    private float eatTimeRemaining;
+    private void HandleInterestObject()
+    {
+        Vector3 targetPos = targetInterestObject.transform.position;
+        targetPos.y = transform.position.y;
+
+        float distance = Vector3.Distance(transform.position, targetPos);
+
+        if (distance <= trapAttackDistance)
+        {
+            if (eatTimeRemaining <= 0f)
+            {
+                eatTimeRemaining = (targetInterestObject.Life - 1) * trapAttackCooldown;
+            }
+
+            EatInterestObject();
+        }
+        else
+        {
+            MoveToInterestObject(targetPos);
+        }
+    }
+    private void MoveToInterestObject(Vector3 targetPos)
+    {
+        Vector3 arriveForce = agent.Arrive(targetPos);
+
+        if (vision.NearbyAgents.Count > 0)
+        {
+            arriveForce += flocking.GetFlocking(vision.NearbyAgents);
+        }
+
+        arriveForce.y = 0f;
+        agent.ApplySteering(arriveForce);
+
+        UpdateUI("Going to food", "");
+    }
+    private void EatInterestObject()
+    {
+        agent.velocity = transform.forward * 0.001f;
+
+        ApplyFlocking();
+
+        UpdateUI("Eating object", "Time remaining: " + eatTimeRemaining.ToString("F0"));
+
+        if (trapAttackTimer <= 0f)
+        {
+            targetInterestObject.TakeDamage(1);
+            trapAttackTimer = trapAttackCooldown;
+        }
+    }
+
+    private void HandleHunter()
+    {
+        Vector3 evadeForce = agent.Evade(vision.HunterAgent);
+
+        if (vision.NearbyAgents.Count > 0)
+        {
+            evadeForce += flocking.GetFlocking(vision.NearbyAgents);
+        }
+
+        evadeForce.y = 0f;
+        agent.ApplySteering(evadeForce);
+
+        UpdateUI("Evading", "");
+    }
+
+    private void HandleFlocking()
+    {
+        if (vision.NearbyAgents.Count > 0)
+        {
+            ApplyFlocking();
+
+            UpdateUI("Flocking","");
+        }
+        else
+        {
+            HandleWandering();
+        }
+    }
+
+    private void UpdateUI(string state, string action)
+    {
+        if (statusUI != null)
+        {
+            statusUI.SetStatus(state);
+            statusUI.ShowAction(action);
+        }
+    }
+    private void ApplyFlocking()
+    {
+        Vector3 flockingForce = flocking.GetFlocking(vision.NearbyAgents);
+        flockingForce.y = 0f;
+
+        agent.ApplySteering(flockingForce);
+    }
+    private void HandleWandering()
+    {
+        if (agent.velocity.magnitude < agent.MaxSpeed * 0.1f)
+        {
+            Vector3 gentlePush = transform.forward * agent.MaxSpeed * 0.5f;
+            gentlePush.y = 0f;
+
+            agent.ApplySteering(gentlePush);
+        }
+
+        UpdateUI("Wandering", "");
+    }
+    private void UpdateTimers()
+    {
         if (trapAttackTimer > 0f) trapAttackTimer -= Time.deltaTime;
 
-        if (targetInterestObject != null && (targetInterestObject.Equals(null) || !targetInterestObject.GetIsAlive))
+        if (eatTimeRemaining > 0f)
+            eatTimeRemaining -= Time.deltaTime;
+    }
+
+    private void UpdateTarget()
+    {
+        if (targetInterestObject != null && !targetInterestObject.IsAlive)
         {
-            targetInterestObject = null;
-            agent.velocity = transform.forward * agent.MaxSpeed;
+            ClearTarget();
         }
 
         if (targetInterestObject == null && vision.InterestObject != null && !vision.InterestObject.Equals(null))
         {
             targetInterestObject = vision.InterestObject;
         }
-
-        if (targetInterestObject != null)
-        {
-            Vector3 targetPos = targetInterestObject.transform.position;
-            targetPos.y = transform.position.y;
-
-            float distance = Vector3.Distance(transform.position, targetPos);
-
-            if (distance <= trapAttackDistance)
-            {
-                agent.velocity = transform.forward * 0.001f;
-
-                if (vision.NearbyAgents.Count > 0)
-                {
-                    Vector3 flockingForce = flocking.GetFlocking(vision.NearbyAgents);
-                    flockingForce.y = 0f;
-                    agent.ApplySteering(flockingForce);
-                }
-
-                if (trapAttackTimer <= 0f)
-                {
-                    targetInterestObject.TakeDamage(1);
-                    trapAttackTimer = trapAttackCooldown;
-                }
-            }
-            else
-            {
-                Vector3 arriveForce = agent.Arrive(targetPos);
-
-                if (vision.NearbyAgents.Count > 0)
-                {
-                    Vector3 flockingForce = flocking.GetFlocking(vision.NearbyAgents);
-                    arriveForce += flockingForce;
-                }
-
-                arriveForce.y = 0f;
-                agent.ApplySteering(arriveForce);
-            }
-            return;
-        }
-
-        /*if (agent.velocity.magnitude < agent.MaxSpeed * 0.1f)
-        {
-            agent.velocity = transform.forward * agent.MaxSpeed;
-        }*/
-
-        if (vision.HunterAgent != null)
-        {
-            Vector3 evadeForce = agent.Evade(vision.HunterAgent);
-            evadeForce.y = 0f;
-            agent.ApplySteering(evadeForce);
-            return;
-        }
-
-        if (vision.NearbyAgents.Count > 0)
-        {
-            Vector3 flockingForce = flocking.GetFlocking(vision.NearbyAgents);
-            flockingForce.y = 0f;
-            agent.ApplySteering(flockingForce);
-        }
     }
 
+    private void ClearTarget()
+    {
+        targetInterestObject = null;
+        eatTimeRemaining = 0f;
+        agent.velocity = transform.forward * agent.MaxSpeed;
+
+        if (statusUI != null)
+        {
+            statusUI.SetStatus("");
+            statusUI.ShowAction("");
+        }
+    }
     public void TakeDamage(int damage)
     {
         life -= damage;
@@ -179,6 +258,12 @@ public class Boid : Agent
         isCollected = true;
         CancelInvoke(nameof(Respawn));
 
+        if (statusUI != null)
+        {
+            statusUI.SetStatus("");
+            statusUI.ShowAction("");
+        }
+
         childMaterial.GetComponent<Collider>().enabled = false;
 
         for (int i = 0; i < allRenderers.Length; i++)
@@ -194,6 +279,9 @@ public class Boid : Agent
         life = initialLife;
         isAlive = true;
         isCollected = false;
+
+        targetInterestObject = null;
+        trapAttackTimer = 0f;
 
         if (healthBar != null)
         {

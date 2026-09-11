@@ -1,7 +1,4 @@
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
-using static UnityEngine.GraphicsBuffer;
 
 public class GatherState : IState
 {
@@ -18,9 +15,9 @@ public class GatherState : IState
 
     public void Enter()
     {
-        hunter.GetStatusUI.SetStatus("Gathering");
+        hunter.StatusUI.SetStatus("Gathering");
         target = hunter.GetClosestDeadTarget();
-        gatherTimer = hunter.GetGatherTime;
+        gatherTimer = hunter.GatherTime;
         hunter.SetCurrentTarget(target);
 
     }
@@ -33,11 +30,11 @@ public class GatherState : IState
             return;
         }
 
-        hunter.GetStatusUI.ShowAction("Time remaining: " + gatherTimer.ToString("F0"));
+        hunter.StatusUI.ShowAction("Time remaining: " + gatherTimer.ToString("F0"));
 
         float distance = Vector3.Distance(hunter.transform.position, target.transform.position);
 
-        if (distance <= hunter.GetMeleeAttackRadius) 
+        if (distance <= hunter.MeleeAttackRadius) 
         {
             hunter.Agent.Stop(); 
             gatherTimer -= Time.deltaTime;
@@ -63,7 +60,7 @@ public class GatherState : IState
     public void Exit()
     {
         target = null;
-        hunter.GetStatusUI.ShowAction("");
+        hunter.StatusUI.ShowAction("");
         hunter.SetCurrentTarget(null);
     }
 }

@@ -12,6 +12,8 @@ public class SteeringAgent : Agent
     [SerializeField] private float minDistance = 0.1f;
 
     public float MaxSpeed => maxSpeed;
+
+    public float MaxSteering => maxSteering;
     public Vector3 Velocity => velocity;
     public float GetMinDistance => minDistance; 
 

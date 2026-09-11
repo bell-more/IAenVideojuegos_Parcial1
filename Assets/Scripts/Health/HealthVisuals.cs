@@ -15,10 +15,7 @@ public class HealthVisuals : MonoBehaviour
     {
         if (bodyRenderer == null || bodyColours.Count == 0) return;
 
-
-
         int index = Mathf.Clamp(currentLife, 0, bodyColours.Count - 1);
-        Debug.Log("Setting colour...current life: " + currentLife + " index: "+index);
         bodyRenderer.material = bodyColours[index];
     }
 }

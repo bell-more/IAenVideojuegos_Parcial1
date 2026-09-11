@@ -1,14 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
-
 public class Hunter : Agent
 {
-    [SerializeField] private LayerMask boidLayer;
 
     public List<Transform> targetsInRange = new List<Transform>();
-
-    private StateMachine stateMachine;
 
     [Header("Visuals")]
     [SerializeField] private LineRenderer lineRenderer;
@@ -18,7 +13,7 @@ public class Hunter : Agent
     [SerializeField] private List<Transform> waypoints = new List<Transform>();
     [SerializeField] private float waypointCheckDistance = 1f;
     public List<Transform> Waypoints => waypoints;
-    public float SetWaypointCheckDistance => waypointCheckDistance;
+    public float WaypointCheckDistance => waypointCheckDistance;
 
     [Header("Attack")]
     [SerializeField] private float tba = 3f;
@@ -26,16 +21,15 @@ public class Hunter : Agent
     [SerializeField] private float meleeAttackRadius = 2f;
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
-    public float GetTBA => tba;
-    public float GetRangeAttackRadius => rangeAttackRadius;
-    public float GetMeleeAttackRadius => meleeAttackRadius;
+    public float RangeAttackRadius => rangeAttackRadius;
+    public float MeleeAttackRadius => meleeAttackRadius;
     private float tbaTimer;
     public bool CanAttack { get { return tbaTimer <= 0f; } }
 
 
     [Header("Gather")]
     [SerializeField] private float gatherTime = 2f;
-    public float GetGatherTime => gatherTime;
+    public float GatherTime => gatherTime;
 
 
     private SteeringAgent agent;
@@ -46,7 +40,7 @@ public class Hunter : Agent
     private int interestObjectCount = 0;
 
     [SerializeField] private HunterStatusUI statusUI;
-    public HunterStatusUI GetStatusUI => statusUI;
+    public HunterStatusUI StatusUI => statusUI;
 
     private void Awake()
     {
@@ -98,7 +92,6 @@ public class Hunter : Agent
     {
         if (target == null) return false;
 
-        Debug.Log("Hunter attacked a boid");
         target.TakeDamage(1);
 
         return true;
@@ -126,30 +119,15 @@ public class Hunter : Agent
 
     public Boid GetClosestTarget()
     {
-        Boid closestTarget = null;
-        float closestDistance = Mathf.Infinity;
-
-        foreach (Transform target in targetsInRange)
-        {
-            if (target == null) continue;
-
-            Boid boid = target.GetComponent<Boid>();
-
-            if (boid == null || !boid.GetIsAlive) continue;
-
-            float distance = Vector3.Distance(transform.position, target.position);
-
-            if (distance < closestDistance)
-            {
-                closestDistance = distance;
-                closestTarget = boid;
-            }
-        }
-
-        return closestTarget;
+        return GetClosestTarget(true);
     }
 
     public Boid GetClosestDeadTarget()
+    {
+        return GetClosestTarget(false);
+    }
+
+    private Boid GetClosestTarget(bool alive)
     {
         Boid closestTarget = null;
         float closestDistance = Mathf.Infinity;
@@ -160,7 +138,8 @@ public class Hunter : Agent
 
             Boid boid = target.GetComponent<Boid>();
 
-            if (boid == null || boid.GetIsAlive) continue; //ignore if it's null or alive
+            if (boid == null || boid.GetIsAlive != alive)
+                continue;
 
             float distance = Vector3.Distance(transform.position, target.position);
 

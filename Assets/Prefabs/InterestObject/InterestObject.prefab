@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e66c35af8f4f57d4c9f97ee0afcbd52d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InterestObject
-  life: 3
+  life: 2
   hunter: {fileID: 0}
 --- !u!135 &2739608584690903509
 SphereCollider:

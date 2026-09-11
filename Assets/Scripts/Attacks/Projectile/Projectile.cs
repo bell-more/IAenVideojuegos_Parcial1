@@ -28,8 +28,6 @@ public class Projectile : MonoBehaviour
     {
         if (other.isTrigger) return;
 
-        Debug.Log("projectile hit a boid collider");
-
         if (other.gameObject.layer == LayerMask.NameToLayer("Boid"))
         {
             Boid boid = other.GetComponentInParent<Boid>();
