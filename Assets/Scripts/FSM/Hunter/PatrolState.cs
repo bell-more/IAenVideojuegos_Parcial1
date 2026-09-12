@@ -38,7 +38,7 @@ public class PatrolState : IState
 
     public void Exit()
     {
-        //Debug.Log("Hunter never exit patrol");
+        //Debug.Log("Hunter exit patrol");
     }
 
     private void Patrol()

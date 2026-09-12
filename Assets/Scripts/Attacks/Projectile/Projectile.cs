@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 
 public class Projectile : MonoBehaviour
 {
-    [SerializeField] private float speed = 15f;
+    [SerializeField] private float speed = 20f;
     [SerializeField] private float lifetime = 4f;
     private int damage = 1;
     private Boid targetBoid;
@@ -32,7 +32,7 @@ public class Projectile : MonoBehaviour
         {
             Boid boid = other.GetComponentInParent<Boid>();
 
-            if (boid != null && boid == targetBoid)
+            if (boid != null)
             {
                 boid.TakeDamage(damage);
                 Destroy(gameObject);

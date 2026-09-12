@@ -87,9 +87,6 @@ MonoBehaviour:
   separationRadius: 2
   alignmentRadius: 5
   cohesionRadius: 5
-  separationWeight: 1.5
-  alignmentWeight: 1
-  cohesionWeight: 1
 --- !u!114 &417586507816256010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,7 +146,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0

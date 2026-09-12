@@ -17,13 +17,42 @@ public class AttackState : IState
         target = hunter.GetClosestTarget();
         hunter.SetCurrentTarget(target);
 
+        hasShot = false;
     }
-
+    private bool rangeAttack = false;
+    private float timeSinceLastShoot = 20f;
+    private float lastShootTime = -20f;
+    private bool hasShot = false;
     public void Update()
     {
-        if (target == null || !hunter.targetsInRange.Contains(target.transform) || !target.GetIsAlive)
+        timeSinceLastShoot = Time.time - lastShootTime;
+
+        if (rangeAttack)
+        {
+            if (Vector3.Dot((target.transform.position - hunter.transform.position).normalized, hunter.transform.forward) > 1 - 0.05)
+            {
+                hunter.RangeAttack(target);
+                rangeAttack = false;
+                hasShot = true;
+                lastShootTime = Time.time;
+            }
+            else
+            {
+                hunter.transform.LookAt(target.transform.position);
+            }
+
+            return;
+        }
+
+        if (timeSinceLastShoot < 1.5f)
+        {
+            return;
+        }
+
+        if (target == null || !hunter.targetsInRange.Contains(target.transform) || !target.GetIsAlive || hasShot)
         {
             fsm.ChangeState(HunterStates.Patrol);
+            hunter.ResetAttackTimer();
             return;
         }
 
@@ -36,8 +65,9 @@ public class AttackState : IState
         }
         else if (distance <= hunter.RangeAttackRadius)
         {
+            rangeAttack = true;
+            hunter.Agent.Stop();
             UpdateUI("Range Attack");
-            Attack(hunter.RangeAttack(target));
         }
         else
         {

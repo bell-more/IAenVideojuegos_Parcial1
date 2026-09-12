@@ -157,7 +157,7 @@ public class Boid : Agent
         {
             ApplyFlocking();
 
-            UpdateUI("Flocking","");
+            UpdateUI("Flocking", "");
         }
         else
         {
