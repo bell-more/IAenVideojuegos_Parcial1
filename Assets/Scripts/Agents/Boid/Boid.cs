@@ -79,6 +79,7 @@ public class Boid : Agent
 
         if (vision.HunterAgent != null)
         {
+            Debug.Log("boid: " + this.gameObject.name + " Hunte: " + (vision.HunterAgent != null));
             HandleHunter();
             return;
         }
@@ -191,6 +192,7 @@ public class Boid : Agent
         }
 
         UpdateUI("Wandering", "");
+       
     }
     private void UpdateTimers()
     {

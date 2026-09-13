@@ -4,7 +4,7 @@ using UnityEngine;
 public class BoidVision : MonoBehaviour
 {
     private List<SteeringAgent> nearbyAgents = new List<SteeringAgent>();
-    private SteeringAgent hunterAgent;
+    public SteeringAgent hunterAgent;
 
     public List<SteeringAgent> NearbyAgents => nearbyAgents;
     public SteeringAgent HunterAgent => hunterAgent;
@@ -29,17 +29,20 @@ public class BoidVision : MonoBehaviour
             }
         }
 
-        if (other.gameObject.layer == LayerMask.NameToLayer("Hunter"))
-        {
-            hunterAgent = other.GetComponent<SteeringAgent>();
-        }
-
         InterestObject objectOnTrigger = other.GetComponent<InterestObject>();
 
         if (objectOnTrigger != null && objectOnTrigger.IsAlive)
         {
             interestObject = objectOnTrigger;
         }
+    }
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("HunterRange"))
+        {
+            hunterAgent = other.GetComponent<SteeringAgent>();
+        }
+
     }
 
     private void OnTriggerExit(Collider other)
@@ -50,7 +53,7 @@ public class BoidVision : MonoBehaviour
             nearbyAgents.Remove(neighbour);
         }
 
-        if (other.gameObject.layer == LayerMask.NameToLayer("Hunter"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("HunterRange"))
         {
             hunterAgent = null;
         }

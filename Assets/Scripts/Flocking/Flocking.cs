@@ -5,9 +5,9 @@ public class Flocking : MonoBehaviour
 {
 
     [Header("Radius")]
-    [SerializeField] private float separationRadius = 2f;
-    [SerializeField] private float alignmentRadius = 5f;
-    [SerializeField] private float cohesionRadius = 5f;
+    private float separationRadius = 2f;
+    private float alignmentRadius = 5f;
+     private float cohesionRadius = 12f;
 
     [Header("Weights")]
     [Range(0, 3)][SerializeField] private const float separationWeight = 1.5f;
