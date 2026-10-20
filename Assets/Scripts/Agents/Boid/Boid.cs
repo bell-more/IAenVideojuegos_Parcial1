@@ -12,6 +12,7 @@ public class Boid : Agent
     private int initialLife;
     public bool GetIsAlive => isAlive;
     private bool isCollected = false;
+    [SerializeField] private float respawnRange = 10f;
 
     [Header("Visuals")]
     [SerializeField] private Renderer childMaterial;
@@ -25,8 +26,11 @@ public class Boid : Agent
     [Header("Trap")]
     [SerializeField] private float trapAttackCooldown = 3f;
     [SerializeField] private float trapAttackDistance = 2f;
-    private float totalEatTime;
     private float trapAttackTimer;
+
+    [Header("Wandering")]
+    [Range(0f, 1f)][SerializeField] private float wanderingMinSpeed = 0.1f;
+    [Range(0f, 1f)][SerializeField] private float wanderingPush = 0.5f;
     private InterestObject targetInterestObject;
     public InterestObject TargetInterestObject
     {
@@ -183,9 +187,9 @@ public class Boid : Agent
     }
     private void HandleWandering()
     {
-        if (agent.velocity.magnitude < agent.MaxSpeed * 0.1f)
+        if (agent.velocity.magnitude < agent.MaxSpeed * wanderingMinSpeed)
         {
-            Vector3 gentlePush = transform.forward * agent.MaxSpeed * 0.5f;
+            Vector3 gentlePush = transform.forward * agent.MaxSpeed * wanderingPush;
             gentlePush.y = 0f;
 
             agent.ApplySteering(gentlePush);
@@ -293,8 +297,7 @@ public class Boid : Agent
 
         GetComponent<BoidVision>().ClearVision();
 
-        float range = 10f;
-        transform.position = new Vector3(Random.Range(-range, range), transform.position.y, Random.Range(-range, range));
+        transform.position = new Vector3(Random.Range(-respawnRange, respawnRange), transform.position.y, Random.Range(-respawnRange, respawnRange));
 
         childMaterial.GetComponent<Collider>().enabled = true;
 

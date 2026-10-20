@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class InterestObject : MonoBehaviour
 {
-    [SerializeField] private int life = 2;
+    [SerializeField] private int life = 6;
     public int Life => life;
     public bool IsAlive => life > 0;
 

@@ -5,6 +5,7 @@ public class AttackState : IState
     private Hunter hunter;
     private StateMachine fsm;
     private Boid target;
+    private bool rangeAttack;
 
     public AttackState(Hunter hunter, StateMachine fsm)
     {
@@ -16,43 +17,39 @@ public class AttackState : IState
     {
         target = hunter.GetClosestTarget();
         hunter.SetCurrentTarget(target);
-
-        hasShot = false;
+        rangeAttack = false;
     }
-    private bool rangeAttack = false;
-    private float timeSinceLastShoot = 20f;
-    private float lastShootTime = -20f;
-    private bool hasShot = false;
+
     public void Update()
     {
-        timeSinceLastShoot = Time.time - lastShootTime;
-
-        if (rangeAttack)
-        {
-            if (Vector3.Dot((target.transform.position - hunter.transform.position).normalized, hunter.transform.forward) > 1 - 0.05)
-            {
-                hunter.RangeAttack(target);
-                rangeAttack = false;
-                hasShot = true;
-                lastShootTime = Time.time;
-            }
-            else
-            {
-                hunter.transform.LookAt(target.transform.position);
-            }
-
-            return;
-        }
-
-        if (timeSinceLastShoot < 1.5f)
-        {
-            return;
-        }
-
-        if (target == null || !hunter.targetsInRange.Contains(target.transform) || !target.GetIsAlive || hasShot)
+        if (target == null || !target.GetIsAlive || !hunter.targetsInRange.Contains(target.transform))
         {
             fsm.ChangeState(HunterStates.Patrol);
             hunter.ResetAttackTimer();
+            return;
+        }
+
+        if (rangeAttack)
+        {
+            Vector3 direction = target.transform.position - hunter.transform.position;
+            direction.y = 0f;
+
+            if (direction.sqrMagnitude > 0.001f)
+            {
+                direction.Normalize();
+
+                if (Vector3.Dot(direction, hunter.transform.forward) > 1f - 0.05f)
+                {
+                    hunter.RangeAttack(target);
+                    hunter.ResetAttackTimer();
+                    rangeAttack = false;
+                }
+                else
+                {
+                    hunter.transform.forward = direction;
+                }
+            }
+
             return;
         }
 
@@ -63,7 +60,7 @@ public class AttackState : IState
             UpdateUI("Melee Attack");
             Attack(hunter.MeleeAttack(target));
         }
-        else if (distance <= hunter.RangeAttackRadius)
+        else if (distance <= hunter.RangeAttackRadius && hunter.CanAttack)
         {
             rangeAttack = true;
             hunter.Agent.Stop();
@@ -75,9 +72,8 @@ public class AttackState : IState
             Vector3 steering = hunter.Agent.Pursuit(target);
             hunter.Agent.ApplySteering(steering);
         }
-
     }
-   
+
     public void Exit()
     {
         target = null;
@@ -89,21 +85,17 @@ public class AttackState : IState
         hunter.StatusUI.SetStatus("Pursuing Boid");
         hunter.StatusUI.ShowAction(action);
     }
+
     private void Attack(bool attackSuccessful)
     {
         hunter.Agent.Stop();
+
         Vector3 lookPos = new Vector3(target.transform.position.x, hunter.transform.position.y, target.transform.position.z);
         hunter.transform.LookAt(lookPos);
 
-        if (hunter.CanAttack)
+        if (hunter.CanAttack && attackSuccessful)
         {
-            if (attackSuccessful)
-            {
-                hunter.ResetAttackTimer();
-                fsm.ChangeState(HunterStates.Patrol);
-
-                return;
-            }
+            hunter.ResetAttackTimer();
         }
     }
 }
