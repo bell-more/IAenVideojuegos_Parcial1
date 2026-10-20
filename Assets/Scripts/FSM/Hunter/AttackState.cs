@@ -6,7 +6,7 @@ public class AttackState : IState
     private StateMachine fsm;
     private Boid target;
     private bool rangeAttack;
-
+    private const float minMagnitudeToNormalize = 0.001f;
     public AttackState(Hunter hunter, StateMachine fsm)
     {
         this.hunter = hunter;
@@ -34,11 +34,11 @@ public class AttackState : IState
             Vector3 direction = target.transform.position - hunter.transform.position;
             direction.y = 0f;
 
-            if (direction.sqrMagnitude > 0.001f)
+            if (direction.sqrMagnitude > minMagnitudeToNormalize)
             {
                 direction.Normalize();
 
-                if (Vector3.Dot(direction, hunter.transform.forward) > 1f - 0.05f)
+                if (Vector3.Dot(direction, hunter.transform.forward) > hunter.AimTolerance)
                 {
                     hunter.RangeAttack(target);
                     hunter.ResetAttackTimer();

@@ -21,6 +21,9 @@ public class Hunter : Agent
     [SerializeField] private float meleeAttackRadius = 2f;
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
+    [SerializeField] private float aimTolerance = 0.95f;
+
+    public float AimTolerance => aimTolerance;
     public float RangeAttackRadius => rangeAttackRadius;
     public float MeleeAttackRadius => meleeAttackRadius;
     private float tbaTimer;
