@@ -10,12 +10,17 @@ public class SteeringAgent : Agent
     [SerializeField] private float slowingDistance;
     [SerializeField] private float minDistance = 0.1f;
 
+    [SerializeField] private bool useBounds = true;
+
     public float MaxSpeed => maxSpeed;
     public Vector3 Velocity => velocity;
 
     private void Update()
     {
-        transform.position = Bounds.Instance.OutOfBounds(transform.position);
+        if (useBounds && Bounds.Instance != null)
+        {
+            transform.position = Bounds.Instance.OutOfBounds(transform.position);
+        }
 
         transform.position += velocity * Time.deltaTime;
 

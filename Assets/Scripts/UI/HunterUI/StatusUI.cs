@@ -5,6 +5,7 @@ public class HunterStatusUI : MonoBehaviour
 {
     [SerializeField] private TMP_Text statusText;
     [SerializeField] private TMP_Text statusInfoText;
+    [SerializeField] private TMP_Text gathersText;
 
     public void SetStatus(string status)
     {
@@ -20,6 +21,13 @@ public class HunterStatusUI : MonoBehaviour
         CancelInvoke(nameof(HideActionText));
 
         Invoke(nameof(HideActionText), 1f);
+    }
+    public void UpdateGathers(int current, int required)
+    {
+        if (gathersText != null)
+        {
+            gathersText.text = current+"/"+required;
+        }
     }
 
     private void HideActionText()

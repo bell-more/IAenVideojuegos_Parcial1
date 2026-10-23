@@ -43,7 +43,7 @@ public class PatrolState : IState
 
     private void Patrol()
     {
-        if (hunter.Waypoints.Count == 0) return;
+       /* if (hunter.Waypoints.Count == 0) return;
 
         
         Transform waypoint = hunter.Waypoints[currentWaypoint];
@@ -64,6 +64,6 @@ public class PatrolState : IState
 
         Vector3 steering = hunter.Agent.Arrive(targetPos);
 
-        hunter.Agent.ApplySteering(steering);
+        hunter.Agent.ApplySteering(steering);*/
     }
 }

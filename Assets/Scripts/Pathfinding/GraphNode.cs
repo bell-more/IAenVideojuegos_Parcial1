@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class GraphNode : MonoBehaviour
 {
-    public List<GraphNode> neighbors = new List<GraphNode>();
+    public List<GraphNode> neighbours = new List<GraphNode>();
 
     private void OnDrawGizmos()
     {
@@ -11,7 +11,7 @@ public class GraphNode : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, 0.3f);
 
         Gizmos.color = Color.yellow;
-        foreach (var neighbor in neighbors)
+        foreach (var neighbor in neighbours)
         {
             if (neighbor != null)
             {

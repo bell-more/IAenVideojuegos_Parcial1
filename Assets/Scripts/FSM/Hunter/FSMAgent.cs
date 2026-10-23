@@ -10,15 +10,25 @@ public class FSMAgent : MonoBehaviour
         fsm = new StateMachine();
         hunter = GetComponent<Hunter>();
 
-        PatrolState patrolState = new PatrolState(hunter, fsm);
-        fsm.RegisterState(HunterStates.Patrol, patrolState);
-        fsm.ChangeState(HunterStates.Patrol);
+        SearchState searchState = new SearchState(hunter, fsm);
+        fsm.RegisterState(HunterStates.Search, searchState);
 
         AttackState attackState = new AttackState(hunter, fsm);
         fsm.RegisterState(HunterStates.Attack, attackState);
 
         GatherState gatherState = new GatherState(hunter, fsm);
         fsm.RegisterState(HunterStates.Gather, gatherState);
+
+        ExitState exitState = new ExitState(hunter, fsm);
+        fsm.RegisterState(HunterStates.Exit, exitState);
+
+        //DEAD
+        //FLEE
+    }
+
+    private void Start()
+    {
+        fsm.ChangeState(HunterStates.Search);
     }
 
     private void Update()

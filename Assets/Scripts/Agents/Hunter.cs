@@ -2,18 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 public class Hunter : Agent
 {
-
     public List<Transform> targetsInRange = new List<Transform>();
-
-    [Header("Visuals")]
     [SerializeField] private LineRenderer lineRenderer;
     private Boid currentBoid;
-
-    [Header("Waypoints")]
-    [SerializeField] private List<Transform> waypoints = new List<Transform>();
-    [SerializeField] private float waypointCheckDistance = 1f;
-    public List<Transform> Waypoints => waypoints;
-    public float WaypointCheckDistance => waypointCheckDistance;
+    [SerializeField] private LayerMask obstacleLayer; 
+    public float eyeHeight = 1f;
+    private Vector3 initialSpawnPosition;
+    public Vector3 InitialSpawnPosition => initialSpawnPosition;
 
     [Header("Attack")]
     [SerializeField] private float tba = 3f;
@@ -29,12 +24,16 @@ public class Hunter : Agent
     private float tbaTimer;
     public bool CanAttack { get { return tbaTimer <= 0f; } }
 
-
     [Header("Gather")]
     [SerializeField] private float gatherTime = 2f;
+    [SerializeField] private int requiredGathers = 3;
     public float GatherTime => gatherTime;
+     private int currentGathers = 0;
+    public int RequiredGathers => requiredGathers;
+    public int CurrentGathers => currentGathers;
 
-
+    
+    //
     private SteeringAgent agent;
     public SteeringAgent Agent => agent;
 
@@ -45,16 +44,39 @@ public class Hunter : Agent
     [SerializeField] private HunterStatusUI statusUI;
     public HunterStatusUI StatusUI => statusUI;
 
+    //
+    [SerializeField] private float respawnTime = 5f;
+    [SerializeField] private float safeZoneWaitTime = 3f;
+    //
+   
+    public float SafeZoneWaitTime => safeZoneWaitTime;
+
+    //dead
+    public float RespawnTime => respawnTime;
+
+    [Header("Pathfinding")]
+    public GraphNode currentNode;
+    public GraphNode exitNode;
+    public GraphNode initialZoneNode;
     private void Awake()
     {
         agent = GetComponent<SteeringAgent>();
+    }
+    private void Start()
+    {
+        initialSpawnPosition = transform.position;
+
+        if (statusUI != null)
+        {
+            statusUI.UpdateGathers(currentGathers, requiredGathers);
+        }
     }
 
     private void Update()
     {
         if (tbaTimer > 0f) tbaTimer -= Time.deltaTime;
 
-        if (GetClosestTarget() == null && GetClosestDeadTarget() == null)
+       /* if (GetClosestTarget() == null && GetClosestDeadTarget() == null)
         {
             if (spawnTimer > 0f)
             {
@@ -65,7 +87,7 @@ public class Hunter : Agent
                 SpawnInterestObject();
                 spawnTimer = 3f;
             }
-        }
+        }*/
 
         RenderLine();
     }
@@ -209,6 +231,50 @@ public class Hunter : Agent
         if (currentBoid != null)
         {
             currentBoid.SetTargetArrow(true);
+        }
+    }
+
+    public void AddGather()
+    {
+        currentGathers++;
+
+        if (statusUI != null)
+        {
+            statusUI.UpdateGathers(currentGathers, requiredGathers);
+        }
+    }
+    public void ResetGathers()
+    {
+        currentGathers = 0;
+
+        if (statusUI != null)
+        {
+            statusUI.UpdateGathers(currentGathers, requiredGathers);
+        }
+    }
+    public bool HasLineOfSight(Transform target)
+    {
+        Vector3 origin = transform.position + (Vector3.up * eyeHeight);
+        Vector3 targetPos = target.position + (Vector3.up * eyeHeight);
+        Vector3 direction = targetPos - origin;
+
+        if (Physics.Raycast(origin, direction, direction.magnitude, obstacleLayer))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public void ToggleVisibility(bool isVisible)
+    {
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = isVisible;
+
+        Renderer[] allRenderers = GetComponentsInChildren<Renderer>(true);
+        foreach (Renderer r in allRenderers)
+        {
+            r.enabled = isVisible;
         }
     }
 }

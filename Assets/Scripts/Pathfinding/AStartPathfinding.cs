@@ -32,7 +32,7 @@ public static class AStarPathfinding
                 return RetracePath(currentRecord, costSoFar);
             }
 
-            foreach (GraphNode neighbor in current.neighbors)
+            foreach (GraphNode neighbor in current.neighbours)
             {
                 float stepCost = Vector3.Distance(current.transform.position, neighbor.transform.position);
                 float newCost = currentRecord.gCost + stepCost;
