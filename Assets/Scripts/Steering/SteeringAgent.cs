@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class SteeringAgent : Agent
 {
-    [Header("References")]
-
     [Header("Stats")]
     [SerializeField] private float maxSpeed;
     [SerializeField] private float maxSteering;

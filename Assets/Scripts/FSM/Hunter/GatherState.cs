@@ -32,6 +32,18 @@ public class GatherState : IState
 
     public void Update()
     {
+        if (hunter.Life <= 0)
+        {
+            fsm.ChangeState(HunterStates.Dead);
+            return;
+        }
+
+        if (hunter.GetClosestVisibleWolf() != null)
+        {
+            fsm.ChangeState(HunterStates.Flee);
+            return;
+        }
+
         if (target == null || !target.gameObject.activeInHierarchy || target.GetIsAlive)
         {
             fsm.ChangeState(HunterStates.Search);

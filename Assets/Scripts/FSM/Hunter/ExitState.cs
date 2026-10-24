@@ -30,6 +30,17 @@ public class ExitState : IState
 
     public void Update()
     {
+        if (hunter.Life <= 0)
+        {
+            fsm.ChangeState(HunterStates.Dead);
+            return;
+        }
+
+        if (hunter.GetClosestVisibleWolf() != null)
+        {
+            fsm.ChangeState(HunterStates.Flee);
+            return;
+        }
 
         if (currentPath == null || currentPath.Count == 0) return;
 

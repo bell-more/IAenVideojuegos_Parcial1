@@ -22,6 +22,12 @@ public class FSMAgent : MonoBehaviour
         ExitState exitState = new ExitState(hunter, fsm);
         fsm.RegisterState(HunterStates.Exit, exitState);
 
+        FleeState fleeState = new FleeState(hunter, fsm);
+        fsm.RegisterState(HunterStates.Flee, fleeState);
+
+        DeadState deadState = new DeadState(hunter, fsm);
+        fsm.RegisterState(HunterStates.Dead, deadState);
+
         //DEAD
         //FLEE
     }

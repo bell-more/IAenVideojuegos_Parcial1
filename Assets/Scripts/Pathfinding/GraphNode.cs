@@ -10,12 +10,12 @@ public class GraphNode : MonoBehaviour
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, 0.3f);
 
-        Gizmos.color = Color.yellow;
-        foreach (var neighbor in neighbours)
+        Gizmos.color = Color.darkMagenta;
+        foreach (var neighbour in neighbours)
         {
-            if (neighbor != null)
+            if (neighbour != null)
             {
-                Gizmos.DrawLine(transform.position, neighbor.transform.position);
+                Gizmos.DrawLine(transform.position, neighbour.transform.position);
             }
         }
     }

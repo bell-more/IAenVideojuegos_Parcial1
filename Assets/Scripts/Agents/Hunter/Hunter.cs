@@ -5,10 +5,14 @@ public class Hunter : Agent
     public List<Transform> targetsInRange = new List<Transform>();
     [SerializeField] private LineRenderer lineRenderer;
     private Boid currentBoid;
-    [SerializeField] private LayerMask obstacleLayer; 
-    public float eyeHeight = 1f;
+    [SerializeField] private LayerMask obstacleLayer;
+    [SerializeField] private float eyeHeight = 1f;
+    [SerializeField] private int life = 1;
+    private int currentLife;
     private Vector3 initialSpawnPosition;
     public Vector3 InitialSpawnPosition => initialSpawnPosition;
+    [SerializeField] private float visionRadius = 15f; 
+    [SerializeField] private LayerMask wolfLayer;
 
     [Header("Attack")]
     [SerializeField] private float tba = 3f;
@@ -23,6 +27,7 @@ public class Hunter : Agent
     public float MeleeAttackRadius => meleeAttackRadius;
     private float tbaTimer;
     public bool CanAttack { get { return tbaTimer <= 0f; } }
+    public int Life => currentLife;
 
     [Header("Gather")]
     [SerializeField] private float gatherTime = 2f;
@@ -64,6 +69,7 @@ public class Hunter : Agent
     }
     private void Start()
     {
+        currentLife = life;
         initialSpawnPosition = transform.position;
 
         if (statusUI != null)
@@ -111,6 +117,38 @@ public class Hunter : Agent
         {
             targetsInRange.Remove(other.transform);
         }
+    }
+
+    public Wolf GetClosestVisibleWolf()
+    {
+        Wolf closestWolf = null;
+        float closestDistance = Mathf.Infinity;
+
+        Collider[] targetsInRadius = Physics.OverlapSphere(transform.position, visionRadius, wolfLayer);
+
+        foreach (Collider target in targetsInRadius)
+        {
+            Wolf wolf = target.GetComponent<Wolf>();
+
+            if (wolf == null)
+            {
+                continue;
+            }
+
+            bool hasLOS = HasLineOfSight(target.transform);
+
+            if (hasLOS)
+            {
+                float distance = Vector3.Distance(transform.position, target.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestWolf = wolf;
+                }
+            }
+        }
+
+        return closestWolf;
     }
 
     public bool MeleeAttack(Boid target)
@@ -252,6 +290,10 @@ public class Hunter : Agent
             statusUI.UpdateGathers(currentGathers, requiredGathers);
         }
     }
+    public void TakeDamage()
+    {
+        currentLife = 0;
+    }
     public bool HasLineOfSight(Transform target)
     {
         Vector3 origin = transform.position + (Vector3.up * eyeHeight);
@@ -268,6 +310,7 @@ public class Hunter : Agent
 
     public void ToggleVisibility(bool isVisible)
     {
+        currentLife = life;
         Collider col = GetComponent<Collider>();
         if (col != null) col.enabled = isVisible;
 
@@ -276,5 +319,10 @@ public class Hunter : Agent
         {
             r.enabled = isVisible;
         }
+    }
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, visionRadius);
     }
 }

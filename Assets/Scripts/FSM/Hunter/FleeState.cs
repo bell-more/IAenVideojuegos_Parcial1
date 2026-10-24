@@ -31,6 +31,12 @@ public class FleeState : IState
 
     public void Update()
     {
+        if (hunter.Life <= 0)
+        {
+            fsm.ChangeState(HunterStates.Dead);
+            return;
+        }
+
         //safe zone
         if (isSafe)
         {

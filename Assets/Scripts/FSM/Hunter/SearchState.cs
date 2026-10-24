@@ -33,6 +33,17 @@ public class SearchState : IState
 
     public void Update()
     {
+        if (hunter.Life <= 0)
+        {
+            fsm.ChangeState(HunterStates.Dead);
+            return;
+        }
+        if (hunter.GetClosestVisibleWolf() != null)
+        {
+            fsm.ChangeState(HunterStates.Flee);
+            return;
+        }
+
         Boid deadTarget = hunter.GetClosestDeadTarget();
         if (deadTarget != null && hunter.HasLineOfSight(deadTarget.transform))
         {
