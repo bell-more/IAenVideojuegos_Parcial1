@@ -40,6 +40,7 @@ public class SearchState : IState
         }
         if (hunter.GetClosestVisibleWolf() != null)
         {
+            { }
             fsm.ChangeState(HunterStates.Flee);
             return;
         }
@@ -102,7 +103,7 @@ public class SearchState : IState
         }
         else
         {
-            Vector3 steering = hunter.Agent.Arrive(targetPos);
+            Vector3 steering = hunter.Agent.Seek(targetPos);
             hunter.Agent.ApplySteering(steering);
         }
     }

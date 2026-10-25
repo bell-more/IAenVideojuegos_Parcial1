@@ -21,11 +21,12 @@ public class WolfPatrolState : IState
     {
         currentWaypointIndex = 0;
         currentAStarPath = null;
+        wolf.UpdateUI("Patrolling", "");
     }
 
     public void Update()
     {
-        if (wolf.IsSeeingHunter)
+        if (wolf.IsSeeingHunter && wolf.CurrentHunter != null && wolf.CurrentHunter.Life > 0)
         {
             fsm.ChangeState(WolfStates.Pursuit);
             return;

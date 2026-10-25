@@ -14,10 +14,17 @@ public class WolfPursuitState : IState
     public void Enter()
     {
         wolf.IsAlerted = false;
+        wolf.UpdateUI("Pursuing", "");
     }
 
     public void Update()
     {
+        if (wolf.CurrentHunter == null || wolf.CurrentHunter.Life <= 0)
+        {
+            fsm.ChangeState(WolfStates.Patrol);
+            return;
+        }
+
         if (!wolf.IsSeeingHunter)
         {
             fsm.ChangeState(WolfStates.Investigate);

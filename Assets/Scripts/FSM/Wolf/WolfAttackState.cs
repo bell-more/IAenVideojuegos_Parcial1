@@ -15,21 +15,26 @@ public class WolfAttackState : IState
 
     public void Enter()
     {
-        wolf.Agent.Stop(); // Frena para morder
-        timer = attackCooldown; // Listo para atacar apenas entra
-        Debug.Log($"[FSM] {wolf.gameObject.name} entró en estado ATAQUE.");
+        wolf.UpdateUI("Attacking", "");
+        wolf.Agent.Stop();
+        timer = attackCooldown;
     }
 
     public void Update()
     {
-        // Si el cazador se esconde, o si la variable quedó vacía, va a investigar
-        if (!wolf.IsSeeingHunter || wolf.CurrentHunter == null)
+        if (wolf.CurrentHunter == null || wolf.CurrentHunter.Life <= 0)
+        {
+            wolf.ForgetHunter();
+            fsm.ChangeState(WolfStates.Patrol);
+            return;
+        }
+
+        if (!wolf.IsSeeingHunter)
         {
             fsm.ChangeState(WolfStates.Investigate);
             return;
         }
 
-        // Si el cazador se aleja corriendo, vuelve a perseguirlo
         float distance = Vector3.Distance(wolf.transform.position, wolf.LastKnownHunterPosition);
         if (distance > 2.5f)
         {
@@ -37,17 +42,13 @@ public class WolfAttackState : IState
             return;
         }
 
-        // Lógica de ataque con cooldown
         timer += Time.deltaTime;
         if (timer >= attackCooldown)
         {
             timer = 0f;
-            Debug.Log($"[Wolf] ¡{wolf.gameObject.name} MORDIÓ AL CAZADOR!");
-
-            // Ejecutamos la muerte en el FSM del Cazador
             wolf.CurrentHunter.TakeDamage();
+            wolf.ForgetHunter();
 
-            // Trabajo terminado, el lobo vuelve a su patrulla pacífica
             fsm.ChangeState(WolfStates.Patrol);
         }
     }

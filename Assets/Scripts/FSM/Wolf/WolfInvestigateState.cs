@@ -17,6 +17,7 @@ public class WolfInvestigateState : IState
 
     public void Enter()
     {
+        wolf.UpdateUI("Investigating", "Checking last known position");
         wolf.IsAlerted = false; 
 
         wolf.currentNode = GraphManager.Instance.GetClosestNode(wolf.transform.position);
@@ -56,7 +57,7 @@ public class WolfInvestigateState : IState
         }
         else
         {
-            Vector3 steering = wolf.Agent.Arrive(targetPos);
+            Vector3 steering = wolf.Agent.Seek(targetPos);
             wolf.Agent.ApplySteering(steering);
         }
     }

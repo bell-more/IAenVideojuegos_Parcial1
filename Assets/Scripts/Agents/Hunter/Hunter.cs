@@ -14,6 +14,10 @@ public class Hunter : Agent
     [SerializeField] private float visionRadius = 15f; 
     [SerializeField] private LayerMask wolfLayer;
 
+    //colour
+    private Renderer[] allRenderers;
+    private Color[] initialColours;
+
     [Header("Attack")]
     [SerializeField] private float tba = 3f;
     [SerializeField] private float rangeAttackRadius = 6f;
@@ -37,13 +41,17 @@ public class Hunter : Agent
     public int RequiredGathers => requiredGathers;
     public int CurrentGathers => currentGathers;
 
-    
+    //wolf detection
+    private Collider[] wolfColliders = new Collider[10]; 
+    private float wolfCheckTimer = 0f;
+    private float wolfCheckInterval = 0.25f;
+    private Wolf cachedClosestWolf;
     //
     private SteeringAgent agent;
     public SteeringAgent Agent => agent;
 
     [SerializeField] private GameObject interestObjectPrefab;
-    [SerializeField] private float spawnTimer = 3f;
+    [SerializeField] private int maxInterestObjects = 5;
     private int interestObjectCount = 0;
 
     [SerializeField] private HunterStatusUI statusUI;
@@ -52,8 +60,10 @@ public class Hunter : Agent
     //
     [SerializeField] private float respawnTime = 5f;
     [SerializeField] private float safeZoneWaitTime = 3f;
+    private bool isDead = false;
     //
-   
+    
+    public bool IsDead => isDead;
     public float SafeZoneWaitTime => safeZoneWaitTime;
 
     //dead
@@ -63,9 +73,12 @@ public class Hunter : Agent
     public GraphNode currentNode;
     public GraphNode exitNode;
     public GraphNode initialZoneNode;
+
+
     private void Awake()
     {
         agent = GetComponent<SteeringAgent>();
+        allRenderers = GetComponentsInChildren<Renderer>(true);
     }
     private void Start()
     {
@@ -76,24 +89,22 @@ public class Hunter : Agent
         {
             statusUI.UpdateGathers(currentGathers, requiredGathers);
         }
+
+        initialColours = new Color[allRenderers.Length];
+        for (int i = 0; i < allRenderers.Length; i++)
+        {
+            initialColours[i] = allRenderers[i].material.color;
+        }
     }
 
     private void Update()
     {
         if (tbaTimer > 0f) tbaTimer -= Time.deltaTime;
 
-       /* if (GetClosestTarget() == null && GetClosestDeadTarget() == null)
+        if (wolfCheckTimer > 0f)
         {
-            if (spawnTimer > 0f)
-            {
-                spawnTimer -= Time.deltaTime;
-            }
-            else
-            {
-                SpawnInterestObject();
-                spawnTimer = 3f;
-            }
-        }*/
+            wolfCheckTimer -= Time.deltaTime;
+        }
 
         RenderLine();
     }
@@ -121,23 +132,26 @@ public class Hunter : Agent
 
     public Wolf GetClosestVisibleWolf()
     {
+        if (wolfCheckTimer > 0f)
+        {
+            return cachedClosestWolf;
+        }
+
+        wolfCheckTimer = wolfCheckInterval;
+
         Wolf closestWolf = null;
         float closestDistance = Mathf.Infinity;
 
-        Collider[] targetsInRadius = Physics.OverlapSphere(transform.position, visionRadius, wolfLayer);
+        int wolvesFound = Physics.OverlapSphereNonAlloc(transform.position, visionRadius, wolfColliders, wolfLayer);///////////////////////////
 
-        foreach (Collider target in targetsInRadius)
+        for (int i = 0; i < wolvesFound; i++)
         {
+            Collider target = wolfColliders[i];
             Wolf wolf = target.GetComponent<Wolf>();
 
-            if (wolf == null)
-            {
-                continue;
-            }
+            if (wolf == null) continue;
 
-            bool hasLOS = HasLineOfSight(target.transform);
-
-            if (hasLOS)
+            if (HasLineOfSight(target.transform))
             {
                 float distance = Vector3.Distance(transform.position, target.transform.position);
                 if (distance < closestDistance)
@@ -147,7 +161,7 @@ public class Hunter : Agent
                 }
             }
         }
-
+        cachedClosestWolf = closestWolf;
         return closestWolf;
     }
 
@@ -218,7 +232,7 @@ public class Hunter : Agent
 
     public void SpawnInterestObject()
     {
-        if (interestObjectCount < 5)
+        if (interestObjectCount < maxInterestObjects)
         {
             GameObject newObject = Instantiate(interestObjectPrefab, transform.position, Quaternion.identity);
             newObject.GetComponent<InterestObject>().SetHunter(this);
@@ -308,16 +322,42 @@ public class Hunter : Agent
         return true;
     }
 
-    public void ToggleVisibility(bool isVisible)
+    public void ToggleVisibility()
+    {
+        for (int i = 0; i < allRenderers.Length; i++)
+        {
+            allRenderers[i].material.color = Color.red;
+        }
+
+        Collider[] childColliders = GetComponentsInChildren<Collider>();
+        foreach (Collider col in childColliders)
+        {
+            if (col.gameObject != this.gameObject)
+            {
+                col.enabled = false;
+            }
+        }
+
+        isDead = true;
+    }
+
+    public void Spawn()
     {
         currentLife = life;
-        Collider col = GetComponent<Collider>();
-        if (col != null) col.enabled = isVisible;
+        isDead = false;
 
-        Renderer[] allRenderers = GetComponentsInChildren<Renderer>(true);
-        foreach (Renderer r in allRenderers)
+        for (int i = 0; i < allRenderers.Length; i++)
         {
-            r.enabled = isVisible;
+           allRenderers[i].material.color = initialColours[i];
+        }
+
+        Collider[] childColliders = GetComponentsInChildren<Collider>();
+        foreach (Collider col in childColliders)
+        {
+            if (col.gameObject != this.gameObject)
+            {
+                col.enabled = true;
+            }
         }
     }
     private void OnDrawGizmos()

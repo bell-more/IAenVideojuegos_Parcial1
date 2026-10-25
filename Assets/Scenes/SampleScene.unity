@@ -169,7 +169,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 856711746840698498, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: life
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1280087512135700557, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_Name
@@ -2128,6 +2128,18 @@ PrefabInstance:
       propertyPath: useBounds
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4466259490723207346, guid: 47d4b2b80096e484d8e45bcf4791da08, type: 3}
+      propertyPath: maxSteering
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 4466259490723207346, guid: 47d4b2b80096e484d8e45bcf4791da08, type: 3}
+      propertyPath: rotationSpeed
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 5324701344695326998, guid: 47d4b2b80096e484d8e45bcf4791da08, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6034723542100123815, guid: 47d4b2b80096e484d8e45bcf4791da08, type: 3}
       propertyPath: m_LocalPosition.x
       value: -71.23952
@@ -2138,7 +2150,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6034723542100123815, guid: 47d4b2b80096e484d8e45bcf4791da08, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.345886
+      value: 0.34588623
       objectReference: {fileID: 0}
     - target: {fileID: 6034723542100123815, guid: 47d4b2b80096e484d8e45bcf4791da08, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2172,13 +2184,7 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hunter
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 6621948790125235442, guid: 47d4b2b80096e484d8e45bcf4791da08, type: 3}
-    - {fileID: 1336114207291794183, guid: 47d4b2b80096e484d8e45bcf4791da08, type: 3}
-    - {fileID: 7607699691638751340, guid: 47d4b2b80096e484d8e45bcf4791da08, type: 3}
-    - {fileID: 6610087618544327665, guid: 47d4b2b80096e484d8e45bcf4791da08, type: 3}
-    - {fileID: 2611486064902961020, guid: 47d4b2b80096e484d8e45bcf4791da08, type: 3}
-    - {fileID: 7195678436829487127, guid: 47d4b2b80096e484d8e45bcf4791da08, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -5269,6 +5275,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3823771085268833687, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3859888012905440029, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
+      propertyPath: viewRadius
+      value: 13.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3859888012905440029, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
+      propertyPath: hunterLayer.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3859888012905440029, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
       propertyPath: packMembers.Array.size
       value: 3
@@ -5297,9 +5315,13 @@ PrefabInstance:
       propertyPath: 'patrolWaypoints.Array.data[1]'
       value: 
       objectReference: {fileID: 505833018}
+    - target: {fileID: 4715923830947040018, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5141996916413768881, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
       propertyPath: maxSteering
-      value: 30
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 9159853103635668021, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
       propertyPath: m_Name
@@ -7622,9 +7644,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3823771085268833687, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3859888012905440029, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
       propertyPath: usePingPongPatrol
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3859888012905440029, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
+      propertyPath: hunterLayer.m_Bits
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3859888012905440029, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
       propertyPath: packMembers.Array.size
@@ -7662,6 +7692,14 @@ PrefabInstance:
       propertyPath: 'patrolWaypoints.Array.data[3]'
       value: 
       objectReference: {fileID: 1933746349}
+    - target: {fileID: 4715923830947040018, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5141996916413768881, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
+      propertyPath: maxSteering
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 9159853103635668021, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
       propertyPath: m_Name
       value: Wolf_4
@@ -8405,9 +8443,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3823771085268833687, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3859888012905440029, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
       propertyPath: usePingPongPatrol
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3859888012905440029, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
+      propertyPath: hunterLayer.m_Bits
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3859888012905440029, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
       propertyPath: packMembers.Array.size
@@ -8445,6 +8491,14 @@ PrefabInstance:
       propertyPath: 'patrolWaypoints.Array.data[3]'
       value: 
       objectReference: {fileID: 135761477}
+    - target: {fileID: 4715923830947040018, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5141996916413768881, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
+      propertyPath: maxSteering
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 9159853103635668021, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
       propertyPath: m_Name
       value: Wolf_2
@@ -8524,7 +8578,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 856711746840698498, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: life
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1280087512135700557, guid: d13f4eb7590d93e439538451c112cd81, type: 3}
       propertyPath: m_Name
@@ -8616,6 +8670,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3823771085268833687, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3859888012905440029, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
+      propertyPath: hunterLayer.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3859888012905440029, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
       propertyPath: packMembers.Array.size
       value: 3
@@ -8640,9 +8702,13 @@ PrefabInstance:
       propertyPath: 'patrolWaypoints.Array.data[1]'
       value: 
       objectReference: {fileID: 750192484}
+    - target: {fileID: 4715923830947040018, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5141996916413768881, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
       propertyPath: maxSteering
-      value: 30
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 9159853103635668021, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
       propertyPath: m_Name

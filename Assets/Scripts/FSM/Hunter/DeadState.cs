@@ -6,6 +6,7 @@ public class DeadState : IState
     private StateMachine fsm;
     private float timer;
 
+
     public DeadState(Hunter hunter, StateMachine fsm)
     {
         this.hunter = hunter;
@@ -19,7 +20,7 @@ public class DeadState : IState
 
         hunter.Agent.Stop();
         hunter.ResetGathers();
-        hunter.ToggleVisibility(false);
+        hunter.ToggleVisibility();
         timer = hunter.RespawnTime;
     }
 
@@ -31,11 +32,11 @@ public class DeadState : IState
         {
             if (hunter.initialZoneNode != null)
             {
-                hunter.transform.position = hunter.initialZoneNode.transform.position;
+                hunter.transform.position = hunter.InitialSpawnPosition;
                 hunter.currentNode = hunter.initialZoneNode;
             }
 
-            hunter.ToggleVisibility(true);
+            hunter.Spawn();
 
             fsm.ChangeState(HunterStates.Search);
         }
@@ -43,6 +44,7 @@ public class DeadState : IState
 
     public void Exit()
     {
+        
         hunter.StatusUI.SetStatus("");
         hunter.StatusUI.ShowAction("");
     }

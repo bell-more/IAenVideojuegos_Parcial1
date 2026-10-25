@@ -28,8 +28,6 @@ public class FSMAgent : MonoBehaviour
         DeadState deadState = new DeadState(hunter, fsm);
         fsm.RegisterState(HunterStates.Dead, deadState);
 
-        //DEAD
-        //FLEE
     }
 
     private void Start()

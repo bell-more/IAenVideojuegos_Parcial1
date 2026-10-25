@@ -7,6 +7,7 @@ public class SteeringAgent : Agent
     [SerializeField] private float maxSteering;
     [SerializeField] private float slowingDistance;
     [SerializeField] private float minDistance = 0.1f;
+    [SerializeField] private float rotationSpeed = 15f; // ¡NUEVO! Controla qué tan rápido gira (grados por segundo)
 
     [SerializeField] private bool useBounds = true;
 
@@ -22,7 +23,14 @@ public class SteeringAgent : Agent
 
         transform.position += velocity * Time.deltaTime;
 
-        if (velocity != Vector3.zero) transform.forward = velocity;
+        // --- GIRO SUAVE INDEPENDIENTE DE LA VELOCIDAD ---
+        if (velocity.sqrMagnitude > 0.001f)
+        {
+            Vector3 flatVelocity = new Vector3(velocity.x, 0f, velocity.z); // Evita que se incline hacia arriba/abajo
+            Quaternion targetRotation = Quaternion.LookRotation(flatVelocity);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
+        // ----------------------------------------------
     }
 
     public Vector3 CalculateSteering(Vector3 desiredVelocity)
@@ -46,6 +54,7 @@ public class SteeringAgent : Agent
 
         return desiredVelocity;
     }
+
     public Vector3 Seek(Vector3 target)
     {
         Vector3 desired = DesiredVelocity(target);
@@ -72,7 +81,7 @@ public class SteeringAgent : Agent
         float desiredSpeed = Mathf.Clamp(maxSpeed * distance / slowingDistance, 0, maxSpeed);
 
         Vector3 desired = direction.normalized * desiredSpeed;
-        
+
         return CalculateSteering(desired);
     }
 
@@ -96,6 +105,7 @@ public class SteeringAgent : Agent
 
         return futurePosition;
     }
+
     public Vector3 Pursuit(Agent target)
     {
         Vector3 futurePosition = PredictTargetPosition(target);
@@ -112,4 +122,3 @@ public class SteeringAgent : Agent
         velocity = Vector3.zero;
     }
 }
-

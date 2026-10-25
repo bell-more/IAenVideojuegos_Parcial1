@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Wolf : MonoBehaviour
@@ -19,6 +20,10 @@ public class Wolf : MonoBehaviour
     private bool hasAlertedPack = false;
     private float perceptionTimer = 0f;
     private float perceptionTickRate = 0.2f;
+
+    [Header("UI")]
+    [SerializeField] private TextMeshProUGUI stateText;
+    [SerializeField] private TextMeshProUGUI infoText;
 
     public SteeringAgent Agent { get; private set; }
     public Vector3 LastKnownHunterPosition { get; private set; }
@@ -41,7 +46,7 @@ public class Wolf : MonoBehaviour
         {
             perceptionTimer = perceptionTickRate;
 
-            IsSeeingHunter = CheckCanSeeHunter(out Vector3 hunterPosition);
+            IsSeeingHunter = CanSeeHunter(out Vector3 hunterPosition);
 
             if (IsSeeingHunter)
             {
@@ -49,6 +54,7 @@ public class Wolf : MonoBehaviour
 
                 if (!hasAlertedPack)
                 {
+                    Debug.Log($"<color=red>[{gameObject.name}] ¡Encontré al cazador! Avisando a la manada.</color>");
                     AlertPack(LastKnownHunterPosition);
                     hasAlertedPack = true;
                 }
@@ -60,16 +66,16 @@ public class Wolf : MonoBehaviour
         }
     }
 
-    private bool CheckCanSeeHunter(out Vector3 hunterPos)
+    private bool CanSeeHunter(out Vector3 hunterPos)
     {
         hunterPos = Vector3.zero;
         Collider[] targetsInRadius = Physics.OverlapSphere(transform.position, viewRadius, hunterLayer);
 
         foreach (Collider target in targetsInRadius)
         {
-            Hunter hunter = target.GetComponent<Hunter>();
+            Hunter hunter = target.GetComponentInParent<Hunter>();
 
-            if (hunter == null) continue;
+            if (hunter == null || hunter.Life <= 0) continue;
 
             Vector3 dirToTarget = (hunter.transform.position - transform.position).normalized;
             float angle = Vector3.Angle(transform.forward, dirToTarget);
@@ -84,7 +90,7 @@ public class Wolf : MonoBehaviour
                 if (!Physics.Raycast(origin, dirToEye.normalized, distanceToTarget, obstacleLayer))
                 {
                     hunterPos = hunter.transform.position;
-                    CurrentHunter = hunter; 
+                    CurrentHunter = hunter;
                     return true;
                 }
             }
@@ -110,6 +116,25 @@ public class Wolf : MonoBehaviour
         LastKnownHunterPosition = alertPosition;
         hasAlertedPack = true;
         IsAlerted = true;
+        Debug.Log($"<color=yellow>[{gameObject.name}] ¡Recibí la alerta. Voy a investigar.</color>");
+    }
+    public void ForgetHunter()
+    {
+        IsSeeingHunter = false;
+        CurrentHunter = null;
+        hasAlertedPack = false;
+        IsAlerted = false;
+
+        foreach (Wolf alliedWolf in packMembers)
+        {
+            if (alliedWolf != null && alliedWolf != this)
+            {
+                alliedWolf.IsSeeingHunter = false;
+                alliedWolf.CurrentHunter = null;
+                alliedWolf.hasAlertedPack = false;
+                alliedWolf.IsAlerted = false;
+            }
+        }
     }
 
     public bool HasLineOfSightTo(Vector3 targetPos)
@@ -119,6 +144,11 @@ public class Wolf : MonoBehaviour
         Vector3 direction = (targetEye - origin);
 
         return !Physics.Raycast(origin, direction.normalized, direction.magnitude, obstacleLayer);
+    }
+    public void UpdateUI(string state, string info)
+    {
+        if (stateText != null && state != "") stateText.text = state;
+        if (infoText != null && info != "") infoText.text = info;
     }
 
     private void OnDrawGizmos()

@@ -11,7 +11,7 @@ public static class AStarPathfinding
         public float fCost; 
     }
 
-    public static List<GraphNode> FindPath(GraphNode startNode, GraphNode targetNode)
+    public static List<GraphNode> FindPath(GraphNode startNode, GraphNode targetNode)///////////////////////////////
     {
         if (startNode == null || targetNode == null) return new List<GraphNode>();
 
@@ -42,13 +42,7 @@ public static class AStarPathfinding
                     float heuristic = Vector3.Distance(neighbor.transform.position, targetNode.transform.position);
                     float priority = newCost + heuristic;
 
-                    PathRecord neighborRecord = new PathRecord
-                    {
-                        node = neighbor,
-                        parent = current,
-                        gCost = newCost,
-                        fCost = priority
-                    };
+                    PathRecord neighborRecord = new PathRecord{node = neighbor,parent = current, gCost = newCost,fCost = priority};
 
                     costSoFar[neighbor] = neighborRecord;
                     frontier.Enqueue(neighborRecord, priority);
