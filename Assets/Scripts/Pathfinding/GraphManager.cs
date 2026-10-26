@@ -10,8 +10,7 @@ public class GraphManager : MonoBehaviour
     public List<GraphNode> cotoNodes = new List<GraphNode>(); 
     public List<GraphNode> safeZoneNodes = new List<GraphNode>(); 
 
-    [Header("config")]
-    [SerializeField] private float maxConnectionDistance = 5f;
+    [Header("Obstacle")]
     [SerializeField] private LayerMask obstacleLayer; 
 
     private void Awake()

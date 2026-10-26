@@ -1306,7 +1306,6 @@ GameObject:
   - component: {fileID: 6034723542100123815}
   - component: {fileID: 1992896842629461399}
   - component: {fileID: 8860186891158833129}
-  - component: {fileID: 5324701344695326998}
   - component: {fileID: 4466259490723207346}
   - component: {fileID: 6737249636403872329}
   - component: {fileID: 3124694872588368703}
@@ -1474,27 +1473,6 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
---- !u!135 &5324701344695326998
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7617855561138713441}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 7.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4466259490723207346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1511,7 +1489,7 @@ MonoBehaviour:
   maxSteering: 40
   slowingDistance: 9
   minDistance: 0.1
-  rotationSpeed: 15
+  rotationSpeed: 180
   useBounds: 1
 --- !u!114 &6737249636403872329
 MonoBehaviour:
@@ -1539,19 +1517,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Hunter
   targetsInRange: []
   lineRenderer: {fileID: 8860186891158833129}
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 512
-  eyeHeight: 1
   life: 1
-  visionRadius: 15
+  visionRadius: 10
   wolfLayer:
     serializedVersion: 2
     m_Bits: 4096
+  boidLayer:
+    serializedVersion: 2
+    m_Bits: 64
   areaToFleeIndicator: {fileID: 2495562644335049216, guid: ff126b99042952a428d001ee3fbc7ca9, type: 3}
   tba: 3
   rangeAttackRadius: 6
-  meleeAttackRadius: 2
+  meleeAttackRadius: 3
   projectilePrefab: {fileID: 7975995204038172403, guid: c0f8da05c8ff8834da159e747e55b1f4, type: 3}
   firePoint: {fileID: 4421062333472504713}
   aimTolerance: 0.95
@@ -1560,12 +1537,14 @@ MonoBehaviour:
   wolfDetectedImage: {fileID: 7044523053845376114}
   interestObjectPrefab: {fileID: 2227697553672454419, guid: 189504d97144c9d44b9a27fcd5845ee7, type: 3}
   maxInterestObjects: 5
+  spawnTimer: 3
   statusUI: {fileID: 8531944841979287248}
   respawnTime: 5
   safeZoneWaitTime: 3
   currentNode: {fileID: 0}
   exitNode: {fileID: 0}
   initialZoneNode: {fileID: 0}
+  gizmoHeight: 0.7
 --- !u!114 &7864483645569186830
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1579,7 +1558,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Perception
   checkInterval: 0.25
-  eyeHeight: 1
+  eyeHeight: 2
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 512

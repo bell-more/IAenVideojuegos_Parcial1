@@ -8,6 +8,8 @@ public class Wolf : MonoBehaviour
 {
     [SerializeField] private float viewRadius = 10f;
     [Range(0, 360)] public float viewAngle = 90f;
+    [SerializeField] private float captureRadius = 2.5f;
+    public float CaptureRadius => captureRadius;
     [SerializeField] private LayerMask hunterLayer;
     [SerializeField] private List<Wolf> packMembers = new List<Wolf>();
 
@@ -165,23 +167,8 @@ public class Wolf : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Vector3 previousPoint = transform.position + DirFromAngle(transform.eulerAngles.y, -viewAngle / 2f) * viewRadius;
-
-        Gizmos.color = Color.yellow;
-
-        for (int i = 1; i <= 30; i++)
-        {
-            float angle = -viewAngle / 2f + viewAngle * i / 30f;
-            Vector3 currentPoint = transform.position + DirFromAngle(transform.eulerAngles.y, angle) * viewRadius;
-            Gizmos.DrawLine(previousPoint, currentPoint);
-            previousPoint = currentPoint;
-        }
-
-        Vector3 viewAngleA = DirFromAngle(transform.eulerAngles.y, -viewAngle / 2f);
-        Vector3 viewAngleB = DirFromAngle(transform.eulerAngles.y, viewAngle / 2f);
-
-        Gizmos.DrawLine(transform.position, transform.position + viewAngleA * viewRadius);
-        Gizmos.DrawLine(transform.position, transform.position + viewAngleB * viewRadius);
+        GroundCircleGizmo.DrawVisionCone(transform.position, transform.eulerAngles.y, viewRadius, viewAngle, Color.yellow);
+        GroundCircleGizmo.DrawArc(transform.position, transform.eulerAngles.y, CaptureRadius, viewAngle, Color.red);
     }
 
     public void ShowFeedback(string text, Sprite icon)
@@ -203,11 +190,5 @@ public class Wolf : MonoBehaviour
     {
         if (detectionText != null) detectionText.gameObject.SetActive(false);
         if (feedbackImage != null) feedbackImage.gameObject.SetActive(false);
-    }
-
-    private Vector3 DirFromAngle(float eulerY, float angleInDegrees)
-    {
-        angleInDegrees += eulerY;
-        return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
     }
 }

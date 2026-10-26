@@ -38,9 +38,9 @@ public class BoidVision : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("HunterRange"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Hunter"))
         {
-            hunterAgent = other.GetComponent<SteeringAgent>();
+            hunterAgent = other.GetComponentInParent<SteeringAgent>();
         }
 
     }
@@ -53,7 +53,7 @@ public class BoidVision : MonoBehaviour
             nearbyAgents.Remove(neighbour);
         }
 
-        if (other.gameObject.layer == LayerMask.NameToLayer("HunterRange"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Hunter"))
         {
             hunterAgent = null;
         }

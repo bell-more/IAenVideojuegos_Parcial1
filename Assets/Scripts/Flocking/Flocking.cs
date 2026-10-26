@@ -14,6 +14,10 @@ public class Flocking : MonoBehaviour
     [Range(0, 3)][SerializeField] private const float alignmentWeight = 1f;
     [Range(0, 3)][SerializeField] private const float cohesionWeight = 1f;
 
+    public float SeparationRadius => separationRadius;
+    public float AlignmentRadius => alignmentRadius;
+    public float CohesionRadius => cohesionRadius;
+
     private SteeringAgent agent;
 
     private void Awake()

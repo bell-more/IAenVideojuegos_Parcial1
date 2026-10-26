@@ -1,19 +1,19 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 public class Hunter : Agent
 {
     public List<Transform> targetsInRange = new List<Transform>();
+    private readonly List<Transform> visibleTargets = new List<Transform>();
     [SerializeField] private LineRenderer lineRenderer;
     private Boid currentBoid;
-    [SerializeField] private LayerMask obstacleLayer;
-    [SerializeField] private float eyeHeight = 1f;
     [SerializeField] private int life = 1;
     private int currentLife;
     private Vector3 initialSpawnPosition;
     public Vector3 InitialSpawnPosition => initialSpawnPosition;
     [SerializeField] private float visionRadius = 15f; 
+    public float VisionRadius => visionRadius;
     [SerializeField] private LayerMask wolfLayer;
+    [SerializeField] private LayerMask boidLayer;
 
     //colour
     private Renderer[] allRenderers;
@@ -51,8 +51,11 @@ public class Hunter : Agent
     private SteeringAgent agent;
     public SteeringAgent Agent => agent;
 
+    [Header("Interest object")]
     [SerializeField] private GameObject interestObjectPrefab;
     [SerializeField] private int maxInterestObjects = 5;
+    [SerializeField] private float spawnTimer = 3f;
+    public float SpawnTimer { get; set; }
     private int interestObjectCount = 0;
 
     [SerializeField] private HunterStatusUI statusUI;
@@ -78,8 +81,6 @@ public class Hunter : Agent
 
     public PathDrawer PathDrawer { get; private set; }
     private Perception perception;
-
-
 
     private void Awake()
     {
@@ -110,27 +111,6 @@ public class Hunter : Agent
         if (tbaTimer > 0f) tbaTimer -= Time.deltaTime;
 
         RenderLine();
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        Boid boid = other.GetComponent<Boid>();
-
-        if (boid != null && boid.gameObject != gameObject)
-        {
-            if (!targetsInRange.Contains(other.transform))
-            {
-                targetsInRange.Add(other.transform);
-            }
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Boid"))
-        {
-            targetsInRange.Remove(other.transform);
-        }
     }
 
 
@@ -186,28 +166,15 @@ public class Hunter : Agent
 
     private Boid GetClosestTarget(bool alive)
     {
-        Boid closestTarget = null;
-        float closestDistance = Mathf.Infinity;
+        if (perception == null) return null;
 
-        foreach (Transform target in targetsInRange)
-        {
-            if (target == null) continue;
+        Transform target = perception.GetClosestVisibleTarget(visionRadius, boidLayer);
+        if (target == null) return null;
 
-            Boid boid = target.GetComponent<Boid>();
+        Boid boid = target.GetComponentInParent<Boid>();
+        if (boid == null || boid.GetIsAlive != alive) return null;
 
-            if (boid == null || boid.GetIsAlive != alive)
-                continue;
-
-            float distance = Vector3.Distance(transform.position, target.position);
-
-            if (distance < closestDistance)
-            {
-                closestDistance = distance;
-                closestTarget = boid;
-            }
-        }
-
-        return closestTarget;
+        return boid;
     }
 
     public void SpawnInterestObject()
@@ -231,23 +198,30 @@ public class Hunter : Agent
         if (lineRenderer == null) return;
 
         targetsInRange.RemoveAll(t => t == null || !t.gameObject.activeInHierarchy);
+        visibleTargets.Clear();
 
-        if (targetsInRange.Count > 0)
+        foreach (Transform target in targetsInRange)
         {
-            lineRenderer.enabled = true;
-
-            lineRenderer.positionCount = targetsInRange.Count * 2;
-
-            for (int i = 0; i < targetsInRange.Count; i++)
+            if (Vector3.Distance(transform.position, target.position) <= visionRadius && HasLineOfSight(target))
             {
-                lineRenderer.SetPosition(i * 2, transform.position);
-
-                lineRenderer.SetPosition((i * 2) + 1, targetsInRange[i].position);
+                visibleTargets.Add(target);
             }
         }
-        else
+
+        if (visibleTargets.Count == 0)
         {
+            lineRenderer.positionCount = 0;
             lineRenderer.enabled = false;
+            return;
+        }
+
+        lineRenderer.enabled = true;
+        lineRenderer.positionCount = visibleTargets.Count * 2;
+
+        for (int i = 0; i < visibleTargets.Count; i++)
+        {
+            lineRenderer.SetPosition(i * 2, transform.position);
+            lineRenderer.SetPosition(i * 2 + 1, visibleTargets[i].position);
         }
     }
 
@@ -334,7 +308,7 @@ public class Hunter : Agent
 
         for (int i = 0; i < allRenderers.Length; i++)
         {
-           allRenderers[i].material.color = initialColours[i];
+            allRenderers[i].material.color = initialColours[i];
         }
 
         Collider[] childColliders = GetComponentsInChildren<Collider>();
@@ -346,9 +320,12 @@ public class Hunter : Agent
             }
         }
     }
+
+    //visuals
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, visionRadius);
+        GroundCircleGizmo.Draw(transform.position, visionRadius, Color.yellow);
+        GroundCircleGizmo.Draw(transform.position, rangeAttackRadius, Color.red);
+        GroundCircleGizmo.Draw(transform.position, meleeAttackRadius, Color.green);
     }
 }

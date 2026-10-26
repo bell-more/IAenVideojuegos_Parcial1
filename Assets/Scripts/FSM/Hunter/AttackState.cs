@@ -42,7 +42,7 @@ public class AttackState : IState
             return;
         }
 
-        if (!hunter.targetsInRange.Contains(target.transform) || !hunter.HasLineOfSight(target.transform))
+        if (Vector3.Distance(hunter.transform.position, target.transform.position) > hunter.VisionRadius || !hunter.HasLineOfSight(target.transform))
         {
             fsm.ChangeState(HunterStates.Search);
             return;

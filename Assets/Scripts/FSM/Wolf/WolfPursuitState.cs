@@ -34,7 +34,7 @@ public class WolfPursuitState : IState
         }
 
         float distance = Vector3.Distance(wolf.transform.position, wolf.LastKnownHunterPosition);
-        if (distance <= 2.5f)
+        if (distance <= wolf.CaptureRadius)
         {
             fsm.ChangeState(WolfStates.Attack);
             return;

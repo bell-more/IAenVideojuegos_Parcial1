@@ -208,7 +208,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6fb78de4ff2374240b48801d5db33001, type: 2}
+  - {fileID: 2100000, guid: 6794e4305c191eb40bf4d9869b819aee, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -453,7 +453,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6c02cd211336d51479cbcc6b373b301c, type: 2}
+  - {fileID: 2100000, guid: 6794e4305c191eb40bf4d9869b819aee, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1270,6 +1270,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Wolf
   viewRadius: 10
   viewAngle: 60
+  captureRadius: 2.5
   hunterLayer:
     serializedVersion: 2
     m_Bits: 264
@@ -1316,4 +1317,4 @@ MonoBehaviour:
   eyeHeight: 1
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 4608
+    m_Bits: 512

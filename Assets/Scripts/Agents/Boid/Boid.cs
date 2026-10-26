@@ -18,6 +18,7 @@ public class Boid : Agent
     [SerializeField] private Renderer childMaterial;
     [SerializeField] private HealthVisuals visuals;
     [SerializeField] private GameObject targetAura;
+    [SerializeField] private bool showGizmos = true;
 
     [Header("UI")]
     [SerializeField] private HealthBar healthBar;
@@ -310,6 +311,7 @@ public class Boid : Agent
         agent.velocity = randomDirection * agent.MaxSpeed;
     }
 
+    //visuals
     public void ChangeColour(Color newColour)
     {
         if (childMaterial != null)
@@ -323,6 +325,17 @@ public class Boid : Agent
         if (targetAura != null)
         {
             targetAura.SetActive(isActive);
+        }
+    }
+    private void OnDrawGizmos()
+    {
+        if (!showGizmos) return;
+
+        if (flocking != null)
+        {
+            GroundCircleGizmo.Draw(transform.position, flocking.SeparationRadius, Color.red);
+            GroundCircleGizmo.Draw(transform.position, flocking.AlignmentRadius, Color.yellow);
+            GroundCircleGizmo.Draw(transform.position, flocking.CohesionRadius, Color.cyan);
         }
     }
 

@@ -7,7 +7,7 @@ public class FleeState : IState
     private StateMachine fsm;
     private List<GraphNode> currentPath = new List<GraphNode>();
     private int currentPathIndex = 0;
-    private float nodeReachedDistance = 0.5f;
+    private float nodeReachedDistance = 3f;
 
     private bool isSafe = false;
     private float waitTimer = 0f;
