@@ -1310,6 +1310,7 @@ GameObject:
   - component: {fileID: 4466259490723207346}
   - component: {fileID: 6737249636403872329}
   - component: {fileID: 3124694872588368703}
+  - component: {fileID: 7864483645569186830}
   m_Layer: 8
   m_Name: Hunter
   m_TagString: Hunter
@@ -1565,6 +1566,23 @@ MonoBehaviour:
   currentNode: {fileID: 0}
   exitNode: {fileID: 0}
   initialZoneNode: {fileID: 0}
+--- !u!114 &7864483645569186830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7617855561138713441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 197c1f2133e607b4788104e981c1b52e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Perception
+  checkInterval: 0.25
+  eyeHeight: 1
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!1 &8542827129566001304
 GameObject:
   m_ObjectHideFlags: 0

@@ -946,6 +946,7 @@ GameObject:
   - component: {fileID: 2953633215022995604}
   - component: {fileID: 3859888012905440029}
   - component: {fileID: 8287894784045209511}
+  - component: {fileID: 8028773948332307303}
   m_Layer: 12
   m_Name: Wolf
   m_TagString: Untagged
@@ -1269,13 +1270,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Wolf
   viewRadius: 10
   viewAngle: 60
-  eyeHeight: 2
   hunterLayer:
     serializedVersion: 2
     m_Bits: 264
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 512
   packMembers: []
   patrolWaypoints:
   - {fileID: 0}
@@ -1303,3 +1300,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PathDrawer
   heightOffset: 0.15
+--- !u!114 &8028773948332307303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9159853103635668021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 197c1f2133e607b4788104e981c1b52e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Perception
+  checkInterval: 0.25
+  eyeHeight: 1
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 4608

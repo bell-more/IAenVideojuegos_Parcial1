@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 public class Hunter : Agent
@@ -45,11 +46,6 @@ public class Hunter : Agent
     public int RequiredGathers => requiredGathers;
     public int CurrentGathers => currentGathers;
 
-    //wolf detection
-    private Collider[] wolfColliders = new Collider[10]; 
-    private float wolfCheckTimer = 0f;
-    private float wolfCheckInterval = 0.25f;
-    private Wolf cachedClosestWolf;
     [SerializeField] private GameObject wolfDetectedImage;
     //
     private SteeringAgent agent;
@@ -81,6 +77,8 @@ public class Hunter : Agent
     public GraphNode initialZoneNode;
 
     public PathDrawer PathDrawer { get; private set; }
+    private Perception perception;
+
 
 
     private void Awake()
@@ -88,6 +86,7 @@ public class Hunter : Agent
         PathDrawer = GetComponentInChildren<PathDrawer>();
         agent = GetComponent<SteeringAgent>();
         allRenderers = GetComponentsInChildren<Renderer>(true);
+        perception = GetComponent<Perception>();
     }
     private void Start()
     {
@@ -109,11 +108,6 @@ public class Hunter : Agent
     private void Update()
     {
         if (tbaTimer > 0f) tbaTimer -= Time.deltaTime;
-
-        if (wolfCheckTimer > 0f)
-        {
-            wolfCheckTimer -= Time.deltaTime;
-        }
 
         RenderLine();
     }
@@ -139,40 +133,17 @@ public class Hunter : Agent
         }
     }
 
+
     public Wolf GetClosestVisibleWolf()
     {
-        if (wolfCheckTimer > 0f)
-        {
-            return cachedClosestWolf;
-        }
+        if (perception == null) return null;
 
-        wolfCheckTimer = wolfCheckInterval;
+        Transform target = perception.GetClosestVisibleTarget(visionRadius, wolfLayer);
+        Wolf wolf = target != null ? target.GetComponent<Wolf>() : null;
 
-        Wolf closestWolf = null;
-        float closestDistance = Mathf.Infinity;
-
-        int wolvesFound = Physics.OverlapSphereNonAlloc(transform.position, visionRadius, wolfColliders, wolfLayer);///////////////////////////
-
-        for (int i = 0; i < wolvesFound; i++)
-        {
-            Collider target = wolfColliders[i];
-            Wolf wolf = target.GetComponent<Wolf>();
-
-            if (wolf == null) continue;
-
-            if (HasLineOfSight(target.transform))
-            {
-                float distance = Vector3.Distance(transform.position, target.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestWolf = wolf;
-                }
-            }
-        }
-        cachedClosestWolf = closestWolf;
-        return closestWolf;
+        return wolf != null && wolf.gameObject.activeInHierarchy ? wolf : null;
     }
+
 
     public bool MeleeAttack(Boid target)
     {
@@ -319,16 +290,7 @@ public class Hunter : Agent
     }
     public bool HasLineOfSight(Transform target)
     {
-        Vector3 origin = transform.position + (Vector3.up * eyeHeight);
-        Vector3 targetPos = target.position + (Vector3.up * eyeHeight);
-        Vector3 direction = targetPos - origin;
-
-        if (Physics.Raycast(origin, direction, direction.magnitude, obstacleLayer))
-        {
-            return false;
-        }
-
-        return true;
+        return perception != null && perception.HasLineOfSight(target);
     }
 
     public void ToggleVisibility()

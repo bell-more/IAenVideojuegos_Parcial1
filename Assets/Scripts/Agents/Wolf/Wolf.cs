@@ -1,3 +1,4 @@
+
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -7,9 +8,7 @@ public class Wolf : MonoBehaviour
 {
     [SerializeField] private float viewRadius = 10f;
     [Range(0, 360)] public float viewAngle = 90f;
-    [SerializeField] private float eyeHeight = 1f;
     [SerializeField] private LayerMask hunterLayer;
-    [SerializeField] private LayerMask obstacleLayer;
     [SerializeField] private List<Wolf> packMembers = new List<Wolf>();
 
     [Header("Patrol")]
@@ -19,25 +18,24 @@ public class Wolf : MonoBehaviour
     public bool UsePingPongPatrol => usePingPongPatrol;
 
     private bool hasAlertedPack = false;
-    private float perceptionTimer = 0f;
-    private float perceptionTickRate = 0.2f;
     public bool IsInvestigating { get; set; } = false;
 
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI stateText;
     [SerializeField] private TextMeshProUGUI infoText;
     [SerializeField] private TextMeshProUGUI detectionText;
-    [SerializeField] private Image feedbackImage;    
+    [SerializeField] private Image feedbackImage;
     [SerializeField] private Sprite detectSprite;
     [SerializeField] private Sprite alertSprite;
-
-    //visuals
+    //
     [SerializeField] private GameObject hunterLastSeenPositionArea;
     private static GameObject currentAreaInstance;
     [SerializeField] private float hunterAreaHeight = 3f;
-    private AudioSource audioSource;
-    public PathDrawer PathDrawer { get; private set; }
 
+    private AudioSource audioSource;
+    private Perception perception;
+
+    public PathDrawer PathDrawer { get; private set; }
     public SteeringAgent Agent { get; private set; }
     public Vector3 LastKnownHunterPosition { get; private set; }
     public GraphNode currentNode;
@@ -46,98 +44,74 @@ public class Wolf : MonoBehaviour
     public bool IsSeeingHunter { get; private set; }
     public Hunter CurrentHunter { get; private set; }
 
-
     private void Awake()
     {
         PathDrawer = GetComponent<PathDrawer>();
         Agent = GetComponent<SteeringAgent>();
         audioSource = GetComponent<AudioSource>();
-
+        perception = GetComponent<Perception>();
         HideFeedback();
     }
 
     private void Update()
     {
-        perceptionTimer -= Time.deltaTime;
+        IsSeeingHunter = CanSeeHunter(out Vector3 hunterPosition);
 
-        if (perceptionTimer <= 0f)
+        if (IsSeeingHunter)
         {
-            perceptionTimer = perceptionTickRate;
+            LastKnownHunterPosition = hunterPosition;
 
-            IsSeeingHunter = CanSeeHunter(out Vector3 hunterPosition);
-
-            if (IsSeeingHunter)
+            if (!hasAlertedPack)
             {
-                LastKnownHunterPosition = hunterPosition;
+                ShowFeedback("Hunter detected", detectSprite);
+                if (audioSource != null) audioSource.Play();
 
-                if (!hasAlertedPack)
+                Vector3 areaPos = new Vector3(LastKnownHunterPosition.x, hunterAreaHeight, LastKnownHunterPosition.z);
+
+                if (currentAreaInstance == null)
                 {
-                    ShowFeedback("Hunter detected", detectSprite);
-                    audioSource.Play();
-
-                    Vector3 areaPos = new Vector3(LastKnownHunterPosition.x,hunterAreaHeight, LastKnownHunterPosition.z);
-                    if (currentAreaInstance == null)
-                    {
-                        currentAreaInstance = Instantiate(hunterLastSeenPositionArea, areaPos, Quaternion.identity);
-                    }
-                    else
-                    {
-                        currentAreaInstance.transform.position = areaPos;
-                    }
-
-                    AlertPack(LastKnownHunterPosition);
-                    hasAlertedPack = true;
+                    if (hunterLastSeenPositionArea != null) currentAreaInstance = Instantiate(hunterLastSeenPositionArea, areaPos, Quaternion.identity);
                 }
+                else
+                {
+                    currentAreaInstance.transform.position = areaPos;
+                }
+
+                AlertPack(LastKnownHunterPosition);
+                hasAlertedPack = true;
             }
-            else
-            {
-                hasAlertedPack = false;
-            }
+        }
+        else
+        {
+            hasAlertedPack = false;
         }
     }
 
     private bool CanSeeHunter(out Vector3 hunterPos)
     {
         hunterPos = Vector3.zero;
-        Collider[] targetsInRadius = Physics.OverlapSphere(transform.position, viewRadius, hunterLayer);
 
-        foreach (Collider target in targetsInRadius)
+        if (perception == null) return false;
+
+        Transform target = perception.GetClosestVisibleTarget(viewRadius, hunterLayer, true, viewAngle);
+        Hunter hunter = target != null ? target.GetComponent<Hunter>() : null;
+
+        if (hunter == null || hunter.Life <= 0 || hunter.IsInSafeZone)
         {
-            Hunter hunter = target.GetComponentInParent<Hunter>();
-
-            if (hunter == null || hunter.Life <= 0) continue;
-
-            Vector3 dirToTarget = (hunter.transform.position - transform.position).normalized;
-            float angle = Vector3.Angle(transform.forward, dirToTarget);
-
-            if (angle <= viewAngle / 2f)
-            {
-                float distanceToTarget = Vector3.Distance(transform.position, hunter.transform.position);
-                Vector3 origin = transform.position + (Vector3.up * eyeHeight);
-                Vector3 targetEye = hunter.transform.position + (Vector3.up * eyeHeight);
-                Vector3 dirToEye = targetEye - origin;
-
-                if (!Physics.Raycast(origin, dirToEye.normalized, distanceToTarget, obstacleLayer))
-                {
-                    hunterPos = hunter.transform.position;
-                    CurrentHunter = hunter;
-                    return true;
-                }
-            }
+            CurrentHunter = null;
+            return false;
         }
 
-        CurrentHunter = null;
-        return false;
+        CurrentHunter = hunter;
+        hunterPos = hunter.transform.position;
+        return true;
     }
 
     private void AlertPack(Vector3 detectedPosition)
     {
         foreach (Wolf alliedWolf in packMembers)
         {
-            if (alliedWolf != null && alliedWolf != this)
-            {
-                alliedWolf.ReceiveAlert(detectedPosition);
-            }
+            if (alliedWolf != null && alliedWolf != this) alliedWolf.ReceiveAlert(detectedPosition);
         }
     }
 
@@ -147,11 +121,9 @@ public class Wolf : MonoBehaviour
         hasAlertedPack = true;
         IsAlerted = true;
 
-        if (!IsSeeingHunter)
-        {
-            ShowFeedback("Wolf alerted!", alertSprite);
-        }
+        if (!IsSeeingHunter) ShowFeedback("Wolf alerted!", alertSprite);
     }
+
     public void ForgetHunter()
     {
         IsSeeingHunter = false;
@@ -166,34 +138,25 @@ public class Wolf : MonoBehaviour
 
         foreach (Wolf alliedWolf in packMembers)
         {
-            if (alliedWolf != null && alliedWolf != this)
+            if (alliedWolf != null && alliedWolf != this && (alliedWolf.IsSeeingHunter || alliedWolf.IsAlerted || alliedWolf.IsInvestigating))
             {
-                if (alliedWolf.IsSeeingHunter || alliedWolf.IsAlerted || alliedWolf.IsInvestigating)
-                {
-                    wolfStillInvestigating = true;
-                    break;
-                }
+                wolfStillInvestigating = true;
+                break;
             }
         }
 
-        if (!wolfStillInvestigating)
+        if (!wolfStillInvestigating && currentAreaInstance != null)
         {
-            if (currentAreaInstance != null)
-            {
-                Destroy(currentAreaInstance);
-                currentAreaInstance = null;
-            }
+            Destroy(currentAreaInstance);
+            currentAreaInstance = null;
         }
     }
 
     public bool HasLineOfSightTo(Vector3 targetPos)
     {
-        Vector3 origin = transform.position + (Vector3.up * eyeHeight);
-        Vector3 targetEye = targetPos + (Vector3.up * eyeHeight);
-        Vector3 direction = (targetEye - origin);
-
-        return !Physics.Raycast(origin, direction.normalized, direction.magnitude, obstacleLayer);
+        return perception != null && perception.HasLineOfSight(targetPos);
     }
+
     public void UpdateUI(string state, string info)
     {
         if (stateText != null) stateText.text = state;
@@ -202,11 +165,21 @@ public class Wolf : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        Vector3 previousPoint = transform.position + DirFromAngle(transform.eulerAngles.y, -viewAngle / 2f) * viewRadius;
+
+        Gizmos.color = Color.yellow;
+
+        for (int i = 1; i <= 30; i++)
+        {
+            float angle = -viewAngle / 2f + viewAngle * i / 30f;
+            Vector3 currentPoint = transform.position + DirFromAngle(transform.eulerAngles.y, angle) * viewRadius;
+            Gizmos.DrawLine(previousPoint, currentPoint);
+            previousPoint = currentPoint;
+        }
 
         Vector3 viewAngleA = DirFromAngle(transform.eulerAngles.y, -viewAngle / 2f);
         Vector3 viewAngleB = DirFromAngle(transform.eulerAngles.y, viewAngle / 2f);
 
-        Gizmos.color = Color.yellow;
         Gizmos.DrawLine(transform.position, transform.position + viewAngleA * viewRadius);
         Gizmos.DrawLine(transform.position, transform.position + viewAngleB * viewRadius);
     }
@@ -216,7 +189,7 @@ public class Wolf : MonoBehaviour
         if (detectionText != null)
         {
             detectionText.text = text;
-            detectionText.gameObject.SetActive(true); 
+            detectionText.gameObject.SetActive(true);
         }
 
         if (feedbackImage != null && icon != null)
@@ -228,8 +201,8 @@ public class Wolf : MonoBehaviour
 
     public void HideFeedback()
     {
-        if (detectionText != null) detectionText.gameObject.SetActive(false); 
-        if (feedbackImage != null) feedbackImage.gameObject.SetActive(false); 
+        if (detectionText != null) detectionText.gameObject.SetActive(false);
+        if (feedbackImage != null) feedbackImage.gameObject.SetActive(false);
     }
 
     private Vector3 DirFromAngle(float eulerY, float angleInDegrees)
