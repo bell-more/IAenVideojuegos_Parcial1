@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -11,7 +10,6 @@ public class Wolf : MonoBehaviour
     [SerializeField] private float captureRadius = 2.5f;
     public float CaptureRadius => captureRadius;
     [SerializeField] private LayerMask hunterLayer;
-    [SerializeField] private List<Wolf> packMembers = new List<Wolf>();
 
     [Header("Patrol")]
     [SerializeField] private List<Transform> patrolWaypoints = new List<Transform>();
@@ -29,13 +27,14 @@ public class Wolf : MonoBehaviour
     [SerializeField] private Image feedbackImage;
     [SerializeField] private Sprite detectSprite;
     [SerializeField] private Sprite alertSprite;
-    //
+
     [SerializeField] private GameObject hunterLastSeenPositionArea;
     private static GameObject currentAreaInstance;
     [SerializeField] private float hunterAreaHeight = 3f;
 
     private AudioSource audioSource;
     private Perception perception;
+    private Hunter hunterTarget;
 
     public PathDrawer PathDrawer { get; private set; }
     public SteeringAgent Agent { get; private set; }
@@ -45,6 +44,7 @@ public class Wolf : MonoBehaviour
     public bool IsAlerted { get; set; } = false;
     public bool IsSeeingHunter { get; private set; }
     public Hunter CurrentHunter { get; private set; }
+    public bool HunterInSafeZone { get; private set; } = false;
 
     private void Awake()
     {
@@ -55,8 +55,39 @@ public class Wolf : MonoBehaviour
         HideFeedback();
     }
 
+    private void OnEnable()
+    {
+        if (WolfManager.Instance != null)
+        {
+            WolfManager.Instance.RegisterWolf(this);
+            WolfManager.Instance.OnHunterDetected += HandleHunterDetected;
+            WolfManager.Instance.OnSafeZoneReached += HandleSafeZoneReached;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (WolfManager.Instance != null)
+        {
+            WolfManager.Instance.UnregisterWolf(this);
+            WolfManager.Instance.OnHunterDetected -= HandleHunterDetected;
+            WolfManager.Instance.OnSafeZoneReached -= HandleSafeZoneReached;
+        }
+    }
+
     private void Update()
     {
+        if (hunterTarget == null) hunterTarget = FindFirstObjectByType<Hunter>();
+        HunterInSafeZone = hunterTarget != null && hunterTarget.IsInSafeZone;
+
+        if (HunterInSafeZone)
+        {
+            IsSeeingHunter = false;
+            CurrentHunter = null;
+            hasAlertedPack = false;
+            return;
+        }
+
         IsSeeingHunter = CanSeeHunter(out Vector3 hunterPosition);
 
         if (IsSeeingHunter)
@@ -79,7 +110,10 @@ public class Wolf : MonoBehaviour
                     currentAreaInstance.transform.position = areaPos;
                 }
 
-                AlertPack(LastKnownHunterPosition);
+                if (WolfManager.Instance != null)
+                {
+                    WolfManager.Instance.NotifyHunterDetected(LastKnownHunterPosition, this);
+                }
                 hasAlertedPack = true;
             }
         }
@@ -109,21 +143,20 @@ public class Wolf : MonoBehaviour
         return true;
     }
 
-    private void AlertPack(Vector3 detectedPosition)
+    private void HandleHunterDetected(Vector3 alertPosition, Wolf sender)
     {
-        foreach (Wolf alliedWolf in packMembers)
-        {
-            if (alliedWolf != null && alliedWolf != this) alliedWolf.ReceiveAlert(detectedPosition);
-        }
-    }
+        if (sender == this) return;
+        if (HunterInSafeZone) return;
 
-    public void ReceiveAlert(Vector3 alertPosition)
-    {
         LastKnownHunterPosition = alertPosition;
         hasAlertedPack = true;
         IsAlerted = true;
 
         if (!IsSeeingHunter) ShowFeedback("Wolf alerted!", alertSprite);
+    }
+    private void HandleSafeZoneReached()
+    {
+        ForgetHunter();
     }
 
     public void ForgetHunter()
@@ -133,24 +166,17 @@ public class Wolf : MonoBehaviour
         hasAlertedPack = false;
         IsAlerted = false;
         IsInvestigating = false;
+        LastKnownHunterPosition = Vector3.zero;
 
         HideFeedback();
 
-        bool wolfStillInvestigating = false;
-
-        foreach (Wolf alliedWolf in packMembers)
+        if (WolfManager.Instance != null && !WolfManager.Instance.IsAnyWolfActive())
         {
-            if (alliedWolf != null && alliedWolf != this && (alliedWolf.IsSeeingHunter || alliedWolf.IsAlerted || alliedWolf.IsInvestigating))
+            if (currentAreaInstance != null)
             {
-                wolfStillInvestigating = true;
-                break;
+                Destroy(currentAreaInstance);
+                currentAreaInstance = null;
             }
-        }
-
-        if (!wolfStillInvestigating && currentAreaInstance != null)
-        {
-            Destroy(currentAreaInstance);
-            currentAreaInstance = null;
         }
     }
 

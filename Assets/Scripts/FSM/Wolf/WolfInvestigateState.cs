@@ -26,13 +26,20 @@ public class WolfInvestigateState : IState
 
         if (wolf.currentNode != null && targetNode != null)
         {
-            path = AStarPathfinding.FindPath(wolf.currentNode, targetNode);
+            path = AStarPathfinding.FindPath(wolf.currentNode, targetNode, true);
             pathIndex = 0;
         }
     }
 
     public void Update()
     {
+        if (wolf.HunterInSafeZone)
+        {
+            wolf.ForgetHunter();
+            fsm.ChangeState(WolfStates.Patrol);
+            return;
+        }
+
         if (wolf.IsSeeingHunter)
         {
             fsm.ChangeState(WolfStates.Pursuit);

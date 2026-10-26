@@ -9,6 +9,7 @@ public class SearchState : IState
     private int currentPathIndex = 0;
     private float nodeReachedDistance = 3f;
     private bool isInCoto = false;
+    private float spawnTimer = 0f;
 
     public SearchState(Hunter hunter, StateMachine fsm)
     {
@@ -60,15 +61,14 @@ public class SearchState : IState
 
         if (isInCoto)
         {
-            hunter.SpawnTimer -= Time.deltaTime;
-            if (hunter.SpawnTimer <= 0f)
+            spawnTimer += Time.deltaTime;
+            if (spawnTimer >= hunter.SpawnTimer)
             {
                 if (Bounds.Instance != null && Bounds.Instance.IsInsideBounds(hunter.transform.position))
                 {
                     hunter.SpawnInterestObject();
+                    spawnTimer -= hunter.SpawnTimer;
                 }
-
-                hunter.SpawnTimer = 3f;
             }
         }
 

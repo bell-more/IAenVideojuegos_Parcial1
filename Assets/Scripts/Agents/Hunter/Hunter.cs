@@ -55,7 +55,7 @@ public class Hunter : Agent
     [SerializeField] private GameObject interestObjectPrefab;
     [SerializeField] private int maxInterestObjects = 5;
     [SerializeField] private float spawnTimer = 3f;
-    public float SpawnTimer { get; set; }
+    public float SpawnTimer => spawnTimer;
     private int interestObjectCount = 0;
 
     [SerializeField] private HunterStatusUI statusUI;
@@ -193,38 +193,7 @@ public class Hunter : Agent
         if (interestObjectCount > 0) interestObjectCount--;
     }
 
-    public void RenderLine()
-    {
-        if (lineRenderer == null) return;
-
-        targetsInRange.RemoveAll(t => t == null || !t.gameObject.activeInHierarchy);
-        visibleTargets.Clear();
-
-        foreach (Transform target in targetsInRange)
-        {
-            if (Vector3.Distance(transform.position, target.position) <= visionRadius && HasLineOfSight(target))
-            {
-                visibleTargets.Add(target);
-            }
-        }
-
-        if (visibleTargets.Count == 0)
-        {
-            lineRenderer.positionCount = 0;
-            lineRenderer.enabled = false;
-            return;
-        }
-
-        lineRenderer.enabled = true;
-        lineRenderer.positionCount = visibleTargets.Count * 2;
-
-        for (int i = 0; i < visibleTargets.Count; i++)
-        {
-            lineRenderer.SetPosition(i * 2, transform.position);
-            lineRenderer.SetPosition(i * 2 + 1, visibleTargets[i].position);
-        }
-    }
-
+  
     public void SetCurrentTarget(Boid newTarget)
     {
         if (currentBoid != null)
@@ -328,4 +297,37 @@ public class Hunter : Agent
         GroundCircleGizmo.Draw(transform.position, rangeAttackRadius, Color.red);
         GroundCircleGizmo.Draw(transform.position, meleeAttackRadius, Color.green);
     }
+
+    public void RenderLine()
+    {
+        if (lineRenderer == null) return;
+
+        targetsInRange.RemoveAll(t => t == null || !t.gameObject.activeInHierarchy);
+        visibleTargets.Clear();
+
+        foreach (Transform target in targetsInRange)
+        {
+            if (Vector3.Distance(transform.position, target.position) <= visionRadius && HasLineOfSight(target))
+            {
+                visibleTargets.Add(target);
+            }
+        }
+
+        if (visibleTargets.Count == 0)
+        {
+            lineRenderer.positionCount = 0;
+            lineRenderer.enabled = false;
+            return;
+        }
+
+        lineRenderer.enabled = true;
+        lineRenderer.positionCount = visibleTargets.Count * 2;
+
+        for (int i = 0; i < visibleTargets.Count; i++)
+        {
+            lineRenderer.SetPosition(i * 2, transform.position);
+            lineRenderer.SetPosition(i * 2 + 1, visibleTargets[i].position);
+        }
+    }
+
 }

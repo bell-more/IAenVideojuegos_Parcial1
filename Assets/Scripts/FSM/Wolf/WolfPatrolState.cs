@@ -65,7 +65,7 @@ public class WolfPatrolState : IState
                 wolf.currentNode = GraphManager.Instance.GetClosestNode(wolf.transform.position);
                 GraphNode waypointNode = GraphManager.Instance.GetClosestNode(targetWaypoint.position);
 
-                currentAStarPath = AStarPathfinding.FindPath(wolf.currentNode, waypointNode);
+                currentAStarPath = AStarPathfinding.FindPath(wolf.currentNode, waypointNode, true);
                 currentPathIndex = 0;
 
 

@@ -21,6 +21,13 @@ public class WolfPursuitState : IState
 
     public void Update()
     {
+        if (wolf.HunterInSafeZone)
+        {
+            wolf.ForgetHunter();
+            fsm.ChangeState(WolfStates.Patrol);
+            return;
+        }
+
         if (wolf.CurrentHunter == null || wolf.CurrentHunter.Life <= 0)
         {
             fsm.ChangeState(WolfStates.Patrol);

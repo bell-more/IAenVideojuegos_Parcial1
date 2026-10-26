@@ -24,6 +24,7 @@ public class FleeState : IState
         hunter.StatusUI.ShowAction("");
         hunter.ToggleWolfDetection(true);
 
+        hunter.IsInSafeZone = false;
         isSafe = false;
         waitTimer = 0f;
 
@@ -102,6 +103,7 @@ public class FleeState : IState
         if (currentPathIndex >= currentPath.Count)
         {
             isSafe = true;
+            hunter.IsInSafeZone = true;
             hunter.Agent.Stop();
             if (hunter.PathDrawer != null) hunter.PathDrawer.ClearPath();
             return;
@@ -131,6 +133,7 @@ public class FleeState : IState
 
     public void Exit()
     {
+        hunter.IsInSafeZone = false;
         hunter.EnableAreaToFleeIndicator(new Vector3(0f,0f,0f), false);
         hunter.ToggleWolfDetection(false);
         currentPath.Clear();

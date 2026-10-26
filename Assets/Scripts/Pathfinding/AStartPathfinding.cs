@@ -11,9 +11,10 @@ public static class AStarPathfinding
         public float fCost; 
     }
 
-    public static List<GraphNode> FindPath(GraphNode startNode, GraphNode targetNode)///////////////////////////////
+    public static List<GraphNode> FindPath(GraphNode startNode, GraphNode targetNode, bool excludeSafeZones = false)
     {
         if (startNode == null || targetNode == null) return new List<GraphNode>();
+        if (excludeSafeZones && (GraphManager.Instance.safeZoneNodes.Contains(startNode) || GraphManager.Instance.safeZoneNodes.Contains(targetNode))) return new List<GraphNode>();
 
         PriorityQueue<PathRecord> frontier = new PriorityQueue<PathRecord>();
         Dictionary<GraphNode, PathRecord> costSoFar = new Dictionary<GraphNode, PathRecord>();
@@ -27,13 +28,12 @@ public static class AStarPathfinding
             PathRecord currentRecord = frontier.Dequeue();
             GraphNode current = currentRecord.node;
 
-            if (current == targetNode)
-            {
-                return RetracePath(currentRecord, costSoFar);
-            }
+            if (current == targetNode) return RetracePath(currentRecord, costSoFar);
 
             foreach (GraphNode neighbor in current.neighbours)
             {
+                if (excludeSafeZones && GraphManager.Instance.safeZoneNodes.Contains(neighbor)) continue;
+
                 float stepCost = Vector3.Distance(current.transform.position, neighbor.transform.position);
                 float newCost = currentRecord.gCost + stepCost;
 
@@ -41,9 +41,7 @@ public static class AStarPathfinding
                 {
                     float heuristic = Vector3.Distance(neighbor.transform.position, targetNode.transform.position);
                     float priority = newCost + heuristic;
-
-                    PathRecord neighborRecord = new PathRecord{node = neighbor,parent = current, gCost = newCost,fCost = priority};
-
+                    PathRecord neighborRecord = new PathRecord { node = neighbor, parent = current, gCost = newCost, fCost = priority };
                     costSoFar[neighbor] = neighborRecord;
                     frontier.Enqueue(neighborRecord, priority);
                 }
