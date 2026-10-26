@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public class GatherState : IState
 {
     private Hunter hunter;

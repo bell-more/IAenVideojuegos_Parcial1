@@ -15,6 +15,8 @@ public class WolfPursuitState : IState
     {
         wolf.IsAlerted = false;
         wolf.UpdateUI("Pursuing", "");
+
+        if (wolf.PathDrawer != null) wolf.PathDrawer.ClearPath();
     }
 
     public void Update()

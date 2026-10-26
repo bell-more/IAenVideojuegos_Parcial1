@@ -22,6 +22,7 @@ public class FleeState : IState
     {
         hunter.StatusUI.SetStatus("Fleeing");
         hunter.StatusUI.ShowAction("");
+        hunter.ToggleWolfDetection(true);
 
         isSafe = false;
         waitTimer = 0f;
@@ -68,6 +69,7 @@ public class FleeState : IState
 
         List<GraphNode> bestPath = null;
         int shortestPathLength = int.MaxValue;
+        GraphNode bestSafeNode = null;
 
         foreach (GraphNode safeNode in GraphManager.Instance.safeZoneNodes)
         {
@@ -77,6 +79,7 @@ public class FleeState : IState
             {
                 shortestPathLength = path.Count;
                 bestPath = path;
+                bestSafeNode = safeNode;
             }
         }
 
@@ -84,6 +87,11 @@ public class FleeState : IState
         {
             currentPath = bestPath;
             currentPathIndex = 0;
+
+            if (bestSafeNode != null)
+            {
+                hunter.EnableAreaToFleeIndicator(bestSafeNode.transform.position, true);
+            }
         }
     }
 
@@ -95,8 +103,11 @@ public class FleeState : IState
         {
             isSafe = true;
             hunter.Agent.Stop();
+            if (hunter.PathDrawer != null) hunter.PathDrawer.ClearPath();
             return;
         }
+
+        if (hunter.PathDrawer != null) hunter.PathDrawer.UpdateRemainingPath(currentPath, currentPathIndex);
 
         GraphNode targetNode = currentPath[currentPathIndex];
         Vector3 targetPos = targetNode.transform.position;
@@ -111,6 +122,7 @@ public class FleeState : IState
         }
         else
         {
+           
             hunter.StatusUI.ShowAction("Going to safe zone");
             Vector3 steering = hunter.Agent.Arrive(targetPos);
             hunter.Agent.ApplySteering(steering);
@@ -119,9 +131,14 @@ public class FleeState : IState
 
     public void Exit()
     {
+        hunter.EnableAreaToFleeIndicator(new Vector3(0f,0f,0f), false);
+        hunter.ToggleWolfDetection(false);
         currentPath.Clear();
+
+        if (hunter.PathDrawer != null) hunter.PathDrawer.ClearPath();
         isSafe = false;
         waitTimer = 0f;
+
         hunter.StatusUI.SetStatus("");
         hunter.StatusUI.ShowAction("");
     }

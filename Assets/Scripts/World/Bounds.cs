@@ -51,4 +51,12 @@ public class Bounds : MonoBehaviour
         Gizmos.DrawWireCube(Vector3.zero, new Vector3(width, 0, height));
     }
 
+    public bool IsInsideBounds(Vector3 position)
+    {
+        float limitX = (width / 2f) + offset;
+        float limitZ = (height / 2f) + offset;
+
+        return (position.x >= -limitX && position.x <= limitX && position.z >= -limitZ && position.z <= limitZ);
+    }
+
 }

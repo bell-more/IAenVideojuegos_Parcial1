@@ -18,6 +18,8 @@ public class WolfAttackState : IState
         wolf.UpdateUI("Attacking", "");
         wolf.Agent.Stop();
         timer = attackCooldown;
+
+        if (wolf.PathDrawer != null) wolf.PathDrawer.ClearPath();
     }
 
     public void Update()

@@ -18,6 +18,10 @@ public class Hunter : Agent
     private Renderer[] allRenderers;
     private Color[] initialColours;
 
+    //safe area visual
+    [SerializeField] private GameObject areaToFleeIndicator;
+    private GameObject activeAreaToFleeIndicator;
+
     [Header("Attack")]
     [SerializeField] private float tba = 3f;
     [SerializeField] private float rangeAttackRadius = 6f;
@@ -46,6 +50,7 @@ public class Hunter : Agent
     private float wolfCheckTimer = 0f;
     private float wolfCheckInterval = 0.25f;
     private Wolf cachedClosestWolf;
+    [SerializeField] private GameObject wolfDetectedImage;
     //
     private SteeringAgent agent;
     public SteeringAgent Agent => agent;
@@ -64,6 +69,7 @@ public class Hunter : Agent
     //
     
     public bool IsDead => isDead;
+    public bool IsInSafeZone { get; set; } = false;
     public float SafeZoneWaitTime => safeZoneWaitTime;
 
     //dead
@@ -74,9 +80,12 @@ public class Hunter : Agent
     public GraphNode exitNode;
     public GraphNode initialZoneNode;
 
+    public PathDrawer PathDrawer { get; private set; }
+
 
     private void Awake()
     {
+        PathDrawer = GetComponentInChildren<PathDrawer>();
         agent = GetComponent<SteeringAgent>();
         allRenderers = GetComponentsInChildren<Renderer>(true);
     }
@@ -339,6 +348,21 @@ public class Hunter : Agent
         }
 
         isDead = true;
+    }
+
+    public void ToggleWolfDetection(bool wasDetected)
+    {
+        wolfDetectedImage.SetActive(wasDetected);
+    }
+
+    public void EnableAreaToFleeIndicator(Vector3 safeZonePos, bool enable)
+    {
+        if (enable)
+        {
+            Vector3 spawnPos = new Vector3(safeZonePos.x, 5f, safeZonePos.z);
+            activeAreaToFleeIndicator = Instantiate(areaToFleeIndicator, spawnPos, Quaternion.identity);
+        }
+        else Destroy(activeAreaToFleeIndicator);
     }
 
     public void Spawn()

@@ -17,8 +17,9 @@ public class WolfInvestigateState : IState
 
     public void Enter()
     {
-        wolf.UpdateUI("Investigating", "Checking last known position");
-        wolf.IsAlerted = false; 
+        wolf.UpdateUI("Investigating", "checking last known position");
+        wolf.IsAlerted = false;
+        wolf.IsInvestigating = true;
 
         wolf.currentNode = GraphManager.Instance.GetClosestNode(wolf.transform.position);
         GraphNode targetNode = GraphManager.Instance.GetClosestNode(wolf.LastKnownHunterPosition);
@@ -45,6 +46,8 @@ public class WolfInvestigateState : IState
         }
 
         GraphNode targetNode = path[pathIndex];
+        if (wolf.PathDrawer != null) wolf.PathDrawer.DrawNextNode(targetNode);
+
         Vector3 targetPos = targetNode.transform.position;
         targetPos.y = wolf.transform.position.y;
 
@@ -64,6 +67,8 @@ public class WolfInvestigateState : IState
 
     public void Exit()
     {
+        wolf.IsInvestigating = false;
         path = null;
+        if (wolf.PathDrawer != null) wolf.PathDrawer.ClearPath();
     }
 }

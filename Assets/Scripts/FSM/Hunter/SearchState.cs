@@ -64,7 +64,11 @@ public class SearchState : IState
             spawnTimer -= Time.deltaTime;
             if (spawnTimer <= 0f)
             {
-                hunter.SpawnInterestObject();
+                if (Bounds.Instance != null && Bounds.Instance.IsInsideBounds(hunter.transform.position))
+                {
+                    hunter.SpawnInterestObject();
+                }
+
                 spawnTimer = 3f;
             }
         }
@@ -90,6 +94,8 @@ public class SearchState : IState
             return;
         }
 
+        if (hunter.PathDrawer != null) hunter.PathDrawer.UpdateRemainingPath(currentPath, currentPathIndex);
+     
         GraphNode targetNode = currentPath[currentPathIndex];
         Vector3 targetPos = targetNode.transform.position;
         targetPos.y = hunter.transform.position.y;
@@ -148,5 +154,6 @@ public class SearchState : IState
     {
         currentPath.Clear();
         hunter.StatusUI.SetStatus("");
+        if (hunter.PathDrawer != null) hunter.PathDrawer.ClearPath();
     }
 }

@@ -59,6 +59,8 @@ public class ExitState : IState
             return;
         }
 
+        if (hunter.PathDrawer != null) hunter.PathDrawer.UpdateRemainingPath(currentPath, currentPathIndex);
+
         GraphNode targetNode = currentPath[currentPathIndex];
         Vector3 targetPos = targetNode.transform.position;
         targetPos.y = hunter.transform.position.y;
@@ -81,5 +83,6 @@ public class ExitState : IState
         currentPath.Clear();
         hunter.StatusUI.SetStatus("");
         hunter.StatusUI.ShowAction("");
+        if (hunter.PathDrawer != null) hunter.PathDrawer.ClearPath();
     }
 }

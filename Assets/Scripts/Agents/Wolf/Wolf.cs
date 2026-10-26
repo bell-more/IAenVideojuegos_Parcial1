@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Wolf : MonoBehaviour
 {
@@ -20,10 +21,22 @@ public class Wolf : MonoBehaviour
     private bool hasAlertedPack = false;
     private float perceptionTimer = 0f;
     private float perceptionTickRate = 0.2f;
+    public bool IsInvestigating { get; set; } = false;
 
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI stateText;
     [SerializeField] private TextMeshProUGUI infoText;
+    [SerializeField] private TextMeshProUGUI detectionText;
+    [SerializeField] private Image feedbackImage;    
+    [SerializeField] private Sprite detectSprite;
+    [SerializeField] private Sprite alertSprite;
+
+    //visuals
+    [SerializeField] private GameObject hunterLastSeenPositionArea;
+    private static GameObject currentAreaInstance;
+    [SerializeField] private float hunterAreaHeight = 3f;
+    private AudioSource audioSource;
+    public PathDrawer PathDrawer { get; private set; }
 
     public SteeringAgent Agent { get; private set; }
     public Vector3 LastKnownHunterPosition { get; private set; }
@@ -33,9 +46,14 @@ public class Wolf : MonoBehaviour
     public bool IsSeeingHunter { get; private set; }
     public Hunter CurrentHunter { get; private set; }
 
+
     private void Awake()
     {
+        PathDrawer = GetComponent<PathDrawer>();
         Agent = GetComponent<SteeringAgent>();
+        audioSource = GetComponent<AudioSource>();
+
+        HideFeedback();
     }
 
     private void Update()
@@ -54,7 +72,19 @@ public class Wolf : MonoBehaviour
 
                 if (!hasAlertedPack)
                 {
-                    Debug.Log($"<color=red>[{gameObject.name}] ¡Encontré al cazador! Avisando a la manada.</color>");
+                    ShowFeedback("Hunter detected", detectSprite);
+                    audioSource.Play();
+
+                    Vector3 areaPos = new Vector3(LastKnownHunterPosition.x,hunterAreaHeight, LastKnownHunterPosition.z);
+                    if (currentAreaInstance == null)
+                    {
+                        currentAreaInstance = Instantiate(hunterLastSeenPositionArea, areaPos, Quaternion.identity);
+                    }
+                    else
+                    {
+                        currentAreaInstance.transform.position = areaPos;
+                    }
+
                     AlertPack(LastKnownHunterPosition);
                     hasAlertedPack = true;
                 }
@@ -116,7 +146,11 @@ public class Wolf : MonoBehaviour
         LastKnownHunterPosition = alertPosition;
         hasAlertedPack = true;
         IsAlerted = true;
-        Debug.Log($"<color=yellow>[{gameObject.name}] ¡Recibí la alerta. Voy a investigar.</color>");
+
+        if (!IsSeeingHunter)
+        {
+            ShowFeedback("Wolf alerted!", alertSprite);
+        }
     }
     public void ForgetHunter()
     {
@@ -124,15 +158,30 @@ public class Wolf : MonoBehaviour
         CurrentHunter = null;
         hasAlertedPack = false;
         IsAlerted = false;
+        IsInvestigating = false;
+
+        HideFeedback();
+
+        bool wolfStillInvestigating = false;
 
         foreach (Wolf alliedWolf in packMembers)
         {
             if (alliedWolf != null && alliedWolf != this)
             {
-                alliedWolf.IsSeeingHunter = false;
-                alliedWolf.CurrentHunter = null;
-                alliedWolf.hasAlertedPack = false;
-                alliedWolf.IsAlerted = false;
+                if (alliedWolf.IsSeeingHunter || alliedWolf.IsAlerted || alliedWolf.IsInvestigating)
+                {
+                    wolfStillInvestigating = true;
+                    break;
+                }
+            }
+        }
+
+        if (!wolfStillInvestigating)
+        {
+            if (currentAreaInstance != null)
+            {
+                Destroy(currentAreaInstance);
+                currentAreaInstance = null;
             }
         }
     }
@@ -147,8 +196,8 @@ public class Wolf : MonoBehaviour
     }
     public void UpdateUI(string state, string info)
     {
-        if (stateText != null && state != "") stateText.text = state;
-        if (infoText != null && info != "") infoText.text = info;
+        if (stateText != null) stateText.text = state;
+        if (infoText != null) infoText.text = info;
     }
 
     private void OnDrawGizmos()
@@ -160,6 +209,27 @@ public class Wolf : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(transform.position, transform.position + viewAngleA * viewRadius);
         Gizmos.DrawLine(transform.position, transform.position + viewAngleB * viewRadius);
+    }
+
+    public void ShowFeedback(string text, Sprite icon)
+    {
+        if (detectionText != null)
+        {
+            detectionText.text = text;
+            detectionText.gameObject.SetActive(true); 
+        }
+
+        if (feedbackImage != null && icon != null)
+        {
+            feedbackImage.sprite = icon;
+            feedbackImage.gameObject.SetActive(true);
+        }
+    }
+
+    public void HideFeedback()
+    {
+        if (detectionText != null) detectionText.gameObject.SetActive(false); 
+        if (feedbackImage != null) feedbackImage.gameObject.SetActive(false); 
     }
 
     private Vector3 DirFromAngle(float eulerY, float angleInDegrees)

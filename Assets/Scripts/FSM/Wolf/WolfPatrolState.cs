@@ -19,6 +19,7 @@ public class WolfPatrolState : IState
 
     public void Enter()
     {
+        wolf.ForgetHunter();
         currentWaypointIndex = 0;
         currentAStarPath = null;
         wolf.UpdateUI("Patrolling", "");
@@ -41,11 +42,6 @@ public class WolfPatrolState : IState
         Patrol();
     }
 
-    public void Exit()
-    {
-        currentAStarPath = null;
-    }
-
     private void Patrol()
     {
         if (wolf.PatrolWaypoints == null || wolf.PatrolWaypoints.Count == 0) return;
@@ -54,7 +50,12 @@ public class WolfPatrolState : IState
 
         if (wolf.HasLineOfSightTo(targetWaypoint.position))
         {
-            currentAStarPath = null;
+            if (currentAStarPath != null)
+            {
+                currentAStarPath = null;
+                if (wolf.PathDrawer != null) wolf.PathDrawer.ClearPath();
+            }
+
             MoveToTarget(targetWaypoint.position);
         }
         else
@@ -66,6 +67,8 @@ public class WolfPatrolState : IState
 
                 currentAStarPath = AStarPathfinding.FindPath(wolf.currentNode, waypointNode);
                 currentPathIndex = 0;
+
+
             }
             NavigateAStar();
         }
@@ -93,10 +96,14 @@ public class WolfPatrolState : IState
         {
             CalculateNextWaypoint();
             currentAStarPath = null;
+            if (wolf.PathDrawer != null) wolf.PathDrawer.ClearPath();
             return;
         }
 
         GraphNode targetNode = currentAStarPath[currentPathIndex];
+
+        if (wolf.PathDrawer != null) wolf.PathDrawer.DrawNextNode(targetNode);
+
         Vector3 destination = targetNode.transform.position;
         destination.y = wolf.transform.position.y;
 
@@ -109,7 +116,7 @@ public class WolfPatrolState : IState
         }
         else
         {
-            Vector3 steering = wolf.Agent.Arrive(destination);
+            Vector3 steering = wolf.Agent.Seek(destination);
             wolf.Agent.ApplySteering(steering);
         }
     }
@@ -135,4 +142,11 @@ public class WolfPatrolState : IState
             }
         }
     }
+
+    public void Exit()
+    {
+        currentAStarPath = null;
+        if (wolf.PathDrawer != null) wolf.PathDrawer.ClearPath();
+    }
+
 }

@@ -5,7 +5,7 @@ public class GraphNode : MonoBehaviour
 {
     public List<GraphNode> neighbours = new List<GraphNode>();
 
-    private void OnDrawGizmos()
+  /*  private void OnDrawGizmos()
     {
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, 0.3f);
@@ -18,5 +18,5 @@ public class GraphNode : MonoBehaviour
                 Gizmos.DrawLine(transform.position, neighbour.transform.position);
             }
         }
-    }
+    }*/
 }
