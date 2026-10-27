@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4085301304705783352}
   - component: {fileID: 6028858207138318712}
   - component: {fileID: 5202930707330184158}
-  - component: {fileID: 2739608584690903509}
+  - component: {fileID: 5622197022745109459}
   m_Layer: 0
   m_Name: InterestObject
   m_TagString: Untagged
@@ -30,8 +30,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 8.3925495, y: 0.5, z: -1.95895}
-  m_LocalScale: {x: 100, y: 100, z: 100}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -106,8 +106,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InterestObject
   life: 4
   hunter: {fileID: 0}
---- !u!135 &2739608584690903509
-SphereCollider:
+--- !u!65 &5622197022745109459
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -125,5 +125,5 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.003343427
-  m_Center: {x: -4.656613e-10, y: 0.0030477745, z: 0.003343427}
+  m_Size: {x: 0.46676692, y: 0.66868544, z: 0.610206}
+  m_Center: {x: -0.028385088, y: 0.33877736, z: 0.0137735605}

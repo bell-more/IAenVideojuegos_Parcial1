@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5820775695781023613}
   - component: {fileID: 8531944841979287248}
   - component: {fileID: 4695219692531892368}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -145,7 +145,7 @@ GameObject:
   - component: {fileID: 4223605526244638803}
   - component: {fileID: 4384531512047082830}
   - component: {fileID: 3298019574637688846}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: boidImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -347,7 +347,7 @@ GameObject:
   - component: {fileID: 1728229145853087630}
   - component: {fileID: 6349076045253326115}
   - component: {fileID: 8200233227604120996}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: gathersCount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -513,7 +513,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7804766343375049569}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: States
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -870,7 +870,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3279919311653774082}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Gathers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -909,7 +909,7 @@ GameObject:
   - component: {fileID: 5575435323758536984}
   - component: {fileID: 4842463511816925695}
   - component: {fileID: 7001328979100041352}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: State
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -963,7 +963,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Pursuing boid
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1044,7 +1044,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3176615974583696489}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Detection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1310,6 +1310,7 @@ GameObject:
   - component: {fileID: 6737249636403872329}
   - component: {fileID: 3124694872588368703}
   - component: {fileID: 7864483645569186830}
+  - component: {fileID: 9035782056137792276}
   m_Layer: 8
   m_Name: Hunter
   m_TagString: Hunter
@@ -1487,10 +1488,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SteeringAgent
   maxSpeed: 10
   maxSteering: 40
-  slowingDistance: 9
+  slowingDistance: 3
   minDistance: 0.1
   rotationSpeed: 180
+  steeringGrip: 1
   useBounds: 1
+  isBoid: 0
 --- !u!114 &6737249636403872329
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1544,7 +1547,6 @@ MonoBehaviour:
   currentNode: {fileID: 0}
   exitNode: {fileID: 0}
   initialZoneNode: {fileID: 0}
-  gizmoHeight: 0.7
 --- !u!114 &7864483645569186830
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1557,11 +1559,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 197c1f2133e607b4788104e981c1b52e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Perception
-  checkInterval: 0.25
+  checkInterval: 0.2
   eyeHeight: 2
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 512
+--- !u!135 &9035782056137792276
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7617855561138713441}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 15
+  m_Center: {x: 5.000004, y: -1, z: 65}
 --- !u!1 &8542827129566001304
 GameObject:
   m_ObjectHideFlags: 0
@@ -1841,7 +1864,7 @@ GameObject:
   - component: {fileID: 8711653916420487570}
   - component: {fileID: 1834185684957169427}
   - component: {fileID: 6038423146671228057}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1916,7 +1939,7 @@ GameObject:
   - component: {fileID: 1895448294709216175}
   - component: {fileID: 161463635080603486}
   - component: {fileID: 6937308552524086467}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Info
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1940,7 +1963,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 1.6000164, y: -95}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 252.98, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &161463635080603486
 CanvasRenderer:

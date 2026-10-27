@@ -10,6 +10,8 @@ public class Wolf : MonoBehaviour
     [SerializeField] private float captureRadius = 2.5f;
     public float CaptureRadius => captureRadius;
     [SerializeField] private LayerMask hunterLayer;
+    [SerializeField] private float inspectDuration = 3f;
+    public float InspectDuration => inspectDuration;
 
     [Header("Patrol")]
     [SerializeField] private List<Transform> patrolWaypoints = new List<Transform>();
@@ -27,6 +29,8 @@ public class Wolf : MonoBehaviour
     [SerializeField] private Image feedbackImage;
     [SerializeField] private Sprite detectSprite;
     [SerializeField] private Sprite alertSprite;
+    [SerializeField] private Sprite hunterLostSprite;
+    public Sprite HunterLostSprite => hunterLostSprite;
 
     [SerializeField] private GameObject hunterLastSeenPositionArea;
     private static GameObject currentAreaInstance;
@@ -61,6 +65,18 @@ public class Wolf : MonoBehaviour
         {
             WolfManager.Instance.RegisterWolf(this);
             WolfManager.Instance.OnHunterDetected += HandleHunterDetected;
+            WolfManager.Instance.OnSafeZoneReached += HandleSafeZoneReached;
+        }
+    }
+
+    private void Start()
+    {
+        if (WolfManager.Instance != null)
+        {
+            WolfManager.Instance.RegisterWolf(this);
+
+            WolfManager.Instance.OnHunterDetected += HandleHunterDetected;
+            WolfManager.Instance.OnSafeZoneReached -= HandleSafeZoneReached;
             WolfManager.Instance.OnSafeZoneReached += HandleSafeZoneReached;
         }
     }

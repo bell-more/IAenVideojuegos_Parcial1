@@ -66,26 +66,41 @@ public class FleeState : IState
 
     private void CalculatePathToClosestSafeZone()
     {
-        hunter.currentNode = GraphManager.Instance.GetClosestNode(hunter.transform.position);
+        hunter.currentNode = GraphManager.Instance.GetClosestNode(hunter.transform.position, true);
 
         List<GraphNode> bestPath = null;
-        int shortestPathLength = int.MaxValue;
+        float shortestDistance = Mathf.Infinity; 
         GraphNode bestSafeNode = null;
 
         foreach (GraphNode safeNode in GraphManager.Instance.safeZoneNodes)
         {
             List<GraphNode> path = AStarPathfinding.FindPath(hunter.currentNode, safeNode);
 
-            if (path != null && path.Count > 0 && path.Count < shortestPathLength)
+            if (path != null && path.Count > 0)
             {
-                shortestPathLength = path.Count;
-                bestPath = path;
-                bestSafeNode = safeNode;
+                float totalPathDistance = Vector3.Distance(hunter.transform.position, path[0].transform.position);
+                
+                for (int i = 0; i < path.Count - 1; i++)
+                {
+                    totalPathDistance += Vector3.Distance(path[i].transform.position, path[i + 1].transform.position);
+                }
+
+                if (totalPathDistance < shortestDistance)
+                {
+                    shortestDistance = totalPathDistance;
+                    bestPath = path;
+                    bestSafeNode = safeNode;
+                }
             }
         }
 
         if (bestPath != null)
         {
+            if (hunter.currentNode != null && !bestPath.Contains(hunter.currentNode))
+            {
+                bestPath.Insert(0, hunter.currentNode);
+            }
+
             currentPath = bestPath;
             currentPathIndex = 0;
 

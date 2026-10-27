@@ -9,7 +9,7 @@ public class WolfPatrolState : IState
     private int patrolDirection = 1;
     private List<GraphNode> currentAStarPath;
     private int currentPathIndex = 0;
-    private float nodeReachedDistance = 1.5f;
+    private float nodeReachedDistance = 3f;
 
     public WolfPatrolState(Wolf wolf, StateMachine fsm)
     {

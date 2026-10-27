@@ -36,13 +36,9 @@ public class AttackState : IState
             return;
         }
 
-        if (target == null || !target.GetIsAlive)
-        {
-            fsm.ChangeState(HunterStates.Search);
-            return;
-        }
-
-        if (Vector3.Distance(hunter.transform.position, target.transform.position) > hunter.VisionRadius || !hunter.HasLineOfSight(target.transform))
+        if (target == null || !target.GetIsAlive ||
+            Vector3.Distance(hunter.transform.position, target.transform.position) > hunter.VisionRadius ||
+            !hunter.HasLineOfSight(target.transform))
         {
             fsm.ChangeState(HunterStates.Search);
             return;
@@ -58,14 +54,49 @@ public class AttackState : IState
 
         if (distance <= hunter.MeleeAttackRadius)
         {
-            hunter.StatusUI.ShowAction("Meele Attack");
-            ExecuteAttack(hunter.MeleeAttack(target));
+            if (hunter.CanAttack)
+            {
+                hunter.Agent.Stop();
+                hunter.StatusUI.ShowAction("Melee Attack");
+
+                if (hunter.MeleeAttack(target))
+                {
+                    hunter.ResetAttackTimer();
+                }
+            }
+            else
+            {
+                hunter.StatusUI.ShowAction("Pursuing...(Cooldown)");
+
+                Vector3 lookPos = new Vector3(target.transform.position.x, hunter.transform.position.y, target.transform.position.z);
+                hunter.transform.LookAt(lookPos);
+                float safeDistanceBuffer = 1f;
+
+                if (distance > safeDistanceBuffer)
+                {
+                    Vector3 steering = hunter.Agent.Pursuit(target);
+                    hunter.Agent.ApplySteering(steering);
+                }
+                else
+                {
+                    hunter.Agent.Stop(); 
+                }
+            }
         }
-        else if (distance <= hunter.RangeAttackRadius && hunter.CanAttack)
+        else if (distance <= hunter.RangeAttackRadius)
         {
-            isAimingRange = true;
-            hunter.Agent.Stop();
-            hunter.StatusUI.ShowAction("Range Attack");
+            if (hunter.CanAttack)
+            {
+                isAimingRange = true;
+                hunter.Agent.Stop();
+                hunter.StatusUI.ShowAction("Range Attack");
+            }
+            else
+            {
+                hunter.StatusUI.ShowAction("Pursuing...(Cooldown)");
+                Vector3 steering = hunter.Agent.Pursuit(target);
+                hunter.Agent.ApplySteering(steering);
+            }
         }
         else
         {
@@ -86,27 +117,16 @@ public class AttackState : IState
 
             if (Vector3.Dot(direction, hunter.transform.forward) > hunter.AimTolerance)
             {
-                ExecuteAttack(hunter.RangeAttack(target));
+                if (hunter.RangeAttack(target))
+                {
+                    hunter.ResetAttackTimer();
+                }
                 isAimingRange = false;
             }
             else
             {
                 hunter.transform.forward = direction;
             }
-        }
-    }
-
-    private void ExecuteAttack(bool attackSuccessful)
-    {
-        hunter.Agent.Stop();
-
-        Vector3 lookPos = new Vector3(target.transform.position.x, hunter.transform.position.y, target.transform.position.z);
-        hunter.transform.LookAt(lookPos);
-
-        if (attackSuccessful)
-        {
-            hunter.ResetAttackTimer();
-            fsm.ChangeState(HunterStates.Search);
         }
     }
 

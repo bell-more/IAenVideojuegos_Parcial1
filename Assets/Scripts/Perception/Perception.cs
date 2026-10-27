@@ -1,13 +1,14 @@
+using System.Collections.Generic;
 using UnityEngine;
-
 public class Perception : MonoBehaviour
 {
-    [Header("Settings")]
-    [SerializeField] private float checkInterval = 0.25f;
+    [SerializeField] private float checkInterval = 0.2f;
     [SerializeField] private float eyeHeight = 1f;
     [SerializeField] private LayerMask obstacleLayer;
 
-    private readonly Collider[] targetsBuffer = new Collider[32];
+    private List<Collider> targetsInRange = new List<Collider>();
+    private SphereCollider triggerCollider;
+
     private float checkTimer;
     private Transform cachedTarget;
     private float cachedRadius;
@@ -16,6 +17,29 @@ public class Perception : MonoBehaviour
     private float cachedViewAngle;
     private bool hasCachedResult;
 
+    private void Awake()
+    {
+        triggerCollider = GetComponent<SphereCollider>();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.isTrigger) return;
+        if (!targetsInRange.Contains(other))
+        {
+            targetsInRange.Add(other);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.isTrigger) return;
+        if (targetsInRange.Contains(other))
+        {
+            targetsInRange.Remove(other);
+        }
+    }
+
     private void Update()
     {
         if (checkTimer > 0f) checkTimer -= Time.deltaTime;
@@ -23,6 +47,7 @@ public class Perception : MonoBehaviour
 
     public Transform GetClosestVisibleTarget(float radius, LayerMask targetLayer, bool useFOV = false, float viewAngle = 90f)
     {
+
         bool settingsChanged = !hasCachedResult || cachedRadius != radius || cachedLayer != targetLayer || cachedUseFOV != useFOV || cachedViewAngle != viewAngle;
 
         if (settingsChanged || checkTimer <= 0f)
@@ -41,14 +66,15 @@ public class Perception : MonoBehaviour
 
     private Transform FindClosestVisibleTarget(float radius, LayerMask targetLayer, bool useFOV, float viewAngle)
     {
-        int targetsFound = Physics.OverlapSphereNonAlloc(transform.position, radius, targetsBuffer, targetLayer);
+        targetsInRange.RemoveAll(t => t == null);
+
         Transform closestTarget = null;
         float closestDistanceSqr = radius * radius;
 
-        for (int i = 0; i < targetsFound; i++)
+        foreach (Collider targetCollider in targetsInRange)
         {
-            Collider targetCollider = targetsBuffer[i];
-            if (targetCollider == null) continue;
+            if (targetCollider == null || !targetCollider.gameObject.activeInHierarchy || !targetCollider.enabled) continue;
+            if (((1 << targetCollider.gameObject.layer) & targetLayer) == 0) continue;
 
             Transform target = ResolveTargetTransform(targetCollider);
             if (target == null || target == transform) continue;

@@ -2,14 +2,15 @@ using UnityEngine;
 
 public class SteeringAgent : Agent
 {
-    [Header("Stats")]
     [SerializeField] private float maxSpeed;
     [SerializeField] private float maxSteering;
     [SerializeField] private float slowingDistance;
     [SerializeField] private float minDistance = 0.1f;
-    [SerializeField] private float rotationSpeed = 15f; 
+    [SerializeField] private float rotationSpeed = 180f;
+    [SerializeField] private float steeringGrip = 5f;
 
     [SerializeField] private bool useBounds = true;
+    [SerializeField] private bool isBoid = false;
 
     public float MaxSpeed => maxSpeed;
     public Vector3 Velocity => velocity;
@@ -23,9 +24,27 @@ public class SteeringAgent : Agent
 
         transform.position += velocity * Time.deltaTime;
 
+        if (isBoid) Boid();
+        else WolvesHunter();
+
+    }
+    private void WolvesHunter()
+    {
         if (velocity.sqrMagnitude > 0.001f)
         {
-            Vector3 flatVelocity = new Vector3(velocity.x, 0f, velocity.z); 
+            Vector3 flatVelocity = new Vector3(velocity.x, 0f, velocity.z);
+            Quaternion targetRotation = Quaternion.LookRotation(flatVelocity);
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            velocity = transform.forward * velocity.magnitude;
+        }
+    }
+
+    private void Boid()
+    {
+        if (velocity.sqrMagnitude > 0.001f)
+        {
+            Vector3 flatVelocity = new Vector3(velocity.x, 0f, velocity.z);
             Quaternion targetRotation = Quaternion.LookRotation(flatVelocity);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
@@ -34,6 +53,7 @@ public class SteeringAgent : Agent
     public Vector3 CalculateSteering(Vector3 desiredVelocity)
     {
         Vector3 steering = desiredVelocity - velocity;
+        steering *= steeringGrip;
         steering = Vector3.ClampMagnitude(steering, maxSteering);
 
         return steering;

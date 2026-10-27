@@ -106,7 +106,9 @@ MonoBehaviour:
   slowingDistance: 5
   minDistance: 1
   rotationSpeed: 15
+  steeringGrip: 5
   useBounds: 1
+  isBoid: 1
 --- !u!135 &725364550705010323
 SphereCollider:
   m_ObjectHideFlags: 0

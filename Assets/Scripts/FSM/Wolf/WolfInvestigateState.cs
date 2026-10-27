@@ -7,7 +7,10 @@ public class WolfInvestigateState : IState
     private StateMachine fsm;
     private List<GraphNode> path;
     private int pathIndex = 0;
-    private float nodeReachedDistance = 1.5f;
+    private float nodeReachedDistance = 3f;
+    private float searchTimer = 0f;
+
+    private bool isSearchingLocally = false;
 
     public WolfInvestigateState(Wolf wolf, StateMachine fsm)
     {
@@ -20,6 +23,9 @@ public class WolfInvestigateState : IState
         wolf.UpdateUI("Investigating", "checking last known position");
         wolf.IsAlerted = false;
         wolf.IsInvestigating = true;
+
+        isSearchingLocally = false;
+        searchTimer = wolf.InspectDuration;
 
         wolf.currentNode = GraphManager.Instance.GetClosestNode(wolf.transform.position);
         GraphNode targetNode = GraphManager.Instance.GetClosestNode(wolf.LastKnownHunterPosition);
@@ -46,9 +52,16 @@ public class WolfInvestigateState : IState
             return;
         }
 
+        if (isSearchingLocally)
+        {
+            SearchLocally();
+            return;
+        }
+
         if (path == null || pathIndex >= path.Count)
         {
-            fsm.ChangeState(WolfStates.Patrol);
+            isSearchingLocally = true;
+            wolf.Agent.Stop();
             return;
         }
 
@@ -69,6 +82,21 @@ public class WolfInvestigateState : IState
         {
             Vector3 steering = wolf.Agent.Seek(targetPos);
             wolf.Agent.ApplySteering(steering);
+        }
+    }
+
+    private void SearchLocally()
+    {
+        searchTimer -= Time.deltaTime;
+
+        wolf.ShowFeedback("Hunter lost!", wolf.HunterLostSprite);
+
+        float rotationAngle = Mathf.Sin(Time.time * 3f) * 30f;
+        wolf.transform.rotation = Quaternion.Euler(0f, wolf.transform.eulerAngles.y + (rotationAngle * Time.deltaTime), 0f);
+
+        if (searchTimer <= 0f)
+        {
+            fsm.ChangeState(WolfStates.Patrol);
         }
     }
 
