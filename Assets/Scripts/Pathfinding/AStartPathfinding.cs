@@ -8,7 +8,7 @@ public static class AStarPathfinding
         public GraphNode node;
         public GraphNode parent;
         public float gCost;
-        public float fCost; 
+        public float fCost;
     }
 
     public static List<GraphNode> FindPath(GraphNode startNode, GraphNode targetNode, bool excludeSafeZones = false)
@@ -64,5 +64,26 @@ public static class AStarPathfinding
 
         path.Reverse();
         return path;
+    }
+
+    public static List<GraphNode> EnsurePathContinuity(List<GraphNode> newPath, List<GraphNode> oldPath, int oldPathIndex)
+    {
+        if (newPath == null || newPath.Count == 0) return newPath;
+
+        GraphNode previousTargetNode = null;
+        if (oldPath != null && oldPathIndex >= 0 && oldPathIndex < oldPath.Count)
+        {
+            previousTargetNode = oldPath[oldPathIndex];
+        }
+
+        if (previousTargetNode != null)
+        {
+            if (newPath[0] != previousTargetNode && !newPath.Contains(previousTargetNode))
+            {
+                newPath.Insert(0, previousTargetNode);
+            }
+        }
+
+        return newPath;
     }
 }

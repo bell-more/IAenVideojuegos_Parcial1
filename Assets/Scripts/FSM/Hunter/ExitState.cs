@@ -8,7 +8,7 @@ public class ExitState : IState
 
     private List<GraphNode> currentPath = new List<GraphNode>();
     private int currentPathIndex = 0;
-    private float nodeReachedDistance = 3f;
+    private float nodeReachedDistance = 0.5f;
 
     public ExitState(Hunter hunter, StateMachine fsm)
     {
@@ -42,10 +42,7 @@ public class ExitState : IState
             return;
         }
 
-        if (currentPath == null || currentPath.Count == 0) return;
-
-        if (currentPathIndex >= currentPath.Count)
-        {
+        hunter.NavigatePath(currentPath, ref currentPathIndex, nodeReachedDistance, true, () => {
             hunter.ResetGathers();
 
             if (hunter.initialZoneNode != null)
@@ -56,26 +53,7 @@ public class ExitState : IState
             }
 
             fsm.ChangeState(HunterStates.Search);
-            return;
-        }
-
-        if (hunter.PathDrawer != null) hunter.PathDrawer.UpdateRemainingPath(currentPath, currentPathIndex);
-
-        GraphNode targetNode = currentPath[currentPathIndex];
-        Vector3 targetPos = targetNode.transform.position;
-        targetPos.y = hunter.transform.position.y;
-
-        float distance = Vector3.Distance(hunter.transform.position, targetPos);
-
-        if (distance <= nodeReachedDistance)
-        {
-            currentPathIndex++;
-        }
-        else
-        {
-            Vector3 steering = hunter.Agent.Arrive(targetPos);
-            hunter.Agent.ApplySteering(steering);
-        }
+        });
     }
 
     public void Exit()

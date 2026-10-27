@@ -7,7 +7,7 @@ public class SearchState : IState
     private StateMachine fsm;
     private List<GraphNode> currentPath = new List<GraphNode>();
     private int currentPathIndex = 0;
-    private float nodeReachedDistance = 3f;
+    private float nodeReachedDistance = 0.5f;
     private bool isInCoto = false;
     private float spawnTimer = 0f;
 
@@ -40,7 +40,6 @@ public class SearchState : IState
         }
         if (hunter.GetClosestVisibleWolf() != null)
         {
-            { }
             fsm.ChangeState(HunterStates.Flee);
             return;
         }
@@ -77,39 +76,17 @@ public class SearchState : IState
 
     private void NavigateAlongPath()
     {
-        if (currentPath == null || currentPath.Count == 0)
-        {
-            if (isInCoto) CalculateRandomPathInCoto();
-            return;
-        }
-
-        if (currentPathIndex >= currentPath.Count)
-        {
+        hunter.NavigatePath(currentPath, ref currentPathIndex, nodeReachedDistance, false, () => {
             if (!isInCoto)
             {
                 isInCoto = true;
             }
             CalculateRandomPathInCoto();
-            return;
-        }
+        });
 
-        if (hunter.PathDrawer != null) hunter.PathDrawer.UpdateRemainingPath(currentPath, currentPathIndex);
-     
-        GraphNode targetNode = currentPath[currentPathIndex];
-        Vector3 targetPos = targetNode.transform.position;
-        targetPos.y = hunter.transform.position.y;
-
-        float distance = Vector3.Distance(hunter.transform.position, targetPos);
-
-        if (distance <= nodeReachedDistance)
+        if (currentPath == null || currentPath.Count == 0 && isInCoto)
         {
-            hunter.currentNode = targetNode;
-            currentPathIndex++;
-        }
-        else
-        {
-            Vector3 steering = hunter.Agent.Seek(targetPos);
-            hunter.Agent.ApplySteering(steering);
+            CalculateRandomPathInCoto();
         }
     }
 
@@ -132,6 +109,8 @@ public class SearchState : IState
 
         if (bestPath != null)
         {
+            bestPath = AStarPathfinding.EnsurePathContinuity(bestPath, currentPath, currentPathIndex);
+
             currentPath = bestPath;
             currentPathIndex = 0;
         }
@@ -144,7 +123,11 @@ public class SearchState : IState
 
         if (hunter.currentNode != null && randomNode != null)
         {
-            currentPath = AStarPathfinding.FindPath(hunter.currentNode, randomNode);
+            List<GraphNode> newPath = AStarPathfinding.FindPath(hunter.currentNode, randomNode);
+
+            newPath = AStarPathfinding.EnsurePathContinuity(newPath, currentPath, currentPathIndex);
+
+            currentPath = newPath;
             currentPathIndex = 0;
         }
     }

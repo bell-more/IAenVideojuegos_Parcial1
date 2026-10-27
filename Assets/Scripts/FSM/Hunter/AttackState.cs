@@ -30,12 +30,18 @@ public class AttackState : IState
             fsm.ChangeState(HunterStates.Dead);
             return;
         }
+
         if (hunter.GetClosestVisibleWolf() != null)
         {
             fsm.ChangeState(HunterStates.Flee);
             return;
         }
 
+        if (hunter.GetClosestDeadTarget() != null)
+        {
+            fsm.ChangeState(HunterStates.Gather);
+            return;
+        }
         if (target == null || !target.GetIsAlive ||
             Vector3.Distance(hunter.transform.position, target.transform.position) > hunter.VisionRadius ||
             !hunter.HasLineOfSight(target.transform))

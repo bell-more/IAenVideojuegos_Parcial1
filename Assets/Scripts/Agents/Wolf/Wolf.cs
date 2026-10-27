@@ -201,6 +201,37 @@ public class Wolf : MonoBehaviour
         return perception != null && perception.HasLineOfSight(targetPos);
     }
 
+    //path
+    public bool NavigatePath(List<GraphNode> path, ref int pathIndex, float reachDistance, System.Action onPathFinished)
+    {
+        if (path == null || pathIndex >= path.Count)
+        {
+            onPathFinished?.Invoke();
+            return true;
+        }
+
+        GraphNode targetNode = path[pathIndex];
+        if (PathDrawer != null) PathDrawer.DrawNextNode(targetNode);
+
+        Vector3 targetPos = targetNode.transform.position;
+        targetPos.y = transform.position.y;
+
+        float distance = Vector3.Distance(transform.position, targetPos);
+
+        if (distance <= reachDistance)
+        {
+            currentNode = targetNode;
+            pathIndex++;
+        }
+        else
+        {
+            Vector3 steering = Agent.Seek(targetPos);
+            Agent.ApplySteering(steering);
+        }
+
+        return false;
+    }
+    //visuals
     public void UpdateUI(string state, string info)
     {
         if (stateText != null) stateText.text = state;

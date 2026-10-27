@@ -7,10 +7,11 @@ public class WolfInvestigateState : IState
     private StateMachine fsm;
     private List<GraphNode> path;
     private int pathIndex = 0;
-    private float nodeReachedDistance = 3f;
+    private float nodeReachedDistance = 0.5f;
     private float searchTimer = 0f;
 
     private bool isSearchingLocally = false;
+    private Vector3 currentInvestigateTarget;
 
     public WolfInvestigateState(Wolf wolf, StateMachine fsm)
     {
@@ -24,17 +25,8 @@ public class WolfInvestigateState : IState
         wolf.IsAlerted = false;
         wolf.IsInvestigating = true;
 
-        isSearchingLocally = false;
-        searchTimer = wolf.InspectDuration;
-
-        wolf.currentNode = GraphManager.Instance.GetClosestNode(wolf.transform.position);
-        GraphNode targetNode = GraphManager.Instance.GetClosestNode(wolf.LastKnownHunterPosition);
-
-        if (wolf.currentNode != null && targetNode != null)
-        {
-            path = AStarPathfinding.FindPath(wolf.currentNode, targetNode, true);
-            pathIndex = 0;
-        }
+        currentInvestigateTarget = wolf.LastKnownHunterPosition;
+        RecalculatePath();
     }
 
     public void Update()
@@ -52,36 +44,36 @@ public class WolfInvestigateState : IState
             return;
         }
 
+        if (Vector3.Distance(currentInvestigateTarget, wolf.LastKnownHunterPosition) > 0.5f)
+        {
+            currentInvestigateTarget = wolf.LastKnownHunterPosition;
+            RecalculatePath();
+            return;
+        }
+
         if (isSearchingLocally)
         {
             SearchLocally();
             return;
         }
 
-        if (path == null || pathIndex >= path.Count)
-        {
+        wolf.NavigatePath(path, ref pathIndex, nodeReachedDistance, () => {
             isSearchingLocally = true;
             wolf.Agent.Stop();
-            return;
-        }
+        });
+    }
+    private void RecalculatePath()
+    {
+        isSearchingLocally = false;
+        searchTimer = wolf.InspectDuration; 
 
-        GraphNode targetNode = path[pathIndex];
-        if (wolf.PathDrawer != null) wolf.PathDrawer.DrawNextNode(targetNode);
+        wolf.currentNode = GraphManager.Instance.GetClosestNode(wolf.transform.position);
+        GraphNode targetNode = GraphManager.Instance.GetClosestNode(currentInvestigateTarget);
 
-        Vector3 targetPos = targetNode.transform.position;
-        targetPos.y = wolf.transform.position.y;
-
-        float distance = Vector3.Distance(wolf.transform.position, targetPos);
-
-        if (distance <= nodeReachedDistance)
+        if (wolf.currentNode != null && targetNode != null)
         {
-            wolf.currentNode = targetNode;
-            pathIndex++;
-        }
-        else
-        {
-            Vector3 steering = wolf.Agent.Seek(targetPos);
-            wolf.Agent.ApplySteering(steering);
+            path = AStarPathfinding.FindPath(wolf.currentNode, targetNode, true);
+            pathIndex = 0;
         }
     }
 
@@ -92,6 +84,7 @@ public class WolfInvestigateState : IState
         wolf.ShowFeedback("Hunter lost!", wolf.HunterLostSprite);
 
         float rotationAngle = Mathf.Sin(Time.time * 3f) * 30f;
+
         wolf.transform.rotation = Quaternion.Euler(0f, wolf.transform.eulerAngles.y + (rotationAngle * Time.deltaTime), 0f);
 
         if (searchTimer <= 0f)

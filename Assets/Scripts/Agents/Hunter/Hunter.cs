@@ -289,6 +289,38 @@ public class Hunter : Agent
             }
         }
     }
+    //path
+    public bool NavigatePath(List<GraphNode> path, ref int pathIndex, float reachDistance, bool useArrive, System.Action onPathFinished)
+    {
+        if (path == null || path.Count == 0) return false;
+
+        if (pathIndex >= path.Count)
+        {
+            onPathFinished?.Invoke();
+            return true;
+        }
+
+        if (PathDrawer != null) PathDrawer.UpdateRemainingPath(path, pathIndex);
+
+        GraphNode targetNode = path[pathIndex];
+        Vector3 targetPos = targetNode.transform.position;
+        targetPos.y = transform.position.y;
+
+        float distance = Vector3.Distance(transform.position, targetPos);
+
+        if (distance <= reachDistance)
+        {
+            currentNode = targetNode;
+            pathIndex++;
+        }
+        else
+        {
+            Vector3 steering = useArrive ? Agent.Arrive(targetPos) : Agent.Seek(targetPos);
+            Agent.ApplySteering(steering);
+        }
+
+        return false;
+    }
 
     //visuals
     private void OnDrawGizmos()

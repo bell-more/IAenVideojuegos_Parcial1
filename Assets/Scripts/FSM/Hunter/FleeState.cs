@@ -7,7 +7,7 @@ public class FleeState : IState
     private StateMachine fsm;
     private List<GraphNode> currentPath = new List<GraphNode>();
     private int currentPathIndex = 0;
-    private float nodeReachedDistance = 3f;
+    private float nodeReachedDistance = 0.5f;
 
     private bool isSafe = false;
     private float waitTimer = 0f;
@@ -39,7 +39,6 @@ public class FleeState : IState
             return;
         }
 
-        //safe zone
         if (isSafe)
         {
             hunter.StatusUI.SetStatus("Hiding");
@@ -69,7 +68,7 @@ public class FleeState : IState
         hunter.currentNode = GraphManager.Instance.GetClosestNode(hunter.transform.position, true);
 
         List<GraphNode> bestPath = null;
-        float shortestDistance = Mathf.Infinity; 
+        float shortestDistance = Mathf.Infinity;
         GraphNode bestSafeNode = null;
 
         foreach (GraphNode safeNode in GraphManager.Instance.safeZoneNodes)
@@ -79,7 +78,7 @@ public class FleeState : IState
             if (path != null && path.Count > 0)
             {
                 float totalPathDistance = Vector3.Distance(hunter.transform.position, path[0].transform.position);
-                
+
                 for (int i = 0; i < path.Count - 1; i++)
                 {
                     totalPathDistance += Vector3.Distance(path[i].transform.position, path[i + 1].transform.position);
@@ -94,12 +93,9 @@ public class FleeState : IState
             }
         }
 
-        if (bestPath != null)
+        if (bestPath != null && bestPath.Count > 0)
         {
-            if (hunter.currentNode != null && !bestPath.Contains(hunter.currentNode))
-            {
-                bestPath.Insert(0, hunter.currentNode);
-            }
+            bestPath = AStarPathfinding.EnsurePathContinuity(bestPath, currentPath, currentPathIndex);
 
             currentPath = bestPath;
             currentPathIndex = 0;
@@ -113,43 +109,18 @@ public class FleeState : IState
 
     private void NavigateAlongPath()
     {
-        if (currentPath == null || currentPath.Count == 0) return;
-
-        if (currentPathIndex >= currentPath.Count)
-        {
+        hunter.NavigatePath(currentPath, ref currentPathIndex, nodeReachedDistance, true, () => {
             isSafe = true;
             hunter.IsInSafeZone = true;
             hunter.Agent.Stop();
             if (hunter.PathDrawer != null) hunter.PathDrawer.ClearPath();
-            return;
-        }
-
-        if (hunter.PathDrawer != null) hunter.PathDrawer.UpdateRemainingPath(currentPath, currentPathIndex);
-
-        GraphNode targetNode = currentPath[currentPathIndex];
-        Vector3 targetPos = targetNode.transform.position;
-        targetPos.y = hunter.transform.position.y;
-
-        float distance = Vector3.Distance(hunter.transform.position, targetPos);
-
-        if (distance <= nodeReachedDistance)
-        {
-            currentPathIndex++;
-            hunter.currentNode = targetNode; 
-        }
-        else
-        {
-           
-            hunter.StatusUI.ShowAction("Going to safe zone");
-            Vector3 steering = hunter.Agent.Arrive(targetPos);
-            hunter.Agent.ApplySteering(steering);
-        }
+        });
     }
 
     public void Exit()
     {
         hunter.IsInSafeZone = false;
-        hunter.EnableAreaToFleeIndicator(new Vector3(0f,0f,0f), false);
+        hunter.EnableAreaToFleeIndicator(new Vector3(0f, 0f, 0f), false);
         hunter.ToggleWolfDetection(false);
         currentPath.Clear();
 

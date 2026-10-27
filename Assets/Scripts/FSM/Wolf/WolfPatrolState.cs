@@ -9,7 +9,7 @@ public class WolfPatrolState : IState
     private int patrolDirection = 1;
     private List<GraphNode> currentAStarPath;
     private int currentPathIndex = 0;
-    private float nodeReachedDistance = 3f;
+    private float nodeReachedDistance = 0.5f;
 
     public WolfPatrolState(Wolf wolf, StateMachine fsm)
     {
@@ -62,13 +62,17 @@ public class WolfPatrolState : IState
         {
             if (currentAStarPath == null || currentAStarPath.Count == 0)
             {
-                wolf.currentNode = GraphManager.Instance.GetClosestNode(wolf.transform.position);
+                wolf.currentNode = GraphManager.Instance.GetClosestNode(wolf.transform.position, true);
                 GraphNode waypointNode = GraphManager.Instance.GetClosestNode(targetWaypoint.position);
 
                 currentAStarPath = AStarPathfinding.FindPath(wolf.currentNode, waypointNode, true);
+
+                if (wolf.currentNode != null && currentAStarPath != null && !currentAStarPath.Contains(wolf.currentNode))
+                {
+                    currentAStarPath.Insert(0, wolf.currentNode);
+                }
+
                 currentPathIndex = 0;
-
-
             }
             NavigateAStar();
         }
@@ -92,38 +96,15 @@ public class WolfPatrolState : IState
 
     private void NavigateAStar()
     {
-        if (currentAStarPath == null || currentPathIndex >= currentAStarPath.Count)
-        {
+        wolf.NavigatePath(currentAStarPath, ref currentPathIndex, nodeReachedDistance, () => {
             CalculateNextWaypoint();
             currentAStarPath = null;
             if (wolf.PathDrawer != null) wolf.PathDrawer.ClearPath();
-            return;
-        }
-
-        GraphNode targetNode = currentAStarPath[currentPathIndex];
-
-        if (wolf.PathDrawer != null) wolf.PathDrawer.DrawNextNode(targetNode);
-
-        Vector3 destination = targetNode.transform.position;
-        destination.y = wolf.transform.position.y;
-
-        float distance = Vector3.Distance(wolf.transform.position, destination);
-
-        if (distance <= nodeReachedDistance)
-        {
-            wolf.currentNode = targetNode;
-            currentPathIndex++;
-        }
-        else
-        {
-            Vector3 steering = wolf.Agent.Seek(destination);
-            wolf.Agent.ApplySteering(steering);
-        }
+        });
     }
 
     private void CalculateNextWaypoint()
     {
-
         if (wolf.UsePingPongPatrol)
         {
             currentWaypointIndex += patrolDirection;
@@ -148,5 +129,4 @@ public class WolfPatrolState : IState
         currentAStarPath = null;
         if (wolf.PathDrawer != null) wolf.PathDrawer.ClearPath();
     }
-
 }
