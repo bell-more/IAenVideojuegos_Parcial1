@@ -83,7 +83,7 @@ public class Boid : Agent
 
         float distance = (transform.position - targetPos).sqrMagnitude;
 
-        if (distance <= trapAttackDistance)
+        if (distance <= (trapAttackDistance * trapAttackDistance))
         {
             if (eatTimeRemaining <= 0f)
             {

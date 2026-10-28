@@ -76,7 +76,7 @@ public class AttackState : IState
     {
         float distance = (hunter.transform.position - target.transform.position).sqrMagnitude;
 
-        if (distance <= hunter.MeleeAttackRadius)
+        if (distance <= (hunter.MeleeAttackRadius * hunter.MeleeAttackRadius))
         {
             if (hunter.CanAttack)
             {
@@ -95,7 +95,7 @@ public class AttackState : IState
                 Vector3 lookPos = new Vector3(target.transform.position.x, hunter.transform.position.y, target.transform.position.z);
                 hunter.transform.LookAt(lookPos);
 
-                if (distance > hunter.MeleeStandbyDistance)
+                if (distance > (hunter.MeleeStandbyDistance * hunter.MeleeStandbyDistance))
                 {
                     Vector3 steering = hunter.Agent.Pursuit(target);
                     hunter.Agent.ApplySteering(steering);
@@ -106,7 +106,7 @@ public class AttackState : IState
                 }
             }
         }
-        else if (distance <= hunter.RangeAttackRadius)
+        else if (distance <= (hunter.RangeAttackRadius * hunter.RangeAttackRadius))
         {
             if (hunter.CanAttack)
             {

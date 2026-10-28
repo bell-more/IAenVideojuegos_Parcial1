@@ -60,7 +60,7 @@ public class GatherState : IState
     {
         float distance = (hunter.transform.position - target.transform.position).sqrMagnitude;
 
-        if (distance <= hunter.MeleeAttackRadius)
+        if (distance <= (hunter.MeleeAttackRadius * hunter.MeleeAttackRadius))
         {
             hunter.Agent.Stop();
             hunter.StatusUI.ShowAction("Time remaining: " + gatherTimer.ToString("F0"));

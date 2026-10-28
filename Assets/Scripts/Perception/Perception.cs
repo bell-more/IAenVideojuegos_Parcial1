@@ -7,6 +7,7 @@ public class Perception : MonoBehaviour
     [SerializeField] private LayerMask obstacleLayer;
 
     private List<Collider> targetsInRange = new List<Collider>();
+    public List<Collider> TargetsInRange => targetsInRange;
     private SphereCollider triggerCollider;
 
     private float checkTimer;

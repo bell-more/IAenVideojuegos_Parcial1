@@ -112,7 +112,7 @@ public class WolfPatrolState : IState
         destination.y = wolf.transform.position.y;
         float distance = (wolf.transform.position - destination).sqrMagnitude;
 
-        if (distance <= wolf.NodeReachedDistance)
+        if (distance <= (wolf.NodeReachedDistance * wolf.NodeReachedDistance))
         {
             wolf.Agent.Stop();
             CalculateNextWaypoint();

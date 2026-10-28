@@ -159,13 +159,30 @@ public class Hunter : Agent
     {
         if (perception == null) return null;
 
-        Transform target = perception.GetClosestVisibleTarget(visionRadius, boidLayer);
-        if (target == null) return null;
+        Boid closestBoid = null;
+        float closestSqrDistance = visionRadius * visionRadius;
 
-        Boid boid = target.GetComponentInParent<Boid>();
-        if (boid == null || boid.GetIsAlive != alive) return null;
+        foreach (Collider col in perception.TargetsInRange)
+        {
+            if (col == null || !col.gameObject.activeInHierarchy || !col.enabled) continue;
 
-        return boid;
+            if (((1 << col.gameObject.layer) & boidLayer) == 0) continue;
+
+            Boid boid = col.GetComponentInParent<Boid>();
+
+            if (boid == null || boid.GetIsAlive != alive) continue;
+
+            if (!perception.HasLineOfSight(boid.transform)) continue;
+
+            float sqrDistance = (transform.position - boid.transform.position).sqrMagnitude;
+            if (sqrDistance < closestSqrDistance)
+            {
+                closestSqrDistance = sqrDistance;
+                closestBoid = boid;
+            }
+        }
+
+        return closestBoid;
     }
 
     public void SpawnInterestObject()
