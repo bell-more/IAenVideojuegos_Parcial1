@@ -32,6 +32,15 @@ public class SearchState : IState
 
     public void Update()
     {
+        CheckTransitions();
+
+        ProcessObjectSpawnBehaviour();
+
+        NavigateAlongPath();
+    }
+
+    public void CheckTransitions()
+    {
         if (hunter.Life <= 0)
         {
             fsm.ChangeState(HunterStates.Dead);
@@ -56,7 +65,10 @@ public class SearchState : IState
             fsm.ChangeState(HunterStates.Attack);
             return;
         }
+    }
 
+    public void ProcessObjectSpawnBehaviour()
+    {
         if (isInCoto)
         {
             spawnTimer += Time.deltaTime;
@@ -69,10 +81,7 @@ public class SearchState : IState
                 }
             }
         }
-
-        NavigateAlongPath();
     }
-
     private void NavigateAlongPath()
     {
         hunter.NavigatePath(currentPath, ref currentPathIndex, hunter.NodeReachedDistance, false, () => {

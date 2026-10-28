@@ -19,15 +19,26 @@ public class WolfInvestigateState : IState
 
     public void Enter()
     {
+        InitializeInvestigation();
+        RecalculatePath();
+    }
+
+    public void Update()
+    {
+        CheckTransitions();
+
+        wolf.NavigatePath(path, ref pathIndex, wolf.NodeReachedDistance, () => {isSearchingLocally = true;wolf.Agent.Stop(); });
+    }
+
+    private void InitializeInvestigation()
+    {
         wolf.UpdateUI("Investigating", "checking last known position");
         wolf.IsAlerted = false;
         wolf.IsInvestigating = true;
 
         currentInvestigateTarget = wolf.LastKnownHunterPosition;
-        RecalculatePath();
     }
-
-    public void Update()
+    private void CheckTransitions()
     {
         if (wolf.HunterInSafeZone)
         {
@@ -54,11 +65,6 @@ public class WolfInvestigateState : IState
             SearchLocally();
             return;
         }
-
-        wolf.NavigatePath(path, ref pathIndex, wolf.NodeReachedDistance, () => {
-            isSearchingLocally = true;
-            wolf.Agent.Stop();
-        });
     }
     private void RecalculatePath()
     {

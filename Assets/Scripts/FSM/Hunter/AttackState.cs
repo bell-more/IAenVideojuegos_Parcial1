@@ -25,37 +25,50 @@ public class AttackState : IState
 
     public void Update()
     {
+        if (CheckTransitions()) return;
+
+        ProcessAttackBehaviour();
+    }
+
+    private bool CheckTransitions()
+    {
         if (hunter.Life <= 0)
         {
             fsm.ChangeState(HunterStates.Dead);
-            return;
+            return true;
         }
 
         if (hunter.GetClosestVisibleWolf() != null)
         {
             fsm.ChangeState(HunterStates.Flee);
-            return;
+            return true;
         }
 
         if (hunter.GetClosestDeadTarget() != null)
         {
             fsm.ChangeState(HunterStates.Gather);
-            return;
+            return true;
         }
         if (target == null || !target.GetIsAlive ||
             Vector3.Distance(hunter.transform.position, target.transform.position) > hunter.VisionRadius ||
             !hunter.HasLineOfSight(target.transform))
         {
             fsm.ChangeState(HunterStates.Search);
-            return;
+            return true;
         }
 
         if (isAimingRange)
         {
             AimAndShoot();
-            return;
+            return true;
         }
 
+        return false;
+   
+    }
+
+    private void ProcessAttackBehaviour()
+    {
         float distance = Vector3.Distance(hunter.transform.position, target.transform.position);
 
         if (distance <= hunter.MeleeAttackRadius)
@@ -84,7 +97,7 @@ public class AttackState : IState
                 }
                 else
                 {
-                    hunter.Agent.Stop(); 
+                    hunter.Agent.Stop();
                 }
             }
         }
@@ -110,7 +123,6 @@ public class AttackState : IState
             hunter.Agent.ApplySteering(steering);
         }
     }
-
     private void AimAndShoot()
     {
         Vector3 direction = target.transform.position - hunter.transform.position;

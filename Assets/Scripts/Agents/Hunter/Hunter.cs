@@ -96,16 +96,9 @@ public class Hunter : Agent
         currentLife = life;
         initialSpawnPosition = transform.position;
 
-        if (statusUI != null)
-        {
-            statusUI.UpdateGathers(currentGathers, requiredGathers);
-        }
+        if (statusUI != null) statusUI.UpdateGathers(currentGathers, requiredGathers);
 
-        initialColours = new Color[allRenderers.Length];
-        for (int i = 0; i < allRenderers.Length; i++)
-        {
-            initialColours[i] = allRenderers[i].material.color;
-        }
+        SaveInitialColours();
     }
 
     private void Update()
@@ -331,6 +324,15 @@ public class Hunter : Agent
     }
 
     //visuals
+
+    private void SaveInitialColours()
+    {
+        initialColours = new Color[allRenderers.Length];
+        for (int i = 0; i < allRenderers.Length; i++)
+        {
+            initialColours[i] = allRenderers[i].material.color;
+        }
+    }
     private void OnDrawGizmos()
     {
         GroundCircleGizmo.Draw(transform.position, visionRadius, Color.yellow);

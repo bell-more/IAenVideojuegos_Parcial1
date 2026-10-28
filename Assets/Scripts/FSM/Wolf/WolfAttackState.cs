@@ -14,14 +14,23 @@ public class WolfAttackState : IState
 
     public void Enter()
     {
+        InitializeAttack();
+    }
+
+    public void Update()
+    {
+        CheckTransitions();
+    }
+
+    private void InitializeAttack()
+    {
         wolf.UpdateUI("Attacking", "");
         wolf.Agent.Stop();
         timer = wolf.AttackCooldown;
 
         if (wolf.PathDrawer != null) wolf.PathDrawer.ClearPath();
     }
-
-    public void Update()
+    public void CheckTransitions()
     {
         if (wolf.HunterInSafeZone)
         {

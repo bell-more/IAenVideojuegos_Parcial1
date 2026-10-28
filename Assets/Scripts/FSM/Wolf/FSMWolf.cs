@@ -10,6 +10,21 @@ public class FSMWolf : MonoBehaviour
         fsm = new StateMachine();
         wolf = GetComponent<Wolf>();
 
+        RegisterStates();
+    }
+
+    private void Start()
+    {
+        fsm.ChangeState(WolfStates.Patrol);
+    }
+
+    private void Update()
+    {
+        fsm.Update();
+    }
+
+    private void RegisterStates()
+    {
         WolfPatrolState patrolState = new WolfPatrolState(wolf, fsm);
         fsm.RegisterState(WolfStates.Patrol, patrolState);
 
@@ -21,17 +36,6 @@ public class FSMWolf : MonoBehaviour
 
         WolfAttackState attackState = new WolfAttackState(wolf, fsm);
         fsm.RegisterState(WolfStates.Attack, attackState);
-
-    }
-
-    private void Start()
-    {
-        fsm.ChangeState(WolfStates.Patrol);
-    }
-
-    private void Update()
-    {
-        fsm.Update();
     }
 
     public void ReturnToPatrol()

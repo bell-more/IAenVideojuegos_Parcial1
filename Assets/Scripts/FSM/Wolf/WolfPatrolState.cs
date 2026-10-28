@@ -18,13 +18,24 @@ public class WolfPatrolState : IState
 
     public void Enter()
     {
+        InitializePatrol();
+    }
+
+    public void Update()
+    {
+        CheckTransitions();
+        Patrol();
+    }
+
+    public void InitializePatrol()
+    {
         wolf.ForgetHunter();
         currentWaypointIndex = 0;
         currentAStarPath = null;
         wolf.UpdateUI("Patrolling", "");
     }
 
-    public void Update()
+    public void CheckTransitions()
     {
         if (wolf.IsSeeingHunter && wolf.CurrentHunter != null && wolf.CurrentHunter.Life > 0)
         {
@@ -37,10 +48,8 @@ public class WolfPatrolState : IState
             fsm.ChangeState(WolfStates.Investigate);
             return;
         }
-
-        Patrol();
     }
-
+    
     private void Patrol()
     {
         if (wolf.PatrolWaypoints == null || wolf.PatrolWaypoints.Count == 0) return;

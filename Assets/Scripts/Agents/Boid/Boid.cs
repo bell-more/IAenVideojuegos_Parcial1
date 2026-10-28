@@ -14,6 +14,8 @@ public class Boid : Agent
     private bool isCollected = false;
     [SerializeField] private float respawnRange = 10f;
 
+    private float eatTimeRemaining;
+
     [Header("Visuals")]
     [SerializeField] private Renderer childMaterial;
     [SerializeField] private HealthVisuals visuals;
@@ -44,24 +46,9 @@ public class Boid : Agent
 
     private void Awake()
     {
-        initialLife = life;
-
-        if (healthBar != null)
-        {
-            healthBar.Setup(initialLife);
-        }
-
-        agent = GetComponent<SteeringAgent>();
-        flocking = GetComponent<Flocking>();
-        vision = GetComponent<BoidVision>();
-
-        allRenderers = GetComponentsInChildren<Renderer>(true);
-
-        initialColours = new Color[allRenderers.Length];
-        for (int i = 0; i < allRenderers.Length; i++)
-        {
-            initialColours[i] = allRenderers[i].material.color;
-        }
+        GetComponents();
+        InitializeLife();
+        SaveInitialColours();
     }
 
     private void Start()
@@ -90,7 +77,23 @@ public class Boid : Agent
 
         HandleFlocking();
     }
-    private float eatTimeRemaining;
+
+    public void InitializeLife()
+    {
+        initialLife = life;
+
+        if (healthBar != null)
+        {
+            healthBar.Setup(initialLife);
+        }
+    }
+    public void GetComponents()
+    {
+        agent = GetComponent<SteeringAgent>();
+        flocking = GetComponent<Flocking>();
+        vision = GetComponent<BoidVision>();
+        allRenderers = GetComponentsInChildren<Renderer>(true);
+    }
     private void HandleInterestObject()
     {
         Vector3 targetPos = targetInterestObject.transform.position;
@@ -327,6 +330,16 @@ public class Boid : Agent
             targetAura.SetActive(isActive);
         }
     }
+
+    public void SaveInitialColours()
+    {
+        initialColours = new Color[allRenderers.Length];
+        for (int i = 0; i < allRenderers.Length; i++)
+        {
+            initialColours[i] = allRenderers[i].material.color;
+        }
+    }
+    
     private void OnDrawGizmos()
     {
         if (!showGizmos) return;

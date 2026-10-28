@@ -15,8 +15,9 @@ public class ExitState : IState
 
     public void Enter()
     {
-        hunter.StatusUI.SetStatus("Exiting level");
-        hunter.StatusUI.ShowAction("");
+        UpdateUI();
+
+        CheckTransitions();
 
         if (hunter.currentNode != null && hunter.exitNode != null)
         {
@@ -26,6 +27,17 @@ public class ExitState : IState
     }
 
     public void Update()
+    {
+        CheckTransitions();
+    }
+
+    public void UpdateUI()
+    {
+        hunter.StatusUI.SetStatus("Exiting level");
+        hunter.StatusUI.ShowAction("");
+    }
+
+    public void CheckTransitions()
     {
         if (hunter.Life <= 0)
         {
@@ -52,7 +64,6 @@ public class ExitState : IState
             fsm.ChangeState(HunterStates.Search);
         });
     }
-
     public void Exit()
     {
         currentPath.Clear();

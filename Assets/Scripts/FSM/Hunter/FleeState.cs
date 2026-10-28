@@ -18,9 +18,7 @@ public class FleeState : IState
 
     public void Enter()
     {
-        hunter.StatusUI.SetStatus("Fleeing");
-        hunter.StatusUI.ShowAction("");
-        hunter.ToggleWolfDetection(true);
+        UpdateUI();
 
         hunter.IsInSafeZone = false;
         isSafe = false;
@@ -30,6 +28,12 @@ public class FleeState : IState
     }
 
     public void Update()
+    {
+        CheckTransitions();
+        NavigateAlongPath();
+    }
+
+    public void CheckTransitions()
     {
         if (hunter.Life <= 0)
         {
@@ -57,8 +61,13 @@ public class FleeState : IState
             }
             return;
         }
+    }
 
-        NavigateAlongPath();
+    public void UpdateUI()
+    {
+        hunter.StatusUI.SetStatus("Fleeing");
+        hunter.StatusUI.ShowAction("");
+        hunter.ToggleWolfDetection(true);
     }
 
     private void CalculatePathToClosestSafeZone()

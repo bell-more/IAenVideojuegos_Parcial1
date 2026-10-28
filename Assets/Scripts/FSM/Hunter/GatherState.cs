@@ -31,6 +31,12 @@ public class GatherState : IState
 
     public void Update()
     {
+        CheckTransitions();
+        ProcessSearchBehaviour();
+    }
+
+    public void CheckTransitions()
+    {
         if (hunter.Life <= 0)
         {
             fsm.ChangeState(HunterStates.Dead);
@@ -48,8 +54,10 @@ public class GatherState : IState
             fsm.ChangeState(HunterStates.Search);
             return;
         }
+    }
 
-        //behaviour
+    public void ProcessSearchBehaviour()
+    {
         float distance = Vector3.Distance(hunter.transform.position, target.transform.position);
 
         if (distance <= hunter.MeleeAttackRadius)
@@ -62,7 +70,7 @@ public class GatherState : IState
             if (gatherTimer <= 0f)
             {
                 hunter.targetsInRange.Remove(target.transform);
-                target.Collect(); 
+                target.Collect();
                 hunter.AddGather();
 
                 if (hunter.CurrentGathers >= hunter.RequiredGathers)
@@ -84,7 +92,6 @@ public class GatherState : IState
             hunter.Agent.ApplySteering(steering);
         }
     }
-
     public void Exit()
     {
         target = null;

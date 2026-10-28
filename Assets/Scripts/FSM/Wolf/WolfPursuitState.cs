@@ -13,13 +13,30 @@ public class WolfPursuitState : IState
 
     public void Enter()
     {
+        InitializePursuit();
+    }
+
+    public void Update()
+    {
+        CheckTransitions();
+        ProcessPursuitMovement();
+    }
+
+    public void InitializePursuit()
+    {
         wolf.IsAlerted = false;
         wolf.UpdateUI("Pursuing", "");
 
         if (wolf.PathDrawer != null) wolf.PathDrawer.ClearPath();
     }
 
-    public void Update()
+    public void ProcessPursuitMovement()
+    {
+        Vector3 targetPos = new Vector3(wolf.LastKnownHunterPosition.x, wolf.transform.position.y, wolf.LastKnownHunterPosition.z);
+        Vector3 steering = wolf.Agent.Seek(targetPos);
+        wolf.Agent.ApplySteering(steering);
+    }
+    public void CheckTransitions()
     {
         if (wolf.HunterInSafeZone)
         {
@@ -46,11 +63,6 @@ public class WolfPursuitState : IState
             fsm.ChangeState(WolfStates.Attack);
             return;
         }
-
-        Vector3 targetPos = new Vector3(wolf.LastKnownHunterPosition.x, wolf.transform.position.y, wolf.LastKnownHunterPosition.z);
-        Vector3 steering = wolf.Agent.Seek(targetPos);
-        wolf.Agent.ApplySteering(steering);
     }
-
     public void Exit() { }
 }

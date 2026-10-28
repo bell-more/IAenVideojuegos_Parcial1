@@ -10,6 +10,21 @@ public class FSMAgent : MonoBehaviour
         fsm = new StateMachine();
         hunter = GetComponent<Hunter>();
 
+        RegisterStates();
+    }
+
+    private void Start()
+    {
+        fsm.ChangeState(HunterStates.Search);
+    }
+
+    private void Update()
+    {
+        fsm.Update();
+    }
+
+    private void RegisterStates()
+    {
         SearchState searchState = new SearchState(hunter, fsm);
         fsm.RegisterState(HunterStates.Search, searchState);
 
@@ -27,17 +42,6 @@ public class FSMAgent : MonoBehaviour
 
         DeadState deadState = new DeadState(hunter, fsm);
         fsm.RegisterState(HunterStates.Dead, deadState);
-
-    }
-
-    private void Start()
-    {
-        fsm.ChangeState(HunterStates.Search);
-    }
-
-    private void Update()
-    {
-        fsm.Update();
     }
 }
 

@@ -100,16 +100,22 @@ public class Wolf : MonoBehaviour
     {
         HunterInSafeZone = hunterTarget != null && hunterTarget.IsInSafeZone;
 
-        if (HunterInSafeZone)
-        {
-            IsSeeingHunter = false;
-            CurrentHunter = null;
-            hasAlertedPack = false;
-            return;
-        }
+        if (CheckHunterInSafeZone()) return;
 
         IsSeeingHunter = CanSeeHunter(out Vector3 hunterPosition);
+        HandleHunterDetection(hunterPosition);
+    }
 
+    private void GetComponents()
+    {
+        PathDrawer = GetComponent<PathDrawer>();
+        Agent = GetComponent<SteeringAgent>();
+        audioSource = GetComponent<AudioSource>();
+        perception = GetComponent<Perception>();
+        wolfFSM = GetComponent<FSMWolf>();
+    }
+    private void HandleHunterDetection(Vector3 hunterPosition)
+    {
         if (IsSeeingHunter)
         {
             LastKnownHunterPosition = hunterPosition;
@@ -123,7 +129,10 @@ public class Wolf : MonoBehaviour
 
                 if (currentAreaInstance == null)
                 {
-                    if (hunterLastSeenPositionArea != null) currentAreaInstance = Instantiate(hunterLastSeenPositionArea, areaPos, Quaternion.identity);
+                    if (hunterLastSeenPositionArea != null)
+                    {
+                        currentAreaInstance = Instantiate(hunterLastSeenPositionArea, areaPos, Quaternion.identity);
+                    }
                 }
                 else
                 {
@@ -141,15 +150,6 @@ public class Wolf : MonoBehaviour
         {
             hasAlertedPack = false;
         }
-    }
-
-    private void GetComponents()
-    {
-        PathDrawer = GetComponent<PathDrawer>();
-        Agent = GetComponent<SteeringAgent>();
-        audioSource = GetComponent<AudioSource>();
-        perception = GetComponent<Perception>();
-        wolfFSM = GetComponent<FSMWolf>();
     }
     private bool CanSeeHunter(out Vector3 hunterPos)
     {
@@ -174,6 +174,17 @@ public class Wolf : MonoBehaviour
         return true;
     }
 
+    private bool CheckHunterInSafeZone()
+    {
+        if (HunterInSafeZone)
+        {
+            IsSeeingHunter = false;
+            CurrentHunter = null;
+            hasAlertedPack = false;
+            return true;
+        }
+        return false;
+    }
     private void HandleHunterDetected(Vector3 alertPosition, Wolf sender)
     {
         if (sender == this) return;
@@ -185,6 +196,7 @@ public class Wolf : MonoBehaviour
 
         if (!IsSeeingHunter) ShowFeedback("Wolf alerted!", alertSprite);
     }
+
     private void HandleSafeZoneReached()
     {
         ForgetHunter();
