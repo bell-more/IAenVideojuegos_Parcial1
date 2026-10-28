@@ -110,7 +110,7 @@ public class WolfPatrolState : IState
     private void MoveToTarget(Vector3 destination)
     {
         destination.y = wolf.transform.position.y;
-        float distance = Vector3.Distance(wolf.transform.position, destination);
+        float distance = (wolf.transform.position - destination).sqrMagnitude;
 
         if (distance <= wolf.NodeReachedDistance)
         {

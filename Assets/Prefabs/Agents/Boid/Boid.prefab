@@ -53,7 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fac55148ecdb3b40b1fd0010a2bc683, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boid
-  life: 2
+  life: 1
   respawnRange: 10
   trapAttackCooldown: 3
   trapAttackDistance: 2
@@ -90,6 +90,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoidVision
   hunterAgent: {fileID: 0}
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!114 &6419548395564398830
 MonoBehaviour:
   m_ObjectHideFlags: 0

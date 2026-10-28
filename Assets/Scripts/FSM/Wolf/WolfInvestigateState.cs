@@ -82,7 +82,7 @@ public class WolfInvestigateState : IState
             return;
         }
 
-        if (Vector3.Distance(currentInvestigateTarget, wolf.LastKnownHunterPosition) > wolf.TargetMoveTolerance)
+        if ((currentInvestigateTarget - wolf.LastKnownHunterPosition).sqrMagnitude > (wolf.TargetMoveTolerance * wolf.TargetMoveTolerance))
         {
             currentInvestigateTarget = wolf.LastKnownHunterPosition;
             RecalculatePath();
@@ -127,9 +127,9 @@ public class WolfInvestigateState : IState
     {
         searchTimer -= Time.deltaTime;
 
-        wolf.WolfVisuals.ShowFeedback("Hunter lost!", wolf.WolfVisuals.HunterLostSprite);
+        wolf.WolfVisuals.ShowFeedback("Hunter lost!", false, true);
 
-        float rotationAngle = Mathf.Sin(Time.time * 3f) * 30f;
+        float rotationAngle = Mathf.Sin(Time.time * wolf.SearchRotationSpeed) * wolf.SearchRotationAngle;
         wolf.transform.rotation = Quaternion.Euler(0f, wolf.transform.eulerAngles.y + (rotationAngle * Time.deltaTime), 0f);
 
         if (searchTimer <= 0f)

@@ -11,6 +11,7 @@ public class HunterVisuals : MonoBehaviour
     public Color[] InitialColours => initialColours;        
     [SerializeField] private LineRenderer lineRenderer;
     [SerializeField] private GameObject areaToFleeIndicator;
+    [SerializeField] private float areaToFleeIndicatorHeight= 5f;
     private GameObject activeAreaToFleeIndicator;
     [SerializeField] private GameObject wolfDetectedImage;
 
@@ -51,7 +52,7 @@ public class HunterVisuals : MonoBehaviour
     {
         if (enable)
         {
-            Vector3 spawnPos = new Vector3(safeZonePos.x, 5f, safeZonePos.z);
+            Vector3 spawnPos = new Vector3(safeZonePos.x, areaToFleeIndicatorHeight, safeZonePos.z);
             activeAreaToFleeIndicator = Instantiate(areaToFleeIndicator, spawnPos, Quaternion.identity);
         }
         else Destroy(activeAreaToFleeIndicator);

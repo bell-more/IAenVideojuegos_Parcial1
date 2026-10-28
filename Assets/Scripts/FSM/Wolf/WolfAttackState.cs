@@ -52,7 +52,7 @@ public class WolfAttackState : IState
             return;
         }
 
-        float distance = Vector3.Distance(wolf.transform.position, wolf.LastKnownHunterPosition);
+        float distance = (wolf.transform.position - wolf.LastKnownHunterPosition).sqrMagnitude;
 
         if (distance > wolf.CaptureRadius)
         {

@@ -12,6 +12,7 @@ public class BoidVision : MonoBehaviour
     private InterestObject interestObject;
     public InterestObject InterestObject => interestObject;
 
+    [SerializeField] private LayerMask hunterLayer;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -38,7 +39,7 @@ public class BoidVision : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Hunter"))
+        if (((1 << other.gameObject.layer) & hunterLayer) != 0)
         {
             hunterAgent = other.GetComponentInParent<SteeringAgent>();
         }
@@ -53,7 +54,7 @@ public class BoidVision : MonoBehaviour
             nearbyAgents.Remove(neighbour);
         }
 
-        if (other.gameObject.layer == LayerMask.NameToLayer("Hunter"))
+        if (((1 << other.gameObject.layer) & hunterLayer) != 0)
         {
             hunterAgent = null;
         }

@@ -16,12 +16,14 @@ public class Boid : Agent
     public bool GetIsAlive => isAlive;
     private bool isCollected = false;
     [SerializeField] private float respawnRange = 10f;
+    [SerializeField] private float respawnDelay = 3f;
 
     private float eatTimeRemaining;
 
     [Header("Trap")]
     [SerializeField] private float trapAttackCooldown = 3f;
     [SerializeField] private float trapAttackDistance = 2f;
+    [SerializeField] private int trapDamageAmount = 1;
     private float trapAttackTimer;
 
     [Header("Wandering")]
@@ -79,7 +81,7 @@ public class Boid : Agent
         Vector3 targetPos = targetInterestObject.transform.position;
         targetPos.y = transform.position.y;
 
-        float distance = Vector3.Distance(transform.position, targetPos);
+        float distance = (transform.position - targetPos).sqrMagnitude;
 
         if (distance <= trapAttackDistance)
         {
@@ -119,7 +121,7 @@ public class Boid : Agent
 
         if (trapAttackTimer <= 0f)
         {
-            targetInterestObject.TakeDamage(1);
+            targetInterestObject.TakeDamage(trapDamageAmount);
             trapAttackTimer = trapAttackCooldown;
         }
     }
@@ -236,7 +238,7 @@ public class Boid : Agent
         boidVisuals.SetStatusUI();
         boidVisuals.ToggleVisual(false);
 
-        Invoke(nameof(Respawn), 3f);
+        Invoke(nameof(Respawn), respawnDelay);
     }
 
     private void Respawn()

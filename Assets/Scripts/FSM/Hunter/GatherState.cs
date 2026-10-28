@@ -58,7 +58,7 @@ public class GatherState : IState
 
     private void ProcessSearchBehaviour()
     {
-        float distance = Vector3.Distance(hunter.transform.position, target.transform.position);
+        float distance = (hunter.transform.position - target.transform.position).sqrMagnitude;
 
         if (distance <= hunter.MeleeAttackRadius)
         {

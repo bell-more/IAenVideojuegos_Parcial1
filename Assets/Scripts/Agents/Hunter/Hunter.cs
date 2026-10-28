@@ -22,6 +22,7 @@ public class Hunter : Agent
     [SerializeField] private float tba = 3f;
     [SerializeField] private float rangeAttackRadius = 6f;
     [SerializeField] private float meleeAttackRadius = 2f;
+    [SerializeField] private int meleeDamage = 1;
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
     [SerializeField] private float aimTolerance = 0.95f;
@@ -116,7 +117,7 @@ public class Hunter : Agent
     {
         if (target == null) return false;
 
-        target.TakeDamage(1);
+        target.TakeDamage(meleeDamage);
 
         return true;
     }
@@ -253,7 +254,7 @@ public class Hunter : Agent
             Vector3 targetPos = targetNode.transform.position;
             targetPos.y = transform.position.y;
 
-            if (Vector3.Distance(transform.position, targetPos) > reachDistance) break;
+            if ((transform.position - targetPos).sqrMagnitude > reachDistance * reachDistance) break;
 
             currentNode = targetNode;
             pathIndex++;

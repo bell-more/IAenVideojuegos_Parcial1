@@ -31,6 +31,12 @@ public class Wolf : MonoBehaviour
     public bool IsInvestigating { get; set; } = false;
     private static GameObject currentAreaInstance;
     public GameObject CurrentAreaInstance { get => currentAreaInstance; set => currentAreaInstance = value; }
+    [Header("Search")]
+    [SerializeField] private float searchRotationSpeed = 3f;
+    public float SearchRotationSpeed => searchRotationSpeed;
+
+    [SerializeField] private float searchRotationAngle = 30f;
+    public float SearchRotationAngle => searchRotationAngle;
     [SerializeField] private float hunterAreaHeight = 3f;
 
     private AudioSource audioSource;

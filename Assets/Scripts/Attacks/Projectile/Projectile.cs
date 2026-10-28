@@ -7,6 +7,7 @@ public class Projectile : MonoBehaviour
     private int damage = 1;
     private Boid targetBoid;
     private Vector3 moveDirection;
+    [SerializeField] private LayerMask boidLayer;
 
     public void Initialize(Boid target)
     {
@@ -27,7 +28,7 @@ public class Projectile : MonoBehaviour
     {
         if (other.isTrigger) return;
 
-        if (other.gameObject.layer == LayerMask.NameToLayer("Boid"))
+        if (((1 << other.gameObject.layer) & boidLayer) != 0)
         {
             Boid boid = other.GetComponentInParent<Boid>();
 

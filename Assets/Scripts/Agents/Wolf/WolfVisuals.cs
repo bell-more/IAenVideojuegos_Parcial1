@@ -32,7 +32,7 @@ public class WolfVisuals : MonoBehaviour
         GroundCircleGizmo.DrawArc(transform.position, transform.eulerAngles.y, wolf.CaptureRadius, wolf.ViewAngle, Color.red);
     }
 
-    public void ShowFeedback(string text, bool hasAlerted)
+    public void ShowFeedback(string text, bool hasAlerted, bool lostHunter = false)
     {
         if (detectionText != null)
         {
@@ -48,6 +48,7 @@ public class WolfVisuals : MonoBehaviour
             else feedbackImage.sprite = alertSprite;
             
         }
+        if (lostHunter) feedbackImage.sprite = hunterLostSprite;
     }
 
     public void HideFeedback()

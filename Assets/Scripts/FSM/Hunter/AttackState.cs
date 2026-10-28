@@ -55,7 +55,7 @@ public class AttackState : IState
             return true;
         }
         if (target == null || !target.GetIsAlive ||
-            Vector3.Distance(hunter.transform.position, target.transform.position) > hunter.VisionRadius ||
+            (hunter.transform.position - target.transform.position).sqrMagnitude > (hunter.VisionRadius * hunter.VisionRadius) ||
             !hunter.HasLineOfSight(target.transform))
         {
             fsm.ChangeState(HunterStates.Search);
@@ -74,7 +74,7 @@ public class AttackState : IState
 
     private void ProcessAttackBehaviour()
     {
-        float distance = Vector3.Distance(hunter.transform.position, target.transform.position);
+        float distance = (hunter.transform.position - target.transform.position).sqrMagnitude;
 
         if (distance <= hunter.MeleeAttackRadius)
         {

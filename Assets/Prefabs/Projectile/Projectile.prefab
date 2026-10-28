@@ -128,6 +128,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   speed: 20
   lifetime: 4
+  boidLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!54 &6836974459978214319
 Rigidbody:
   m_ObjectHideFlags: 0
