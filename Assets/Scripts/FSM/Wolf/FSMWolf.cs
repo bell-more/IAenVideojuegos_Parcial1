@@ -33,4 +33,9 @@ public class FSMWolf : MonoBehaviour
     {
         fsm.Update();
     }
+
+    public void ReturnToPatrol()
+    {
+        fsm.ChangeState(WolfStates.Patrol);
+    }
 }

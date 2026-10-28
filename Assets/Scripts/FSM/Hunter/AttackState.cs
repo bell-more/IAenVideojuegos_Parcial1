@@ -76,9 +76,8 @@ public class AttackState : IState
 
                 Vector3 lookPos = new Vector3(target.transform.position.x, hunter.transform.position.y, target.transform.position.z);
                 hunter.transform.LookAt(lookPos);
-                float safeDistanceBuffer = 1f;
 
-                if (distance > safeDistanceBuffer)
+                if (distance > hunter.MeleeStandbyDistance)
                 {
                     Vector3 steering = hunter.Agent.Pursuit(target);
                     hunter.Agent.ApplySteering(steering);

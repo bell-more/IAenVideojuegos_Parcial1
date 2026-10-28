@@ -4,7 +4,6 @@ public class WolfAttackState : IState
 {
     private Wolf wolf;
     private StateMachine fsm;
-    private float attackCooldown = 1.5f;
     private float timer = 0f;
 
     public WolfAttackState(Wolf wolf, StateMachine fsm)
@@ -17,7 +16,7 @@ public class WolfAttackState : IState
     {
         wolf.UpdateUI("Attacking", "");
         wolf.Agent.Stop();
-        timer = attackCooldown;
+        timer = wolf.AttackCooldown;
 
         if (wolf.PathDrawer != null) wolf.PathDrawer.ClearPath();
     }
@@ -53,7 +52,7 @@ public class WolfAttackState : IState
         }
 
         timer += Time.deltaTime;
-        if (timer >= attackCooldown)
+        if (timer >= wolf.AttackCooldown)
         {
             timer = 0f;
             wolf.CurrentHunter.TakeDamage();

@@ -10,8 +10,13 @@ public class Hunter : Agent
     private int currentLife;
     private Vector3 initialSpawnPosition;
     public Vector3 InitialSpawnPosition => initialSpawnPosition;
+    [Header("FSM")]
+    [SerializeField] private float nodeReachedDistance = 0.5f;
+    public float NodeReachedDistance => nodeReachedDistance;
     [SerializeField] private float visionRadius = 15f; 
     public float VisionRadius => visionRadius;
+    [SerializeField] private float meleeStandbyDistance = 1f;
+    public float MeleeStandbyDistance => meleeStandbyDistance;
     [SerializeField] private LayerMask wolfLayer;
     [SerializeField] private LayerMask boidLayer;
 
@@ -84,10 +89,7 @@ public class Hunter : Agent
 
     private void Awake()
     {
-        PathDrawer = GetComponentInChildren<PathDrawer>();
-        agent = GetComponent<SteeringAgent>();
-        allRenderers = GetComponentsInChildren<Renderer>(true);
-        perception = GetComponent<Perception>();
+        GetComponents();
     }
     private void Start()
     {
@@ -113,7 +115,13 @@ public class Hunter : Agent
         RenderLine();
     }
 
-
+    public void GetComponents()
+    {
+        PathDrawer = GetComponentInChildren<PathDrawer>();
+        agent = GetComponent<SteeringAgent>();
+        allRenderers = GetComponentsInChildren<Renderer>(true);
+        perception = GetComponent<Perception>();
+    }
     public Wolf GetClosestVisibleWolf()
     {
         if (perception == null) return null;

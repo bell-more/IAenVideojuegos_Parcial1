@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class Wolf : MonoBehaviour
 {
+    [Header("FSM")]
+    [SerializeField] private float nodeReachedDistance = 0.5f;
+    public float NodeReachedDistance => nodeReachedDistance;
     [SerializeField] private float viewRadius = 10f;
     [Range(0, 360)] public float viewAngle = 90f;
     [SerializeField] private float captureRadius = 2.5f;
@@ -12,6 +15,11 @@ public class Wolf : MonoBehaviour
     [SerializeField] private LayerMask hunterLayer;
     [SerializeField] private float inspectDuration = 3f;
     public float InspectDuration => inspectDuration;
+    [SerializeField] private float attackCooldown = 1.5f;
+    public float AttackCooldown => attackCooldown;
+    [SerializeField] private float targetMoveTolerance = 0.5f;
+    public float TargetMoveTolerance => targetMoveTolerance;
+    private FSMWolf wolfFSM;
 
     [Header("Patrol")]
     [SerializeField] private List<Transform> patrolWaypoints = new List<Transform>();
@@ -52,10 +60,7 @@ public class Wolf : MonoBehaviour
 
     private void Awake()
     {
-        PathDrawer = GetComponent<PathDrawer>();
-        Agent = GetComponent<SteeringAgent>();
-        audioSource = GetComponent<AudioSource>();
-        perception = GetComponent<Perception>();
+        GetComponents();
         HideFeedback();
     }
 
@@ -93,7 +98,6 @@ public class Wolf : MonoBehaviour
 
     private void Update()
     {
-        if (hunterTarget == null) hunterTarget = FindFirstObjectByType<Hunter>();
         HunterInSafeZone = hunterTarget != null && hunterTarget.IsInSafeZone;
 
         if (HunterInSafeZone)
@@ -139,6 +143,14 @@ public class Wolf : MonoBehaviour
         }
     }
 
+    private void GetComponents()
+    {
+        PathDrawer = GetComponent<PathDrawer>();
+        Agent = GetComponent<SteeringAgent>();
+        audioSource = GetComponent<AudioSource>();
+        perception = GetComponent<Perception>();
+        wolfFSM = GetComponent<FSMWolf>();
+    }
     private bool CanSeeHunter(out Vector3 hunterPos)
     {
         hunterPos = Vector3.zero;
@@ -153,6 +165,9 @@ public class Wolf : MonoBehaviour
             CurrentHunter = null;
             return false;
         }
+
+        hunterTarget = hunter;
+
 
         CurrentHunter = hunter;
         hunterPos = hunter.transform.position;
@@ -173,6 +188,8 @@ public class Wolf : MonoBehaviour
     private void HandleSafeZoneReached()
     {
         ForgetHunter();
+        hunterTarget = null;
+        if (wolfFSM != null) wolfFSM.ReturnToPatrol();
     }
 
     public void ForgetHunter()

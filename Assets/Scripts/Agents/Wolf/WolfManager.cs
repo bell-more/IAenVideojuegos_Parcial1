@@ -9,7 +9,20 @@ public class WolfManager : MonoBehaviour
     public event Action OnSafeZoneReached;
 
     private List<Wolf> allWolves = new List<Wolf>();
+    private void OnEnable()
+    {
+        SafeZoneNotifier.OnHunterEnteredSafeZone += HandleHunterEnteredSafeZone;
+    }
 
+    private void OnDisable()
+    {
+        SafeZoneNotifier.OnHunterEnteredSafeZone -= HandleHunterEnteredSafeZone;
+    }
+
+    public void NotifySafeZoneReached()
+    {
+        OnSafeZoneReached?.Invoke();
+    }
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -31,10 +44,11 @@ public class WolfManager : MonoBehaviour
         OnHunterDetected?.Invoke(position, sender);
     }
 
-    public void NotifySafeZoneReached()
+    private void HandleHunterEnteredSafeZone()
     {
-        OnSafeZoneReached?.Invoke();
+        NotifySafeZoneReached();
     }
+
 
     public bool IsAnyWolfActive()
     {

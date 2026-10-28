@@ -7,7 +7,6 @@ public class SearchState : IState
     private StateMachine fsm;
     private List<GraphNode> currentPath = new List<GraphNode>();
     private int currentPathIndex = 0;
-    private float nodeReachedDistance = 0.5f;
     private bool isInCoto = false;
     private float spawnTimer = 0f;
 
@@ -76,7 +75,7 @@ public class SearchState : IState
 
     private void NavigateAlongPath()
     {
-        hunter.NavigatePath(currentPath, ref currentPathIndex, nodeReachedDistance, false, () => {
+        hunter.NavigatePath(currentPath, ref currentPathIndex, hunter.NodeReachedDistance, false, () => {
             if (!isInCoto)
             {
                 isInCoto = true;

@@ -7,9 +7,7 @@ public class WolfInvestigateState : IState
     private StateMachine fsm;
     private List<GraphNode> path;
     private int pathIndex = 0;
-    private float nodeReachedDistance = 0.5f;
     private float searchTimer = 0f;
-
     private bool isSearchingLocally = false;
     private Vector3 currentInvestigateTarget;
 
@@ -44,7 +42,7 @@ public class WolfInvestigateState : IState
             return;
         }
 
-        if (Vector3.Distance(currentInvestigateTarget, wolf.LastKnownHunterPosition) > 0.5f)
+        if (Vector3.Distance(currentInvestigateTarget, wolf.LastKnownHunterPosition) > wolf.TargetMoveTolerance)
         {
             currentInvestigateTarget = wolf.LastKnownHunterPosition;
             RecalculatePath();
@@ -57,7 +55,7 @@ public class WolfInvestigateState : IState
             return;
         }
 
-        wolf.NavigatePath(path, ref pathIndex, nodeReachedDistance, () => {
+        wolf.NavigatePath(path, ref pathIndex, wolf.NodeReachedDistance, () => {
             isSearchingLocally = true;
             wolf.Agent.Stop();
         });

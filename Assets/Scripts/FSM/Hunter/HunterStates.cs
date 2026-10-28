@@ -1,7 +1,7 @@
 
     public enum HunterStates
     {
-        Search, //Patrol,
+        Search, 
         Attack,
         Gather,
         Flee,

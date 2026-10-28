@@ -9,7 +9,6 @@ public class WolfPatrolState : IState
     private int patrolDirection = 1;
     private List<GraphNode> currentAStarPath;
     private int currentPathIndex = 0;
-    private float nodeReachedDistance = 0.5f;
 
     public WolfPatrolState(Wolf wolf, StateMachine fsm)
     {
@@ -83,7 +82,7 @@ public class WolfPatrolState : IState
         destination.y = wolf.transform.position.y;
         float distance = Vector3.Distance(wolf.transform.position, destination);
 
-        if (distance <= nodeReachedDistance)
+        if (distance <= wolf.NodeReachedDistance)
         {
             CalculateNextWaypoint();
         }
@@ -96,7 +95,7 @@ public class WolfPatrolState : IState
 
     private void NavigateAStar()
     {
-        wolf.NavigatePath(currentAStarPath, ref currentPathIndex, nodeReachedDistance, () => {
+        wolf.NavigatePath(currentAStarPath, ref currentPathIndex, wolf.NodeReachedDistance, () => {
             CalculateNextWaypoint();
             currentAStarPath = null;
             if (wolf.PathDrawer != null) wolf.PathDrawer.ClearPath();

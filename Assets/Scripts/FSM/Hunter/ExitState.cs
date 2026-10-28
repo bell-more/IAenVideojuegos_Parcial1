@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 public class ExitState : IState
 {
@@ -8,8 +7,6 @@ public class ExitState : IState
 
     private List<GraphNode> currentPath = new List<GraphNode>();
     private int currentPathIndex = 0;
-    private float nodeReachedDistance = 0.5f;
-
     public ExitState(Hunter hunter, StateMachine fsm)
     {
         this.hunter = hunter;
@@ -42,7 +39,7 @@ public class ExitState : IState
             return;
         }
 
-        hunter.NavigatePath(currentPath, ref currentPathIndex, nodeReachedDistance, true, () => {
+        hunter.NavigatePath(currentPath, ref currentPathIndex, hunter.NodeReachedDistance, true, () => {
             hunter.ResetGathers();
 
             if (hunter.initialZoneNode != null)

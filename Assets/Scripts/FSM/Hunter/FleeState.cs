@@ -7,8 +7,6 @@ public class FleeState : IState
     private StateMachine fsm;
     private List<GraphNode> currentPath = new List<GraphNode>();
     private int currentPathIndex = 0;
-    private float nodeReachedDistance = 0.5f;
-
     private bool isSafe = false;
     private float waitTimer = 0f;
 
@@ -109,9 +107,11 @@ public class FleeState : IState
 
     private void NavigateAlongPath()
     {
-        hunter.NavigatePath(currentPath, ref currentPathIndex, nodeReachedDistance, true, () => {
+        hunter.NavigatePath(currentPath, ref currentPathIndex, hunter.NodeReachedDistance, true, () => {
+            if (isSafe) return;
             isSafe = true;
             hunter.IsInSafeZone = true;
+            SafeZoneNotifier.NotifyHunterEnteredSafeZone();
             hunter.Agent.Stop();
             if (hunter.PathDrawer != null) hunter.PathDrawer.ClearPath();
         });
