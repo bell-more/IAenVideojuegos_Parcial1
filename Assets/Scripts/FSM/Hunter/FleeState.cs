@@ -67,7 +67,7 @@ public class FleeState : IState
     {
         hunter.StatusUI.SetStatus("Fleeing");
         hunter.StatusUI.ShowAction("");
-        hunter.ToggleWolfDetection(true);
+        hunter.Visuals.ToggleWolfDetection(true);
     }
 
     private void CalculatePathToClosestSafeZone()
@@ -109,7 +109,7 @@ public class FleeState : IState
 
             if (bestSafeNode != null)
             {
-                hunter.EnableAreaToFleeIndicator(bestSafeNode.transform.position, true);
+                hunter.Visuals.EnableAreaToFleeIndicator(bestSafeNode.transform.position, true);
             }
         }
     }
@@ -129,8 +129,8 @@ public class FleeState : IState
     public void Exit()
     {
         hunter.IsInSafeZone = false;
-        hunter.EnableAreaToFleeIndicator(new Vector3(0f, 0f, 0f), false);
-        hunter.ToggleWolfDetection(false);
+        hunter.Visuals.EnableAreaToFleeIndicator(new Vector3(0f, 0f, 0f), false);
+        hunter.Visuals.ToggleWolfDetection(false);
         currentPath.Clear();
 
         if (hunter.PathDrawer != null) hunter.PathDrawer.ClearPath();

@@ -3,8 +3,6 @@ using UnityEngine;
 public class Hunter : Agent
 {
     public List<Transform> targetsInRange = new List<Transform>();
-    private readonly List<Transform> visibleTargets = new List<Transform>();
-    [SerializeField] private LineRenderer lineRenderer;
     private Boid currentBoid;
     [SerializeField] private int life = 1;
     private int currentLife;
@@ -19,14 +17,6 @@ public class Hunter : Agent
     public float MeleeStandbyDistance => meleeStandbyDistance;
     [SerializeField] private LayerMask wolfLayer;
     [SerializeField] private LayerMask boidLayer;
-
-    //colour
-    private Renderer[] allRenderers;
-    private Color[] initialColours;
-
-    //safe area visual
-    [SerializeField] private GameObject areaToFleeIndicator;
-    private GameObject activeAreaToFleeIndicator;
 
     [Header("Attack")]
     [SerializeField] private float tba = 3f;
@@ -51,8 +41,6 @@ public class Hunter : Agent
     public int RequiredGathers => requiredGathers;
     public int CurrentGathers => currentGathers;
 
-    [SerializeField] private GameObject wolfDetectedImage;
-    //
     private SteeringAgent agent;
     public SteeringAgent Agent => agent;
 
@@ -70,9 +58,9 @@ public class Hunter : Agent
     [SerializeField] private float respawnTime = 5f;
     [SerializeField] private float safeZoneWaitTime = 3f;
     private bool isDead = false;
+    public bool IsDead { get => isDead; set => isDead = value; }
     //
-    
-    public bool IsDead => isDead;
+
     public bool IsInSafeZone { get; set; } = false;
     public float SafeZoneWaitTime => safeZoneWaitTime;
 
@@ -86,7 +74,8 @@ public class Hunter : Agent
 
     public PathDrawer PathDrawer { get; private set; }
     private Perception perception;
-
+    private HunterVisuals visuals;
+    public HunterVisuals Visuals => visuals;
     private void Awake()
     {
         GetComponents();
@@ -98,22 +87,19 @@ public class Hunter : Agent
 
         if (statusUI != null) statusUI.UpdateGathers(currentGathers, requiredGathers);
 
-        SaveInitialColours();
     }
 
     private void Update()
     {
         if (tbaTimer > 0f) tbaTimer -= Time.deltaTime;
-
-        RenderLine();
     }
 
     public void GetComponents()
     {
         PathDrawer = GetComponentInChildren<PathDrawer>();
         agent = GetComponent<SteeringAgent>();
-        allRenderers = GetComponentsInChildren<Renderer>(true);
         perception = GetComponent<Perception>();
+        visuals = GetComponent<HunterVisuals>();    
     }
     public Wolf GetClosestVisibleWolf()
     {
@@ -154,7 +140,10 @@ public class Hunter : Agent
     {
         tbaTimer = tba;
     }
-
+    public void TakeDamage()
+    {
+        currentLife = 0;
+    }
     public Boid GetClosestTarget()
     {
         return GetClosestTarget(true);
@@ -228,47 +217,10 @@ public class Hunter : Agent
             statusUI.UpdateGathers(currentGathers, requiredGathers);
         }
     }
-    public void TakeDamage()
-    {
-        currentLife = 0;
-    }
+    
     public bool HasLineOfSight(Transform target)
     {
         return perception != null && perception.HasLineOfSight(target);
-    }
-
-    public void ToggleVisibility()
-    {
-        for (int i = 0; i < allRenderers.Length; i++)
-        {
-            allRenderers[i].material.color = Color.red;
-        }
-
-        Collider[] childColliders = GetComponentsInChildren<Collider>();
-        foreach (Collider col in childColliders)
-        {
-            if (col.gameObject != this.gameObject)
-            {
-                col.enabled = false;
-            }
-        }
-
-        isDead = true;
-    }
-
-    public void ToggleWolfDetection(bool wasDetected)
-    {
-        wolfDetectedImage.SetActive(wasDetected);
-    }
-
-    public void EnableAreaToFleeIndicator(Vector3 safeZonePos, bool enable)
-    {
-        if (enable)
-        {
-            Vector3 spawnPos = new Vector3(safeZonePos.x, 5f, safeZonePos.z);
-            activeAreaToFleeIndicator = Instantiate(areaToFleeIndicator, spawnPos, Quaternion.identity);
-        }
-        else Destroy(activeAreaToFleeIndicator);
     }
 
     public void Spawn()
@@ -276,9 +228,9 @@ public class Hunter : Agent
         currentLife = life;
         isDead = false;
 
-        for (int i = 0; i < allRenderers.Length; i++)
+        for (int i = 0; i < visuals.AllRenderers.Length; i++)
         {
-            allRenderers[i].material.color = initialColours[i];
+            visuals.AllRenderers[i].material.color = visuals.InitialColours[i];
         }
 
         Collider[] childColliders = GetComponentsInChildren<Collider>();
@@ -322,54 +274,4 @@ public class Hunter : Agent
 
         return false;
     }
-
-    //visuals
-
-    private void SaveInitialColours()
-    {
-        initialColours = new Color[allRenderers.Length];
-        for (int i = 0; i < allRenderers.Length; i++)
-        {
-            initialColours[i] = allRenderers[i].material.color;
-        }
-    }
-    private void OnDrawGizmos()
-    {
-        GroundCircleGizmo.Draw(transform.position, visionRadius, Color.yellow);
-        GroundCircleGizmo.Draw(transform.position, rangeAttackRadius, Color.red);
-        GroundCircleGizmo.Draw(transform.position, meleeAttackRadius, Color.green);
-    }
-
-    public void RenderLine()
-    {
-        if (lineRenderer == null) return;
-
-        targetsInRange.RemoveAll(t => t == null || !t.gameObject.activeInHierarchy);
-        visibleTargets.Clear();
-
-        foreach (Transform target in targetsInRange)
-        {
-            if (Vector3.Distance(transform.position, target.position) <= visionRadius && HasLineOfSight(target))
-            {
-                visibleTargets.Add(target);
-            }
-        }
-
-        if (visibleTargets.Count == 0)
-        {
-            lineRenderer.positionCount = 0;
-            lineRenderer.enabled = false;
-            return;
-        }
-
-        lineRenderer.enabled = true;
-        lineRenderer.positionCount = visibleTargets.Count * 2;
-
-        for (int i = 0; i < visibleTargets.Count; i++)
-        {
-            lineRenderer.SetPosition(i * 2, transform.position);
-            lineRenderer.SetPosition(i * 2 + 1, visibleTargets[i].position);
-        }
-    }
-
 }

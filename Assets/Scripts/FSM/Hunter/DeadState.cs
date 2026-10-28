@@ -20,7 +20,7 @@ public class DeadState : IState
 
         hunter.Agent.Stop();
         hunter.ResetGathers();
-        hunter.ToggleVisibility();
+        hunter.Visuals.ToggleVisibility();
         timer = hunter.RespawnTime;
     }
 

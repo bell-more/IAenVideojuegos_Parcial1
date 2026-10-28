@@ -1308,8 +1308,9 @@ GameObject:
   - component: {fileID: 8860186891158833129}
   - component: {fileID: 4466259490723207346}
   - component: {fileID: 6737249636403872329}
-  - component: {fileID: 3124694872588368703}
   - component: {fileID: 7864483645569186830}
+  - component: {fileID: 155548648572954245}
+  - component: {fileID: 3124694872588368703}
   - component: {fileID: 9035782056137792276}
   m_Layer: 8
   m_Name: Hunter
@@ -1506,47 +1507,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d26a310447d0b44f972efa57e5cd7be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FSMAgent
---- !u!114 &3124694872588368703
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7617855561138713441}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e673e6260f176b04999e1d912f1d8173, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Hunter
-  targetsInRange: []
-  lineRenderer: {fileID: 8860186891158833129}
-  life: 1
-  visionRadius: 10
-  wolfLayer:
-    serializedVersion: 2
-    m_Bits: 4096
-  boidLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  areaToFleeIndicator: {fileID: 2495562644335049216, guid: ff126b99042952a428d001ee3fbc7ca9, type: 3}
-  tba: 3
-  rangeAttackRadius: 6
-  meleeAttackRadius: 3
-  projectilePrefab: {fileID: 7975995204038172403, guid: c0f8da05c8ff8834da159e747e55b1f4, type: 3}
-  firePoint: {fileID: 4421062333472504713}
-  aimTolerance: 0.95
-  gatherTime: 2
-  requiredGathers: 3
-  wolfDetectedImage: {fileID: 7044523053845376114}
-  interestObjectPrefab: {fileID: 2227697553672454419, guid: 189504d97144c9d44b9a27fcd5845ee7, type: 3}
-  maxInterestObjects: 5
-  spawnTimer: 3
-  statusUI: {fileID: 8531944841979287248}
-  respawnTime: 5
-  safeZoneWaitTime: 3
-  currentNode: {fileID: 0}
-  exitNode: {fileID: 0}
-  initialZoneNode: {fileID: 0}
 --- !u!114 &7864483645569186830
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1564,6 +1524,61 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 512
+--- !u!114 &155548648572954245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7617855561138713441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c268b640e8dcc041ae81a16e1192fe0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HunterVisuals
+  lineRenderer: {fileID: 8860186891158833129}
+  areaToFleeIndicator: {fileID: 1659511697884674294, guid: 086b72cac2035cd41a8d533d2d9ed594, type: 3}
+  wolfDetectedImage: {fileID: 7044523053845376114}
+--- !u!114 &3124694872588368703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7617855561138713441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e673e6260f176b04999e1d912f1d8173, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hunter
+  targetsInRange: []
+  life: 1
+  nodeReachedDistance: 0.5
+  visionRadius: 10
+  meleeStandbyDistance: 1
+  wolfLayer:
+    serializedVersion: 2
+    m_Bits: 4096
+  boidLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  tba: 3
+  rangeAttackRadius: 6
+  meleeAttackRadius: 3
+  projectilePrefab: {fileID: 7975995204038172403, guid: c0f8da05c8ff8834da159e747e55b1f4, type: 3}
+  firePoint: {fileID: 4421062333472504713}
+  aimTolerance: 0.95
+  gatherTime: 2
+  requiredGathers: 3
+  interestObjectPrefab: {fileID: 2227697553672454419, guid: 189504d97144c9d44b9a27fcd5845ee7, type: 3}
+  maxInterestObjects: 5
+  spawnTimer: 3
+  statusUI: {fileID: 8531944841979287248}
+  respawnTime: 5
+  safeZoneWaitTime: 3
+  currentNode: {fileID: 0}
+  exitNode: {fileID: 0}
+  initialZoneNode: {fileID: 0}
 --- !u!135 &9035782056137792276
 SphereCollider:
   m_ObjectHideFlags: 0

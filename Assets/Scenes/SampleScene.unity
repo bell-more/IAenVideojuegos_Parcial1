@@ -2153,6 +2153,10 @@ PrefabInstance:
       value: 4096
       objectReference: {fileID: 0}
     - target: {fileID: 3124694872588368703, guid: 47d4b2b80096e484d8e45bcf4791da08, type: 3}
+      propertyPath: nodeReachedDistance
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3124694872588368703, guid: 47d4b2b80096e484d8e45bcf4791da08, type: 3}
       propertyPath: obstacleLayer.m_Bits
       value: 512
       objectReference: {fileID: 0}
@@ -5362,7 +5366,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2093405461512368907, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -24.408031
+      value: -28.408031
       objectReference: {fileID: 0}
     - target: {fileID: 2093405461512368907, guid: a9a111d0cdcba524fbd812b4cefe5be4, type: 3}
       propertyPath: m_LocalRotation.w
