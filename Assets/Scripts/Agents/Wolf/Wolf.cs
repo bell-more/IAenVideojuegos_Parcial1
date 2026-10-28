@@ -29,8 +29,6 @@ public class Wolf : MonoBehaviour
 
     private bool hasAlertedPack = false;
     public bool IsInvestigating { get; set; } = false;
-
-    //[SerializeField] private GameObject hunterLastSeenPositionArea;
     private static GameObject currentAreaInstance;
     public GameObject CurrentAreaInstance { get => currentAreaInstance; set => currentAreaInstance = value; }
     [SerializeField] private float hunterAreaHeight = 3f;

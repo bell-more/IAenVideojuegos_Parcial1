@@ -4,13 +4,9 @@ using UnityEngine;
 public class GraphManager : MonoBehaviour
 {
     public static GraphManager Instance { get; private set; }
-
-    [Header("Nodes")]
     [SerializeField] private List<GraphNode> allNodes = new List<GraphNode>();
     public List<GraphNode> cotoNodes = new List<GraphNode>(); 
     public List<GraphNode> safeZoneNodes = new List<GraphNode>(); 
-
-    [Header("Obstacle")]
     [SerializeField] private LayerMask obstacleLayer; 
 
     private void Awake()

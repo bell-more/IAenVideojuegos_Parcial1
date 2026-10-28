@@ -19,16 +19,6 @@ public class Boid : Agent
 
     private float eatTimeRemaining;
 
-   /* [Header("Visuals")]
-    [SerializeField] private Renderer childMaterial;
-    [SerializeField] private HealthVisuals visuals;
-    [SerializeField] private GameObject targetAura;
-    [SerializeField] private bool showGizmos = true;
-
-    [Header("UI")]
-    [SerializeField] private HealthBar healthBar;
-    [SerializeField] private HunterStatusUI statusUI;*/
-
     [Header("Trap")]
     [SerializeField] private float trapAttackCooldown = 3f;
     [SerializeField] private float trapAttackDistance = 2f;
