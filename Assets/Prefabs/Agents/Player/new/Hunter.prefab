@@ -1537,7 +1537,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HunterVisuals
   lineRenderer: {fileID: 8860186891158833129}
-  areaToFleeIndicator: {fileID: 1659511697884674294, guid: 086b72cac2035cd41a8d533d2d9ed594, type: 3}
+  areaToFleeIndicator: {fileID: 2495562644335049216, guid: ff126b99042952a428d001ee3fbc7ca9, type: 3}
   wolfDetectedImage: {fileID: 7044523053845376114}
 --- !u!114 &3124694872588368703
 MonoBehaviour:
@@ -1553,7 +1553,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Hunter
   targetsInRange: []
   life: 1
-  nodeReachedDistance: 0.5
+  nodeReachedDistance: 0.1
   visionRadius: 10
   meleeStandbyDistance: 1
   wolfLayer:

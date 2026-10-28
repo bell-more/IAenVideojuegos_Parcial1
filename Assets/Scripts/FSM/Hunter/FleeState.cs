@@ -31,6 +31,7 @@ public class FleeState : IState
     {
         CheckTransitions();
         NavigateAlongPath();
+       // Debug.Log("FLEEING - current node: "+hunter.currentNode);
     }
 
     public void CheckTransitions()

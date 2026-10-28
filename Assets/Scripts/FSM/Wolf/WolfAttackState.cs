@@ -24,7 +24,7 @@ public class WolfAttackState : IState
 
     private void InitializeAttack()
     {
-        wolf.UpdateUI("Attacking", "");
+        wolf.WolfVisuals.UpdateUI("Attacking", "");
         wolf.Agent.Stop();
         timer = wolf.AttackCooldown;
 

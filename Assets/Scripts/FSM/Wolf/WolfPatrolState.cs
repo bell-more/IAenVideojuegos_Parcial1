@@ -32,7 +32,7 @@ public class WolfPatrolState : IState
         wolf.ForgetHunter();
         currentWaypointIndex = 0;
         currentAStarPath = null;
-        wolf.UpdateUI("Patrolling", "");
+        wolf.WolfVisuals.UpdateUI("Patrolling", "");
     }
 
     public void CheckTransitions()

@@ -960,6 +960,7 @@ GameObject:
   - component: {fileID: 5141996916413768881}
   - component: {fileID: 2953633215022995604}
   - component: {fileID: 3859888012905440029}
+  - component: {fileID: 3157019681660711704}
   - component: {fileID: 8028773948332307303}
   - component: {fileID: 8287894784045209511}
   - component: {fileID: 868233773480650396}
@@ -1265,6 +1266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c809ae61cebea734cb1cad45a18882dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Wolf
+  nodeReachedDistance: 0.5
   viewRadius: 10
   viewAngle: 60
   captureRadius: 2.5
@@ -1272,20 +1274,34 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 264
   inspectDuration: 3
+  attackCooldown: 1.5
+  targetMoveTolerance: 0.5
   patrolWaypoints:
   - {fileID: 0}
   - {fileID: 0}
   usePingPongPatrol: 1
+  hunterAreaHeight: 3
+  currentNode: {fileID: 0}
+--- !u!114 &3157019681660711704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9159853103635668021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f14cc27a7b4bd5742a844073e6d109ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WolfVisuals
   stateText: {fileID: 4414992978655043637}
   infoText: {fileID: 7430887637895065015}
   detectionText: {fileID: 5906066977836335174}
+  hunterLastSeenPositionArea: {fileID: 1659511697884674294, guid: 086b72cac2035cd41a8d533d2d9ed594, type: 3}
   feedbackImage: {fileID: 4377392325205094451}
   detectSprite: {fileID: 21300000, guid: 255906514304fcb4dad1e1409e40a300, type: 3}
   alertSprite: {fileID: 21300000, guid: 17bb566138e206d4c90754add7f62a4e, type: 3}
   hunterLostSprite: {fileID: 21300000, guid: fb591e184475c7343ad11a4855db562a, type: 3}
-  hunterLastSeenPositionArea: {fileID: 1659511697884674294, guid: 086b72cac2035cd41a8d533d2d9ed594, type: 3}
-  hunterAreaHeight: 3
-  currentNode: {fileID: 0}
 --- !u!114 &8028773948332307303
 MonoBehaviour:
   m_ObjectHideFlags: 0

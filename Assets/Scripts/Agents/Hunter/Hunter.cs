@@ -260,6 +260,7 @@ public class Hunter : Agent
         targetPos.y = transform.position.y;
 
         float distance = Vector3.Distance(transform.position, targetPos);
+        Debug.Log("Hunter: " + name + " | CurrentNode: " + (currentNode != null ? currentNode.name : "NULL") + " | TargetNode: " + targetNode.name + " | PathIndex: " + pathIndex + "/" + path.Count + " | Distance: " + distance);
 
         if (distance <= reachDistance)
         {

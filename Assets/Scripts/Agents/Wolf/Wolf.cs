@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Wolf : MonoBehaviour
 {
@@ -9,7 +7,9 @@ public class Wolf : MonoBehaviour
     [SerializeField] private float nodeReachedDistance = 0.5f;
     public float NodeReachedDistance => nodeReachedDistance;
     [SerializeField] private float viewRadius = 10f;
+    public float ViewRadius => viewRadius;
     [Range(0, 360)] public float viewAngle = 90f;
+    public float ViewAngle => viewAngle;
     [SerializeField] private float captureRadius = 2.5f;
     public float CaptureRadius => captureRadius;
     [SerializeField] private LayerMask hunterLayer;
@@ -30,18 +30,9 @@ public class Wolf : MonoBehaviour
     private bool hasAlertedPack = false;
     public bool IsInvestigating { get; set; } = false;
 
-    [Header("UI")]
-    [SerializeField] private TextMeshProUGUI stateText;
-    [SerializeField] private TextMeshProUGUI infoText;
-    [SerializeField] private TextMeshProUGUI detectionText;
-    [SerializeField] private Image feedbackImage;
-    [SerializeField] private Sprite detectSprite;
-    [SerializeField] private Sprite alertSprite;
-    [SerializeField] private Sprite hunterLostSprite;
-    public Sprite HunterLostSprite => hunterLostSprite;
-
-    [SerializeField] private GameObject hunterLastSeenPositionArea;
+    //[SerializeField] private GameObject hunterLastSeenPositionArea;
     private static GameObject currentAreaInstance;
+    public GameObject CurrentAreaInstance { get => currentAreaInstance; set => currentAreaInstance = value; }
     [SerializeField] private float hunterAreaHeight = 3f;
 
     private AudioSource audioSource;
@@ -58,10 +49,14 @@ public class Wolf : MonoBehaviour
     public Hunter CurrentHunter { get; private set; }
     public bool HunterInSafeZone { get; private set; } = false;
 
+    //visuals
+    private WolfVisuals wolfVisuals;
+    public WolfVisuals WolfVisuals => wolfVisuals;
+                               
+
     private void Awake()
     {
         GetComponents();
-        HideFeedback();
     }
 
     private void OnEnable()
@@ -113,6 +108,7 @@ public class Wolf : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         perception = GetComponent<Perception>();
         wolfFSM = GetComponent<FSMWolf>();
+        wolfVisuals = GetComponent<WolfVisuals>();  
     }
     private void HandleHunterDetection(Vector3 hunterPosition)
     {
@@ -122,17 +118,14 @@ public class Wolf : MonoBehaviour
 
             if (!hasAlertedPack)
             {
-                ShowFeedback("Hunter detected", detectSprite);
+                wolfVisuals.ShowFeedback("Hunter detected", true);
                 if (audioSource != null) audioSource.Play();
 
                 Vector3 areaPos = new Vector3(LastKnownHunterPosition.x, hunterAreaHeight, LastKnownHunterPosition.z);
 
                 if (currentAreaInstance == null)
                 {
-                    if (hunterLastSeenPositionArea != null)
-                    {
-                        currentAreaInstance = Instantiate(hunterLastSeenPositionArea, areaPos, Quaternion.identity);
-                    }
+                    wolfVisuals.InstantiateHunterLastPositionSquare(areaPos);
                 }
                 else
                 {
@@ -194,7 +187,7 @@ public class Wolf : MonoBehaviour
         hasAlertedPack = true;
         IsAlerted = true;
 
-        if (!IsSeeingHunter) ShowFeedback("Wolf alerted!", alertSprite);
+        if (!IsSeeingHunter) wolfVisuals.ShowFeedback("Wolf alerted!", false);
     }
 
     private void HandleSafeZoneReached()
@@ -213,7 +206,7 @@ public class Wolf : MonoBehaviour
         IsInvestigating = false;
         LastKnownHunterPosition = Vector3.zero;
 
-        HideFeedback();
+        wolfVisuals.HideFeedback();
 
         if (WolfManager.Instance != null && !WolfManager.Instance.IsAnyWolfActive())
         {
@@ -259,38 +252,5 @@ public class Wolf : MonoBehaviour
         }
 
         return false;
-    }
-    //visuals
-    public void UpdateUI(string state, string info)
-    {
-        if (stateText != null) stateText.text = state;
-        if (infoText != null) infoText.text = info;
-    }
-
-    private void OnDrawGizmos()
-    {
-        GroundCircleGizmo.DrawVisionCone(transform.position, transform.eulerAngles.y, viewRadius, viewAngle, Color.yellow);
-        GroundCircleGizmo.DrawArc(transform.position, transform.eulerAngles.y, CaptureRadius, viewAngle, Color.red);
-    }
-
-    public void ShowFeedback(string text, Sprite icon)
-    {
-        if (detectionText != null)
-        {
-            detectionText.text = text;
-            detectionText.gameObject.SetActive(true);
-        }
-
-        if (feedbackImage != null && icon != null)
-        {
-            feedbackImage.sprite = icon;
-            feedbackImage.gameObject.SetActive(true);
-        }
-    }
-
-    public void HideFeedback()
-    {
-        if (detectionText != null) detectionText.gameObject.SetActive(false);
-        if (feedbackImage != null) feedbackImage.gameObject.SetActive(false);
     }
 }

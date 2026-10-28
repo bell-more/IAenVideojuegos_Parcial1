@@ -32,7 +32,7 @@ public class WolfInvestigateState : IState
 
     private void InitializeInvestigation()
     {
-        wolf.UpdateUI("Investigating", "checking last known position");
+        wolf.WolfVisuals.UpdateUI("Investigating", "checking last known position");
         wolf.IsAlerted = false;
         wolf.IsInvestigating = true;
 
@@ -85,7 +85,7 @@ public class WolfInvestigateState : IState
     {
         searchTimer -= Time.deltaTime;
 
-        wolf.ShowFeedback("Hunter lost!", wolf.HunterLostSprite);
+        wolf.WolfVisuals.ShowFeedback("Hunter lost!", wolf.WolfVisuals.HunterLostSprite);
 
         float rotationAngle = Mathf.Sin(Time.time * 3f) * 30f;
 

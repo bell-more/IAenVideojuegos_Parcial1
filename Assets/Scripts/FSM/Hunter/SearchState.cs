@@ -33,8 +33,9 @@ public class SearchState : IState
     public void Update()
     {
         CheckTransitions();
-
         ProcessObjectSpawnBehaviour();
+
+      //  Debug.Log("SEARCHING - current node: " + hunter.currentNode);
 
         NavigateAlongPath();
     }

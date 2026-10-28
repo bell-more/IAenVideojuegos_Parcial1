@@ -2154,7 +2154,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3124694872588368703, guid: 47d4b2b80096e484d8e45bcf4791da08, type: 3}
       propertyPath: nodeReachedDistance
-      value: 0.1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3124694872588368703, guid: 47d4b2b80096e484d8e45bcf4791da08, type: 3}
       propertyPath: obstacleLayer.m_Bits
