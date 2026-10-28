@@ -1,3 +1,4 @@
+
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,23 +19,28 @@ public class FleeState : IState
 
     public void Enter()
     {
-        UpdateUI();
-
-        hunter.IsInSafeZone = false;
-        isSafe = false;
-        waitTimer = 0f;
-
-        CalculatePathToClosestSafeZone();
+        InitializeFlee();
     }
 
     public void Update()
     {
         CheckTransitions();
-        NavigateAlongPath();
-       // Debug.Log("FLEEING - current node: "+hunter.currentNode);
+        if (!isSafe) NavigateAlongPath();
     }
 
-    public void CheckTransitions()
+    private void InitializeFlee()
+    {
+        UpdateUI();
+        hunter.IsInSafeZone = false;
+        isSafe = false;
+        waitTimer = 0f;
+        currentPath.Clear();
+        currentPathIndex = 0;
+        hunter.Agent.Stop();
+        CalculatePathToClosestSafeZone();
+    }
+
+    private void CheckTransitions()
     {
         if (hunter.Life <= 0)
         {
@@ -45,26 +51,18 @@ public class FleeState : IState
         if (isSafe)
         {
             hunter.StatusUI.SetStatus("Hiding");
-            hunter.StatusUI.ShowAction($"Waiting: {(hunter.SafeZoneWaitTime - waitTimer):F1}s");
-
+            hunter.StatusUI.ShowAction($"Waiting: {Mathf.Max(0f, hunter.SafeZoneWaitTime - waitTimer):F1}s");
             waitTimer += Time.deltaTime;
 
             if (waitTimer >= hunter.SafeZoneWaitTime)
             {
-                if (hunter.CurrentGathers >= hunter.RequiredGathers)
-                {
-                    fsm.ChangeState(HunterStates.Exit);
-                }
-                else
-                {
-                    fsm.ChangeState(HunterStates.Search);
-                }
+                if (hunter.CurrentGathers >= hunter.RequiredGathers) fsm.ChangeState(HunterStates.Exit);
+                else fsm.ChangeState(HunterStates.Search);
             }
-            return;
         }
     }
 
-    public void UpdateUI()
+    private void UpdateUI()
     {
         hunter.StatusUI.SetStatus("Fleeing");
         hunter.StatusUI.ShowAction("");
@@ -73,68 +71,88 @@ public class FleeState : IState
 
     private void CalculatePathToClosestSafeZone()
     {
-        hunter.currentNode = GraphManager.Instance.GetClosestNode(hunter.transform.position, true);
+        GraphManager graph = GraphManager.Instance;
+        if (graph == null)
+        {
+            hunter.Agent.Stop();
+            return;
+        }
+
+        hunter.currentNode = graph.GetClosestNode(hunter.transform.position, true);
+        if (hunter.currentNode == null || graph.safeZoneNodes == null || graph.safeZoneNodes.Count == 0)
+        {
+            hunter.Agent.Stop();
+            return;
+        }
 
         List<GraphNode> bestPath = null;
         float shortestDistance = Mathf.Infinity;
         GraphNode bestSafeNode = null;
 
-        foreach (GraphNode safeNode in GraphManager.Instance.safeZoneNodes)
+        foreach (GraphNode safeNode in graph.safeZoneNodes)
         {
+            if (safeNode == null) continue;
+
             List<GraphNode> path = AStarPathfinding.FindPath(hunter.currentNode, safeNode);
 
-            if (path != null && path.Count > 0)
+            if (path == null || path.Count == 0 || path[path.Count - 1] != safeNode) continue;
+
+            float totalPathDistance = Vector3.Distance(hunter.transform.position, path[0].transform.position);
+
+            for (int i = 0; i < path.Count - 1; i++)
             {
-                float totalPathDistance = Vector3.Distance(hunter.transform.position, path[0].transform.position);
+                totalPathDistance += Vector3.Distance(path[i].transform.position, path[i + 1].transform.position);
+            }
 
-                for (int i = 0; i < path.Count - 1; i++)
-                {
-                    totalPathDistance += Vector3.Distance(path[i].transform.position, path[i + 1].transform.position);
-                }
-
-                if (totalPathDistance < shortestDistance)
-                {
-                    shortestDistance = totalPathDistance;
-                    bestPath = path;
-                    bestSafeNode = safeNode;
-                }
+            if (totalPathDistance < shortestDistance)
+            {
+                shortestDistance = totalPathDistance;
+                bestPath = path;
+                bestSafeNode = safeNode;
             }
         }
 
-        if (bestPath != null && bestPath.Count > 0)
+        if (bestPath == null || bestSafeNode == null)
         {
-            bestPath = AStarPathfinding.EnsurePathContinuity(bestPath, currentPath, currentPathIndex);
-
-            currentPath = bestPath;
-            currentPathIndex = 0;
-
-            if (bestSafeNode != null)
-            {
-                hunter.Visuals.EnableAreaToFleeIndicator(bestSafeNode.transform.position, true);
-            }
+            currentPath.Clear();
+            hunter.Agent.Stop();
+            if (hunter.PathDrawer != null) hunter.PathDrawer.ClearPath();
+            return;
         }
+
+        currentPath = bestPath;
+        currentPathIndex = 0;
+        hunter.Visuals.EnableAreaToFleeIndicator(bestSafeNode.transform.position, true);
     }
 
     private void NavigateAlongPath()
     {
-        hunter.NavigatePath(currentPath, ref currentPathIndex, hunter.NodeReachedDistance, true, () => {
+        if (currentPath == null || currentPath.Count == 0) return;
+
+        hunter.NavigatePath(currentPath, ref currentPathIndex, hunter.NodeReachedDistance, true, () =>
+        {
             if (isSafe) return;
+
             isSafe = true;
             hunter.IsInSafeZone = true;
-            SafeZoneNotifier.NotifyHunterEnteredSafeZone();
             hunter.Agent.Stop();
+
             if (hunter.PathDrawer != null) hunter.PathDrawer.ClearPath();
+
+            SafeZoneNotifier.NotifyHunterEnteredSafeZone();
         });
     }
 
     public void Exit()
     {
         hunter.IsInSafeZone = false;
-        hunter.Visuals.EnableAreaToFleeIndicator(new Vector3(0f, 0f, 0f), false);
+        hunter.Visuals.EnableAreaToFleeIndicator(Vector3.zero, false);
         hunter.Visuals.ToggleWolfDetection(false);
         currentPath.Clear();
 
         if (hunter.PathDrawer != null) hunter.PathDrawer.ClearPath();
+
+        hunter.Agent.Stop();
         isSafe = false;
         waitTimer = 0f;
 

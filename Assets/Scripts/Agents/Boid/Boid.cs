@@ -4,19 +4,22 @@ public class Boid : Agent
 {
     private SteeringAgent agent;
     private Flocking flocking;
+    public Flocking Flocking => flocking;
     private BoidVision vision;
     private bool isAlive = true;
 
     [Header("Stats")]
     [SerializeField] private int life = 3;
+    public int Life => life;
     private int initialLife;
+    public int InitialLife { get => initialLife; set => initialLife = value; }
     public bool GetIsAlive => isAlive;
     private bool isCollected = false;
     [SerializeField] private float respawnRange = 10f;
 
     private float eatTimeRemaining;
 
-    [Header("Visuals")]
+   /* [Header("Visuals")]
     [SerializeField] private Renderer childMaterial;
     [SerializeField] private HealthVisuals visuals;
     [SerializeField] private GameObject targetAura;
@@ -24,7 +27,7 @@ public class Boid : Agent
 
     [Header("UI")]
     [SerializeField] private HealthBar healthBar;
-    [SerializeField] private HunterStatusUI statusUI;
+    [SerializeField] private HunterStatusUI statusUI;*/
 
     [Header("Trap")]
     [SerializeField] private float trapAttackCooldown = 3f;
@@ -39,16 +42,13 @@ public class Boid : Agent
     {
         set => targetInterestObject = value;
     }
-
-    //colours
-    private Renderer[] allRenderers;
-    private Color[] initialColours;
+    //visuals
+    private BoidVisuals boidVisuals; 
+    public BoidVisuals BoidVisuals  => boidVisuals;
 
     private void Awake()
     {
         GetComponents();
-        InitializeLife();
-        SaveInitialColours();
     }
 
     private void Start()
@@ -77,22 +77,12 @@ public class Boid : Agent
 
         HandleFlocking();
     }
-
-    public void InitializeLife()
-    {
-        initialLife = life;
-
-        if (healthBar != null)
-        {
-            healthBar.Setup(initialLife);
-        }
-    }
     public void GetComponents()
     {
         agent = GetComponent<SteeringAgent>();
         flocking = GetComponent<Flocking>();
         vision = GetComponent<BoidVision>();
-        allRenderers = GetComponentsInChildren<Renderer>(true);
+        boidVisuals = GetComponent<BoidVisuals>();  
     }
     private void HandleInterestObject()
     {
@@ -127,7 +117,7 @@ public class Boid : Agent
         arriveForce.y = 0f;
         agent.ApplySteering(arriveForce);
 
-        UpdateUI("Going to food", "");
+        boidVisuals.UpdateUI("Going to food", "");
     }
     private void EatInterestObject()
     {
@@ -135,7 +125,7 @@ public class Boid : Agent
 
         ApplyFlocking();
 
-        UpdateUI("Eating object", "Time remaining: " + eatTimeRemaining.ToString("F0"));
+        boidVisuals.UpdateUI("Eating object", "Time remaining: " + eatTimeRemaining.ToString("F0"));
 
         if (trapAttackTimer <= 0f)
         {
@@ -156,7 +146,7 @@ public class Boid : Agent
         evadeForce.y = 0f;
         agent.ApplySteering(evadeForce);
 
-        UpdateUI("Evading", "");
+        boidVisuals.UpdateUI("Evading", "");
     }
 
     private void HandleFlocking()
@@ -165,20 +155,11 @@ public class Boid : Agent
         {
             ApplyFlocking();
 
-            UpdateUI("Flocking", "");
+            boidVisuals.UpdateUI("Flocking", "");
         }
         else
         {
             HandleWandering();
-        }
-    }
-
-    private void UpdateUI(string state, string action)
-    {
-        if (statusUI != null)
-        {
-            statusUI.SetStatus(state);
-            statusUI.ShowAction(action);
         }
     }
     private void ApplyFlocking()
@@ -198,7 +179,7 @@ public class Boid : Agent
             agent.ApplySteering(gentlePush);
         }
 
-        UpdateUI("Wandering", "");
+        boidVisuals.UpdateUI("Wandering", "");
        
     }
     private void UpdateTimers()
@@ -228,18 +209,13 @@ public class Boid : Agent
         eatTimeRemaining = 0f;
         agent.velocity = transform.forward * agent.MaxSpeed;
 
-        if (statusUI != null)
-        {
-            statusUI.SetStatus("");
-            statusUI.ShowAction("");
-        }
+        boidVisuals.SetStatusUI();
     }
     public void TakeDamage(int damage)
     {
         life -= damage;
-        if (healthBar != null) healthBar.UpdateHealth(life);
 
-        if (visuals != null) visuals.SetColour(life);
+        boidVisuals.TakeDamageVisual();
 
         if (life <= 0 && isAlive)
         {
@@ -248,7 +224,7 @@ public class Boid : Agent
             isCollected = false;
             agent.Stop();
 
-            if (healthBar != null) healthBar.SetActive(false);
+            boidVisuals.ToggleHealthBar(false);
 
             foreach (SteeringAgent neighbor in vision.NearbyAgents)
             {
@@ -267,18 +243,8 @@ public class Boid : Agent
         isCollected = true;
         CancelInvoke(nameof(Respawn));
 
-        if (statusUI != null)
-        {
-            statusUI.SetStatus("");
-            statusUI.ShowAction("");
-        }
-
-        childMaterial.GetComponent<Collider>().enabled = false;
-
-        for (int i = 0; i < allRenderers.Length; i++)
-        {
-            allRenderers[i].enabled = false;
-        }
+        boidVisuals.SetStatusUI();
+        boidVisuals.ToggleVisual(false);
 
         Invoke(nameof(Respawn), 3f);
     }
@@ -291,65 +257,16 @@ public class Boid : Agent
 
         targetInterestObject = null;
         trapAttackTimer = 0f;
-
-        if (healthBar != null)
-        {
-            healthBar.SetActive(true);
-            healthBar.UpdateHealth(initialLife);
-        }
+        boidVisuals.ToggleHealthBar(true);
 
         GetComponent<BoidVision>().ClearVision();
 
         transform.position = new Vector3(Random.Range(-respawnRange, respawnRange), transform.position.y, Random.Range(-respawnRange, respawnRange));
 
-        childMaterial.GetComponent<Collider>().enabled = true;
-
-        for (int i = 0; i < allRenderers.Length; i++)
-        {
-            allRenderers[i].enabled = true;
-            allRenderers[i].material.color = initialColours[i];
-        }
+        boidVisuals.ToggleVisual(true);
 
         Vector3 randomDirection = new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f)).normalized;
         agent.velocity = randomDirection * agent.MaxSpeed;
-    }
-
-    //visuals
-    public void ChangeColour(Color newColour)
-    {
-        if (childMaterial != null)
-        {
-            childMaterial.material.color = newColour;
-        }
-    }
-
-    public void SetTargetArrow(bool isActive)
-    {
-        if (targetAura != null)
-        {
-            targetAura.SetActive(isActive);
-        }
-    }
-
-    public void SaveInitialColours()
-    {
-        initialColours = new Color[allRenderers.Length];
-        for (int i = 0; i < allRenderers.Length; i++)
-        {
-            initialColours[i] = allRenderers[i].material.color;
-        }
-    }
-    
-    private void OnDrawGizmos()
-    {
-        if (!showGizmos) return;
-
-        if (flocking != null)
-        {
-            GroundCircleGizmo.Draw(transform.position, flocking.SeparationRadius, Color.red);
-            GroundCircleGizmo.Draw(transform.position, flocking.AlignmentRadius, Color.yellow);
-            GroundCircleGizmo.Draw(transform.position, flocking.CohesionRadius, Color.cyan);
-        }
     }
 
 }

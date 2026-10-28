@@ -188,14 +188,14 @@ public class Hunter : Agent
     {
         if (currentBoid != null)
         {
-            currentBoid.SetTargetArrow(false);
+            currentBoid.BoidVisuals.SetTargetArrow(false);
         }
 
         currentBoid = newTarget;
 
         if (currentBoid != null)
         {
-            currentBoid.SetTargetArrow(true);
+            currentBoid.BoidVisuals.SetTargetArrow(true);
         }
     }
 
@@ -247,31 +247,33 @@ public class Hunter : Agent
     {
         if (path == null || path.Count == 0) return false;
 
+        while (pathIndex < path.Count)
+        {
+            GraphNode targetNode = path[pathIndex];
+            Vector3 targetPos = targetNode.transform.position;
+            targetPos.y = transform.position.y;
+
+            if (Vector3.Distance(transform.position, targetPos) > reachDistance) break;
+
+            currentNode = targetNode;
+            pathIndex++;
+        }
+
         if (pathIndex >= path.Count)
         {
+            Agent.Stop();
+            if (PathDrawer != null) PathDrawer.ClearPath();
             onPathFinished?.Invoke();
             return true;
         }
 
         if (PathDrawer != null) PathDrawer.UpdateRemainingPath(path, pathIndex);
 
-        GraphNode targetNode = path[pathIndex];
-        Vector3 targetPos = targetNode.transform.position;
-        targetPos.y = transform.position.y;
+        Vector3 targetPosition = path[pathIndex].transform.position;
+        targetPosition.y = transform.position.y;
 
-        float distance = Vector3.Distance(transform.position, targetPos);
-        Debug.Log("Hunter: " + name + " | CurrentNode: " + (currentNode != null ? currentNode.name : "NULL") + " | TargetNode: " + targetNode.name + " | PathIndex: " + pathIndex + "/" + path.Count + " | Distance: " + distance);
-
-        if (distance <= reachDistance)
-        {
-            currentNode = targetNode;
-            pathIndex++;
-        }
-        else
-        {
-            Vector3 steering = useArrive ? Agent.Arrive(targetPos) : Agent.Seek(targetPos);
-            Agent.ApplySteering(steering);
-        }
+        Vector3 steering = useArrive ? Agent.Arrive(targetPosition) : Agent.Seek(targetPosition);
+        Agent.ApplySteering(steering);
 
         return false;
     }

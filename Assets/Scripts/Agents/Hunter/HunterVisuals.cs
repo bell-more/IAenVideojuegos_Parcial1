@@ -70,7 +70,7 @@ public class HunterVisuals : MonoBehaviour
         if (hunter == null) return;
         GroundCircleGizmo.Draw(transform.position, hunter.VisionRadius, Color.yellow);
         GroundCircleGizmo.Draw(transform.position, hunter.RangeAttackRadius, Color.red);
-        GroundCircleGizmo.Draw(transform.position, hunter.MeleeAttackRadius, Color.green);
+        GroundCircleGizmo.Draw(transform.position, hunter.MeleeAttackRadius, Color.red);
     }
 
 

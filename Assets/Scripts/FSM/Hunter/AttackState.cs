@@ -17,10 +17,7 @@ public class AttackState : IState
 
     public void Enter()
     {
-        hunter.StatusUI.SetStatus("Attacking");
-        target = hunter.GetClosestTarget();
-        hunter.SetCurrentTarget(target);
-        isAimingRange = false;
+        InitializeAttack();
     }
 
     public void Update()
@@ -28,6 +25,14 @@ public class AttackState : IState
         if (CheckTransitions()) return;
 
         ProcessAttackBehaviour();
+    }
+
+    private void InitializeAttack()
+    {
+        hunter.StatusUI.SetStatus("Attacking");
+        target = hunter.GetClosestTarget();
+        hunter.SetCurrentTarget(target);
+        isAimingRange = false;
     }
 
     private bool CheckTransitions()

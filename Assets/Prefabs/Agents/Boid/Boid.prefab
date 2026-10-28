@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 476848993220531001}
   - component: {fileID: 856711746840698498}
+  - component: {fileID: 7873669681652396692}
   - component: {fileID: 535180689089622927}
   - component: {fileID: 6419548395564398830}
   - component: {fileID: 417586507816256010}
@@ -52,18 +53,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fac55148ecdb3b40b1fd0010a2bc683, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boid
-  life: 1
+  life: 2
   respawnRange: 10
+  trapAttackCooldown: 3
+  trapAttackDistance: 2
+  wanderingMinSpeed: 0.1
+  wanderingPush: 0.5
+--- !u!114 &7873669681652396692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280087512135700557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cb1032c25607b0458a1728a6d7b32cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoidVisuals
   childMaterial: {fileID: 7084471772390166928}
   visuals: {fileID: 1458539871974296780}
   targetAura: {fileID: 607768385173835610}
   showGizmos: 0
   healthBar: {fileID: 4023664891530475531}
   statusUI: {fileID: 2907369921857705093}
-  trapAttackCooldown: 3
-  trapAttackDistance: 2
-  wanderingMinSpeed: 0.1
-  wanderingPush: 0.5
 --- !u!114 &535180689089622927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -89,6 +102,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a4c791ecd70f914482cc21c270fa4ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Flocking
+  separationRadius: 2
+  alignmentRadius: 5
+  cohesionRadius: 12
 --- !u!114 &417586507816256010
 MonoBehaviour:
   m_ObjectHideFlags: 0

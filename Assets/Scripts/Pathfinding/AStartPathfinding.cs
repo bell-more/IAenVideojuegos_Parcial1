@@ -1,89 +1,74 @@
+
 using System.Collections.Generic;
 using UnityEngine;
 
 public static class AStarPathfinding
 {
-    private class PathRecord
+    public static List<GraphNode> FindPath(GraphNode start, GraphNode goal, bool excludeSafeZones = false)
     {
-        public GraphNode node;
-        public GraphNode parent;
-        public float gCost;
-        public float fCost;
-    }
+        List<GraphNode> path = new List<GraphNode>();
 
-    public static List<GraphNode> FindPath(GraphNode startNode, GraphNode targetNode, bool excludeSafeZones = false)
-    {
-        if (startNode == null || targetNode == null) return new List<GraphNode>();
-        if (excludeSafeZones && (GraphManager.Instance.safeZoneNodes.Contains(startNode) || GraphManager.Instance.safeZoneNodes.Contains(targetNode))) return new List<GraphNode>();
+        if (start == null || goal == null) return path;
 
-        PriorityQueue<PathRecord> frontier = new PriorityQueue<PathRecord>();
-        Dictionary<GraphNode, PathRecord> costSoFar = new Dictionary<GraphNode, PathRecord>();
+        GraphManager graph = GraphManager.Instance;
+        if (graph == null) return path;
 
-        PathRecord startRecord = new PathRecord { node = startNode, parent = null, gCost = 0, fCost = 0 };
-        frontier.Enqueue(startRecord, 0);
-        costSoFar[startNode] = startRecord;
+        if (excludeSafeZones && graph.safeZoneNodes.Contains(goal)) return path;
+        if (start == goal)
+        {
+            path.Add(start);
+            return path;
+        }
+
+        PriorityQueue<GraphNode> frontier = new PriorityQueue<GraphNode>();
+        Dictionary<GraphNode, GraphNode> cameFrom = new Dictionary<GraphNode, GraphNode>();
+        Dictionary<GraphNode, float> costSoFar = new Dictionary<GraphNode, float>();
+        HashSet<GraphNode> processed = new HashSet<GraphNode>();
+
+        frontier.Enqueue(start, 0f);
+        costSoFar[start] = 0f;
 
         while (frontier.Count > 0)
         {
-            PathRecord currentRecord = frontier.Dequeue();
-            GraphNode current = currentRecord.node;
+            GraphNode current = frontier.Dequeue();
 
-            if (current == targetNode) return RetracePath(currentRecord, costSoFar);
+            if (processed.Contains(current)) continue;
+            processed.Add(current);
 
-            foreach (GraphNode neighbor in current.neighbours)
+            if (current == goal) break;
+
+            foreach (GraphNode neighbour in current.neighbours)
             {
-                if (excludeSafeZones && GraphManager.Instance.safeZoneNodes.Contains(neighbor)) continue;
+                if (neighbour == null) continue;
+                if (excludeSafeZones && graph.safeZoneNodes.Contains(neighbour)) continue;
+                if (processed.Contains(neighbour)) continue;
 
-                float stepCost = Vector3.Distance(current.transform.position, neighbor.transform.position);
-                float newCost = currentRecord.gCost + stepCost;
+                float newCost = costSoFar[current] + Vector3.Distance(current.transform.position, neighbour.transform.position);
 
-                if (!costSoFar.ContainsKey(neighbor) || newCost < costSoFar[neighbor].gCost)
+                if (!costSoFar.ContainsKey(neighbour) || newCost < costSoFar[neighbour])
                 {
-                    float heuristic = Vector3.Distance(neighbor.transform.position, targetNode.transform.position);
-                    float priority = newCost + heuristic;
-                    PathRecord neighborRecord = new PathRecord { node = neighbor, parent = current, gCost = newCost, fCost = priority };
-                    costSoFar[neighbor] = neighborRecord;
-                    frontier.Enqueue(neighborRecord, priority);
+                    costSoFar[neighbour] = newCost;
+                    cameFrom[neighbour] = current;
+
+                    float heuristic = Vector3.Distance(neighbour.transform.position, goal.transform.position);
+                    frontier.Enqueue(neighbour, newCost + heuristic);
                 }
             }
         }
 
-        return new List<GraphNode>();
-    }
+        if (!costSoFar.ContainsKey(goal)) return path;
 
-    private static List<GraphNode> RetracePath(PathRecord endRecord, Dictionary<GraphNode, PathRecord> records)
-    {
-        List<GraphNode> path = new List<GraphNode>();
-        PathRecord current = endRecord;
+        GraphNode node = goal;
+        path.Add(node);
 
-        while (current != null && current.parent != null)
+        while (node != start)
         {
-            path.Add(current.node);
-            current = records[current.parent];
+            if (!cameFrom.ContainsKey(node)) return new List<GraphNode>();
+            node = cameFrom[node];
+            path.Add(node);
         }
 
         path.Reverse();
         return path;
-    }
-
-    public static List<GraphNode> EnsurePathContinuity(List<GraphNode> newPath, List<GraphNode> oldPath, int oldPathIndex)
-    {
-        if (newPath == null || newPath.Count == 0) return newPath;
-
-        GraphNode previousTargetNode = null;
-        if (oldPath != null && oldPathIndex >= 0 && oldPathIndex < oldPath.Count)
-        {
-            previousTargetNode = oldPath[oldPathIndex];
-        }
-
-        if (previousTargetNode != null)
-        {
-            if (newPath[0] != previousTargetNode && !newPath.Contains(previousTargetNode))
-            {
-                newPath.Insert(0, previousTargetNode);
-            }
-        }
-
-        return newPath;
     }
 }

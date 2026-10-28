@@ -35,7 +35,7 @@ public class GatherState : IState
         ProcessSearchBehaviour();
     }
 
-    public void CheckTransitions()
+    private void CheckTransitions()
     {
         if (hunter.Life <= 0)
         {
@@ -56,7 +56,7 @@ public class GatherState : IState
         }
     }
 
-    public void ProcessSearchBehaviour()
+    private void ProcessSearchBehaviour()
     {
         float distance = Vector3.Distance(hunter.transform.position, target.transform.position);
 
